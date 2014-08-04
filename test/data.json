@@ -1,0 +1,13 @@
+{
+    "record": [
+        {
+            "id": 1,
+            "name": "Record 1"
+        },
+        {
+            "id": 2,
+            "name": "Record 2"
+        }
+    ],
+    "total": 2
+}

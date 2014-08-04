@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script src="../../metaphorjs/src/MetaphorJs.js"></script>
+    <script src="../../metaphorjs-namespace/metaphorjs.namespace.js"></script>
+    <script src="../../metaphorjs-class/metaphorjs.class.js"></script>
+    <script src="../../metaphorjs-observable/metaphorjs.observable.js"></script>
+    <script src="../../metaphorjs-promise/metaphorjs.promise.js"></script>
+    <script src="../metaphorjs.ajax.js"></script>
+    <script>
+        MetaphorJs.onReady(function(){
+
+            MetaphorJs.ajax.get("data.json")
+                .done(function(response){
+                    console.log("got json response: ", response);
+                })
+                .fail(function(reason){
+                    console.log("failed to get json: ", reason);
+                });
+
+
+            MetaphorJs.ajax.get("data1.json")
+                .fail(function(reason){
+                    console.log("failed to get non-existent json: ", reason);
+                });
+
+            MetaphorJs.ajax("script.js", {dataType: "script"});
+
+            MetaphorJs.ajax("jsonp.js", {jsonp: true, jsonpCallback: "jsonpCallback"})
+            .done(function(response){
+                console.log("jsonp returned data: ", response);
+            })
+            .fail(function(reason) {
+                console.log("jsonp failed: ", reason);
+            });
+
+            MetaphorJs.ajax(
+                "http://127.0.0.1:3001/metaphorjs-ajax/test/cross-jsonp.js",
+                {jsonp: true, jsonpCallback: "crossJsonpCallback"}
+            )
+            .done(function(response){
+                console.log("cross-domain jsonp returned data: ", response);
+            })
+            .fail(function(reason) {
+                console.log("cross-domain jsonp failed: ", reason);
+            });
+
+
+            MetaphorJs.ajax.get("data.xml")
+            .done(function(response){
+                console.log("got xml response: ", response);
+            })
+            .fail(function(reason){
+                console.log("failed to get xml: ", reason);
+            });
+
+            MetaphorJs.ajax.get("data.html", {dataType: "html", selector: "#selector"})
+            .done(function(response){
+                console.log("got selector html response: ", response);
+            })
+            .fail(function(reason){
+                console.log("failed to get selector html: ", reason);
+            });
+
+            MetaphorJs.ajax.get("data.html", {dataType: "html"})
+            .done(function(response){
+                console.log("got html response: ", response);
+            })
+            .fail(function(reason){
+                console.log("failed to get html: ", reason);
+            });
+
+            MetaphorJs.ajax.get("data-partial.html", {dataType: "html"})
+            .done(function(response){
+                console.log("got html-partial response: ", response);
+            })
+            .fail(function(reason){
+                console.log("failed to get html-partial: ", reason);
+            });
+
+            MetaphorJs.ajax.load(document.getElementById("load-here"), "data-partial.html");
+
+            MetaphorJs.ajax.submit(document.getElementById("form1"), {dataType: "json"})
+            .done(function(response){
+                console.log("form submit response: ", response);
+            })
+            .fail(function(reason){
+                console.log("form submit failed: ", reason);
+            });
+
+
+            MetaphorJs.ajax.get("long.json", {cache: false, progress: function(progress){
+                console.log("progress: ", (progress.loaded * 100) / progress.total);
+            }})
+            .done(function(){
+                console.log("loaded long json");
+            });
+
+
+            MetaphorJs.ajax.post("http://192.168.1.161", {
+                data: {
+                    a: 1,
+                    b: 2
+                },
+                transport: "iframe",
+                method: "POST"
+            })
+            .done(function(){
+                console.log("submit as form done");
+            })
+            .fail(function(){
+                console.log("failed to submit as form");
+            });
+
+
+        });
+
+        var submitForm2_XHR = function() {
+
+            MetaphorJs.ajax.submit(document.getElementById("form2"), {uploadProgress: function(progress){
+                console.log("upload progress: ", (progress.loaded * 100) / progress.total);
+            }})
+            .done(function(){
+                console.log("upload complete");
+            })
+            .fail(function(reason){
+                console.log("upload failed: ", reason);
+            });
+
+        };
+
+        var submitForm2_Iframe = function() {
+
+            MetaphorJs.ajax.submit(document.getElementById("form2"), {transport: "iframe"})
+            .done(function(){
+                console.log("upload complete");
+            })
+            .fail(function(reason){
+                console.log("upload failed: ", reason);
+            });
+
+        };
+
+    </script>
+</head>
+<body>
+
+    <div id="load-here">
+
+    </div>
+
+    <form id="form1" action="data.json" method="get">
+        <h4>Simple form</h4>
+        <input type="text" name="textvalue" value="123"/>
+    </form>
+
+    <form id="form2" action="http://192.168.1.161" method="post" enctype="multipart/form-data">
+        <h4>Form with a file</h4>
+        <input type="text" name="textvalue" value="123"/>
+        <input type="file" name="upload"/>
+        <button onclick="submitForm2_XHR(); return false;">Submit XHR</button>
+        <button onclick="submitForm2_Iframe(); return false;">Submit Iframe</button>
+    </form>
+
+</body>
+</html>
