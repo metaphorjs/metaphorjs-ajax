@@ -34,11 +34,15 @@
         }
     };
 
-    var bind    = function(fn, scope) {
-        return function() {
-            fn.apply(scope, arguments);
-        };
-    };
+    var bind    = Function.prototype.bind ?
+                  function(fn, fnScope){
+                      return fn.bind(fnScope);
+                  } :
+                  function(fn, fnScope) {
+                      return function() {
+                          fn.apply(fnScope, arguments);
+                      };
+                  };
 
     var qsa;
 
@@ -50,7 +54,12 @@
             head.appendChild(styleTag);
             doc.__qsaels = [];
 
-            styleTag.sheet.insertRule(selector + "{x:expression(document.__qsaels.push(this))}", 0);
+            if (styleTag.sheet){
+                styleTag.sheet.insertRule(selector + "{x:expression(document.__qsaels.push(this))}", 0);
+            }
+            else if (styleTag.styleSheet) {
+                styleTag.styleSheet.cssText = selector + "{x:expression(document.__qsaels.push(this))}";
+            }
             window.scrollBy(0, 0);
 
             return doc.__qsaels;
@@ -166,7 +175,7 @@
                        url + (rquery.test(url) ? "&" : "?" ) + "_=" + stamp;
             }
 
-            if (opt.data && !(opt.data instanceof window.FormData)) {
+            if (opt.data && (!window.FormData || !(opt.data instanceof window.FormData))) {
                 opt.data = typeof opt.data != "string" ? prepareParams(opt.data) : opt.data;
                 if (rgethead.test(opt.method)) {
                     url += (rquery.test(url) ? "&" : "?") + opt.data;
@@ -193,22 +202,23 @@
             headers:        null,
             username:       null,
             password:       null,
-            body:           null,
             cache:          null,
-            type:           null,
             dataType:       null,
             timeout:        0,
             contentType:    "application/x-www-form-urlencoded",
             xhrFields:      null,
             jsonp:          false,
-            jsonpName:      null,
+            jsonpParam:     null,
             jsonpCallback:  null,
             transport:      null,
             replace:        false,
             selector:       null,
             form:           null,
+            beforeSend:     null,
             progress:       null,
-            uploadProgress: null
+            uploadProgress: null,
+            processResponse:null,
+            callbackScope:  null
         },
 
         defaultSetup    = {},
@@ -219,7 +229,7 @@
 
             var xhr;
 
-            if (!(xhr = new XMLHttpRequest())) {
+            if (!window.XMLHttpRequest || !(xhr = new XMLHttpRequest())) {
                 if (!(xhr = new ActiveXObject("Msxml2.XMLHTTP"))) {
                     if (!(xhr = new ActiveXObject("Microsoft.XMLHTTP"))) {
                         throw "Unable to create XHR object";
@@ -435,14 +445,23 @@
             self.createJsonp();
         }
 
-        async(transport.send, transport);
+        if (globalEvents.trigger("beforeSend", opt, transport) === false) {
+            self._promise = Promise.reject();
+        }
+        if (opt.beforeSend && opt.beforeSend.call(opt.callbackScope, opt, transport) === false) {
+            self._promise = Promise.reject();
+        }
 
-        var promise = deferred.promise();
-        promise.abort = bind(self.abort, self);
+        if (!self._promise) {
+            async(transport.send, transport);
 
-        deferred.always(self.destroy, self);
+            var promise = deferred.promise();
+            promise.abort = bind(self.abort, self);
 
-        return promise;
+            deferred.always(self.destroy, self);
+
+            self._promise = promise;
+        }
     };
 
     extend(AJAX.prototype, {
@@ -451,9 +470,14 @@
         _transport: null,
         _opt: null,
         _deferred: null,
+        _promise: null,
         _timeout: null,
         _form: null,
         _removeForm: false,
+
+        promise: function() {
+            return this._promise;
+        },
 
         abort: function(reason) {
             this._transport.abort();
@@ -484,7 +508,7 @@
 
             var self        = this,
                 opt         = self._opt,
-                paramName   = opt.jsonpName || "callback",
+                paramName   = opt.jsonpParam || "callback",
                 cbName      = opt.jsonpCallback || "jsonp_" + (++jsonpCb);
 
             opt.url += (rquery.test(opt.url) ? "&" : "?") + paramName + "=" + cbName;
@@ -502,9 +526,11 @@
         },
 
         jsonpCallback: function(data) {
-            var self = this;
+
+            var self    = this;
+
             try {
-                self._deferred.resolve(processData(data, self._opt.dataType));
+                self._deferred.resolve(self.processResponseData(data));
             }
             catch (e) {
                 self._deferred.reject(e);
@@ -513,15 +539,30 @@
 
         processResponseData: function(data, contentType) {
 
+            var self    = this,
+                opt     = self._opt;
+
+            data    = processData(data, opt, contentType);
+
+            if (globalEvents.hasListener("processResponse")) {
+                data    = globalEvents.trigger("processResponse", data, self._deferred);
+            }
+
+            if (opt.processResponse) {
+                data    = opt.processResponse.call(opt.callbackScope, data, self._deferred);
+            }
+
+            return data;
+        },
+
+        processResponse: function(data, contentType) {
+
             var self        = this,
-                deferred    = self._deferred,
-                tmp;
+                deferred    = self._deferred;
 
             if (!self._opt.jsonp) {
                 try {
-                    data    = processData(data, self._opt, contentType);
-                    tmp     = globalEvents.trigger("processResponse", data);
-                    deferred.resolve(tmp || data);
+                    deferred.resolve(self.processResponseData(data, contentType));
                 }
                 catch (e) {
                     deferred.reject(e);
@@ -563,6 +604,7 @@
             delete self._transport;
             delete self._opt;
             delete self._deferred;
+            delete self._promise;
             delete self._timeout;
             delete self._form;
 
@@ -615,11 +657,7 @@
             opt.method = opt.method.toUpperCase();
         }
 
-        if (globalEvents.trigger("beforeSend", opt.url, opt) === false) {
-            return Promise.reject();
-        }
-
-        return new AJAX(opt);
+        return (new AJAX(opt)).promise();
     };
 
     ajax.setup  = function(opt) {
@@ -697,13 +735,11 @@
         self._ajax          = ajax;
 
         if (opt.progress) {
-            addListener(xhr, "progress", opt.progress);
+            addListener(xhr, "progress", bind(opt.progress, opt.callbackScope));
         }
         if (opt.uploadProgress && xhr.upload) {
-            addListener(xhr.upload, "progress", opt.uploadProgress);
+            addListener(xhr.upload, "progress", bind(opt.uploadProgress, opt.callbackScope));
         }
-
-        xhr.open(opt.method, opt.url, true, opt.username, opt.password);
 
         try {
             var i;
@@ -726,13 +762,7 @@
             }
         } catch(e){}
 
-        if (opt.beforeSend) {
-            opt.beforeSend(xhr);
-        }
-
         xhr.onreadystatechange = bind(self.onReadyStateChange, self);
-
-
     };
 
     extend(XHRTransport.prototype, {
@@ -758,7 +788,7 @@
 
                 if (httpSuccess(xhr)) {
 
-                    self._ajax.processResponseData(
+                    self._ajax.processResponse(
                         typeof xhr.responseText == "string" ? xhr.responseText : undefined,
                         xhr.getResponseHeader("content-type") || ''
                     );
@@ -777,10 +807,12 @@
 
         send: function() {
 
-            var self    = this;
+            var self    = this,
+                opt     = self._opt;
 
             try {
-                self._xhr.send(self._opt.data);
+                self._xhr.open(opt.method, opt.url, true, opt.username, opt.password);
+                self._xhr.send(opt.data);
             }
             catch (e) {
                 self._deferred.reject(e);
@@ -926,7 +958,7 @@
             if (self._opt && !self._opt.jsonp) {
                 doc		= frame.contentDocument || frame.contentWindow.document;
                 data    = doc.body.innerHTML;
-                self._ajax.processResponseData(data);
+                self._ajax.processResponse(data);
             }
         },
 
