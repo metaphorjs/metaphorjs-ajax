@@ -14,7 +14,7 @@
             Promise     = require("metaphorjs-promise");
             Observable  = require("metaphorjs-observable");
         }
-        catch (e) {
+        catch (thrownError) {
             Promise     = global.MetaphorJs.lib.Promise;
             Observable  = global.MetaphorJs.lib.Observable;
         }
@@ -24,25 +24,11 @@
         Observable  = window.MetaphorJs.lib.Observable;
     }
 
-    var extend = function(trg, src, overwrite) {
-        for (var i in src) {
-            if (src.hasOwnProperty(i)) {
-                if (typeof trg[i] == undefined || overwrite !== false) {
-                    trg[i] = src[i];
-                }
-            }
-        }
-    };
-
-    var bind    = Function.prototype.bind ?
-                  function(fn, fnScope){
-                      return fn.bind(fnScope);
-                  } :
-                  function(fn, fnScope) {
-                      return function() {
-                          fn.apply(fnScope, arguments);
-                      };
-                  };
+    var extend      = MetaphorJs.extend,
+        bind        = MetaphorJs.bind,
+        addListener = MetaphorJs.addListener,
+        trim        = MetaphorJs.trim,
+        isArray     = MetaphorJs.isArray;
 
     var qsa;
 
@@ -80,7 +66,12 @@
         jsonpCb     = 0,
 
         parseJson   = function(data) {
-            return JSON.parse(data);
+            if (window.JSON) {
+                return JSON.parse(data);
+            }
+            else {
+                return (new Function("return " + data))();
+            }
         },
 
         async       = function(fn, fnScope) {
@@ -88,27 +79,6 @@
                 fn.call(fnScope);
             }, 0);
         },
-
-        addListener = function(el, event, func) {
-            if (el.attachEvent) {
-                el.attachEvent('on' + event, func);
-            } else {
-                el.addEventListener(event, func, false);
-            }
-        },
-
-        trim    = (function() {
-            // native trim is way faster: http://jsperf.com/angular-trim-test
-            // but IE doesn't have it... :-(
-            if (!String.prototype.trim) {
-                return function(value) {
-                    return typeof value == "string" ? value.replace(/^\s\s*/, '').replace(/\s\s*$/, '') : value;
-                };
-            }
-            return function(value) {
-                return typeof value == "string" ? value.trim() : value;
-            };
-        })(),
 
         parseXML    = function(data, type) {
 
@@ -122,7 +92,7 @@
             try {
                 tmp = new DOMParser();
                 xml = tmp.parseFromString(data, type || "text/xml");
-            } catch ( e ) {
+            } catch (thrownError) {
                 xml = undefined;
             }
 
@@ -254,11 +224,6 @@
             }
         },
 
-        isArray     = function(value) {
-            return value && typeof value == 'object' && typeof value.length == 'number' &&
-                   Object.prototype.toString.call(value) == '[object Array]' || false;
-        },
-
         data2form       = function(data, form, name) {
 
             var i, input, len;
@@ -304,7 +269,7 @@
                     for (nFile = 0;
                          nFile < oField.files.length;
                          sSearch += "&" + encodeURIComponent(oField.name) + "=" +
-                                    encodeURIComponent(oField.files[nFile++].name));
+                                    encodeURIComponent(oField.files[nFile++].name)){}
 
                 } else if ((sFieldType !== "RADIO" && sFieldType !== "CHECKBOX") || oField.checked) {
                     sSearch += "&" + encodeURIComponent(oField.name) + "=" + encodeURIComponent(oField.value);
@@ -319,7 +284,7 @@
                 return (!r.status && typeof location != "undefined" && location.protocol == "file:")
                            || (r.status >= 200 && r.status < 300)
                            || r.status === 304 || r.status === 1223; // || r.status === 0;
-            } catch(e){}
+            } catch(thrownError){}
             return false;
         },
 
@@ -455,12 +420,10 @@
         if (!self._promise) {
             async(transport.send, transport);
 
-            var promise = deferred.promise();
-            promise.abort = bind(self.abort, self);
-
+            deferred.abort = bind(self.abort, self);
             deferred.always(self.destroy, self);
 
-            self._promise = promise;
+            self._promise = deferred;
         }
     };
 
@@ -532,8 +495,8 @@
             try {
                 self._deferred.resolve(self.processResponseData(data));
             }
-            catch (e) {
-                self._deferred.reject(e);
+            catch (thrownError) {
+                self._deferred.reject(thrownError);
             }
         },
 
@@ -564,8 +527,8 @@
                 try {
                     deferred.resolve(self.processResponseData(data, contentType));
                 }
-                catch (e) {
-                    deferred.reject(e);
+                catch (thrownError) {
+                    deferred.reject(thrownError);
                 }
             }
             else {
@@ -577,8 +540,8 @@
                 try {
                     globalEval(data);
                 }
-                catch (e) {
-                    deferred.reject(e);
+                catch (thrownError) {
+                    deferred.reject(thrownError);
                 }
 
                 if (deferred.isPending()) {
@@ -760,7 +723,7 @@
             for (i in opt.headers) {
                 xhr.setRequestHeader(i, opt.headers[i]);
             }
-        } catch(e){}
+        } catch(thrownError){}
 
         xhr.onreadystatechange = bind(self.onReadyStateChange, self);
     };
@@ -814,8 +777,8 @@
                 self._xhr.open(opt.method, opt.url, true, opt.username, opt.password);
                 self._xhr.send(opt.data);
             }
-            catch (e) {
-                self._deferred.reject(e);
+            catch (thrownError) {
+                self._deferred.reject(thrownError);
             }
         },
 
@@ -943,8 +906,8 @@
             try {
                 form.submit();
             }
-            catch (e) {
-                self._deferred.reject(e);
+            catch (thrownError) {
+                self._deferred.reject(thrownError);
             }
         },
 
