@@ -1,0 +1,26 @@
+{
+    "standalone": {
+        "wrap": true,
+        "auto": true,
+        "target": "dist/metaphorjs.ajax.js",
+        "files": [
+            "../metaphorjs/src/MetaphorJs.js",
+            "src/metaphorjs.ajax.js"
+        ]
+    },
+
+    "module": {
+        "wrap": true,
+        "auto": true,
+        "target": "dist/metaphorjs.ajax.amd.js",
+        "prependFilesFrom": "standalone",
+        "append": [
+            "src/amd/append.js"
+        ]
+    },
+
+    "compile-standalone": {
+        "target": "dist/metaphorjs.ajax.min.js",
+        "compile": "standalone"
+    }
+}

@@ -1,3 +1,15 @@
+//#require ../../metaphorjs/src/func/extend.js
+//#require ../../metaphorjs/src/func/bind.js
+//#require ../../metaphorjs/src/func/event/addListener.js
+//#require ../../metaphorjs/src/func/trim.js
+//#require ../../metaphorjs/src/func/array/isArray.js
+//#require ../../metaphorjs/src/func/dom/select.js
+//#require ../../metaphorjs/src/func/emptyFn.js
+//#require ../../metaphorjs/src/func/parseJSON.js
+//#require ../../metaphorjs/src/func/parseXML.js
+//#require ../../metaphorjs/src/func/async.js
+//#require ../../metaphorjs/src/vars/Promise.js
+//#require ../../metaphorjs/src/vars/Observable.js
 
 /*
 * Contents of this file are partially taken from jQuery
@@ -6,52 +18,6 @@
 (function(){
 
     "use strict";
-
-    var Promise, Observable;
-
-    if (typeof global != "undefined") {
-        try {
-            Promise     = require("metaphorjs-promise");
-            Observable  = require("metaphorjs-observable");
-        }
-        catch (thrownError) {
-            Promise     = global.MetaphorJs.lib.Promise;
-            Observable  = global.MetaphorJs.lib.Observable;
-        }
-    }
-    else {
-        Promise     = window.MetaphorJs.lib.Promise;
-        Observable  = window.MetaphorJs.lib.Observable;
-    }
-
-    var extend      = MetaphorJs.extend,
-        bind        = MetaphorJs.bind,
-        addListener = MetaphorJs.addListener,
-        trim        = MetaphorJs.trim,
-        isArray     = MetaphorJs.isArray;
-
-    var qsa;
-
-    if (typeof window != "undefined") {
-        qsa    = document.querySelectorAll || function(selector) {
-            var doc = document,
-                head = doc.documentElement.firstChild,
-                styleTag = doc.createElement('STYLE');
-            head.appendChild(styleTag);
-            doc.__qsaels = [];
-
-            if (styleTag.sheet){
-                styleTag.sheet.insertRule(selector + "{x:expression(document.__qsaels.push(this))}", 0);
-            }
-            else if (styleTag.styleSheet) {
-                styleTag.styleSheet.cssText = selector + "{x:expression(document.__qsaels.push(this))}";
-            }
-            window.scrollBy(0, 0);
-
-            return doc.__qsaels;
-        };
-    }
-
 
     var rhash       = /#.*$/,
 
@@ -64,44 +30,6 @@
         rgethead    = /^(?:GET|HEAD)$/i,
 
         jsonpCb     = 0,
-
-        parseJson   = function(data) {
-            if (window.JSON) {
-                return JSON.parse(data);
-            }
-            else {
-                return (new Function("return " + data))();
-            }
-        },
-
-        async       = function(fn, fnScope) {
-            setTimeout(function(){
-                fn.call(fnScope);
-            }, 0);
-        },
-
-        parseXML    = function(data, type) {
-
-            var xml, tmp;
-
-            if (!data || typeof data !== "string") {
-                return null;
-            }
-
-            // Support: IE9
-            try {
-                tmp = new DOMParser();
-                xml = tmp.parseFromString(data, type || "text/xml");
-            } catch (thrownError) {
-                xml = undefined;
-            }
-
-            if (!xml || xml.getElementsByTagName("parsererror").length) {
-                throw "Invalid XML: " + data;
-            }
-
-            return xml;
-        },
 
         buildParams     = function(data, params, name) {
 
@@ -288,8 +216,6 @@
             return false;
         },
 
-        emptyFn         = function() {},
-
         processData     = function(data, opt, ct) {
 
             var type        = opt ? opt.dataType : null,
@@ -304,11 +230,11 @@
 
             if (type === "xml" || !type && ct.indexOf("xml") >= 0) {
                 doc = parseXML(trim(data));
-                return selector ? qsa.call(doc, selector) : doc;
+                return selector ? select(selector, doc) : doc;
             }
             else if (type === "html") {
                 doc = parseXML(data, "text/html");
-                return selector ? qsa.call(doc, selector) : doc;
+                return selector ? select(selector, doc) : doc;
             }
             else if (type == "fragment") {
                 var fragment    = document.createDocumentFragment(),
@@ -323,7 +249,7 @@
                 return fragment;
             }
             else if (type === "json" || !type && ct.indexOf("json") >= 0) {
-                return parseJson(trim(data));
+                return parseJSON(trim(data));
             }
             else if (type === "script" || !type && ct.indexOf("javascript") >= 0) {
                 globalEval(data);
@@ -427,7 +353,7 @@
         }
     };
 
-    extend(AJAX.prototype, {
+    AJAX.prototype = {
 
         _jsonpName: null,
         _transport: null,
@@ -580,8 +506,7 @@
                 }
             }
         }
-
-    }, true);
+    };
 
 
 
@@ -605,8 +530,8 @@
             }
         }
 
-        extend(opt, defaultSetup, false);
-        extend(opt, defaults, false);
+        extend(opt, defaultSetup, false, true);
+        extend(opt, defaults, false, true);
 
         if (!opt.method) {
             if (opt.form) {
@@ -624,7 +549,7 @@
     };
 
     ajax.setup  = function(opt) {
-        extend(defaultSetup, opt, true);
+        extend(defaultSetup, opt, true, true);
     };
 
     ajax.on     = function() {
@@ -728,7 +653,7 @@
         xhr.onreadystatechange = bind(self.onReadyStateChange, self);
     };
 
-    extend(XHRTransport.prototype, {
+    XHRTransport.prototype = {
 
         _xhr: null,
         _deferred: null,
@@ -792,7 +717,7 @@
 
         }
 
-    }, true);
+    };
 
 
 
@@ -807,7 +732,7 @@
 
     };
 
-    extend(ScriptTransport.prototype, {
+    ScriptTransport.prototype = {
 
         _opt: null,
         _deferred: null,
@@ -864,7 +789,7 @@
 
         }
 
-    }, true);
+    };
 
 
 
@@ -876,7 +801,7 @@
         self._deferred  = deferred;
     };
 
-    extend(IframeTransport.prototype, {
+    IframeTransport.prototype = {
 
         _opt: null,
         _deferred: null,
@@ -951,32 +876,8 @@
 
         }
 
-    }, true);
+    };
 
-
-
-
-
-
-
-
-
-
-
-
-
-    if (typeof global != "undefined") {
-        module.exports = ajax;
-    }
-    else {
-        if (window.MetaphorJs) {
-            MetaphorJs.ajax = ajax;
-        }
-        else {
-            window.MetaphorJs = {
-                ajax: ajax
-            };
-        }
-    }
+    MetaphorJs.ajax = ajax;
 
 }());
