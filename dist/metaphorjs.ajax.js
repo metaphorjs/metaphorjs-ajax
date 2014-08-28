@@ -1,17 +1,34 @@
 (function(){
-"use strict"
+"use strict";
 
-window.MetaphorJs = {
+var MetaphorJs = {
     lib: {}
 };
 
 
-var slice = Array.prototype.slice;/**
+
+
+var slice = Array.prototype.slice;
+/**
  * @param {*} obj
  * @returns {boolean}
  */
-var isPlainObject = MetaphorJs.isPlainObject = function(obj) {
+var isPlainObject = function(obj) {
     return !!(obj && obj.constructor === Object);
+};
+
+var isBool = function(value) {
+    return typeof value == "boolean";
+};
+var strUndef = "undefined";
+
+
+var isUndefined = function(any) {
+    return typeof any == strUndef;
+};
+
+var isNull = function(value) {
+    return value === null;
 };
 
 
@@ -23,7 +40,7 @@ var isPlainObject = MetaphorJs.isPlainObject = function(obj) {
  * @param {boolean} deep = false
  * @returns {*}
  */
-var extend = MetaphorJs.extend = function extend() {
+var extend = function extend() {
 
 
     var override    = false,
@@ -34,10 +51,10 @@ var extend = MetaphorJs.extend = function extend() {
         k,
         value;
 
-    if (typeof args[args.length - 1] == "boolean") {
+    if (isBool(args[args.length - 1])) {
         override    = args.pop();
     }
-    if (typeof args[args.length - 1] == "boolean") {
+    if (isBool(args[args.length - 1])) {
         deep        = override;
         override    = args.pop();
     }
@@ -46,14 +63,14 @@ var extend = MetaphorJs.extend = function extend() {
         if (src = args.shift()) {
             for (k in src) {
 
-                if (src.hasOwnProperty(k) && typeof (value = src[k]) != "undefined") {
+                if (src.hasOwnProperty(k) && !isUndefined((value = src[k]))) {
 
                     if (deep) {
                         if (dst[k] && isPlainObject(dst[k]) && isPlainObject(value)) {
                             extend(dst[k], value, override, deep);
                         }
                         else {
-                            if (override === true || typeof dst[k] == "undefined" || dst[k] === null) {
+                            if (override === true || isUndefined(dst[k]) || isNull(dst[k])) {
                                 if (isPlainObject(value)) {
                                     dst[k] = {};
                                     extend(dst[k], value, override, true);
@@ -65,7 +82,7 @@ var extend = MetaphorJs.extend = function extend() {
                         }
                     }
                     else {
-                        if (override === true || typeof dst[k] == "undefined" || dst[k] === null) {
+                        if (override === true || isUndefined(dst[k]) || isNull(dst[k])) {
                             dst[k] = value;
                         }
                     }
@@ -75,11 +92,14 @@ var extend = MetaphorJs.extend = function extend() {
     }
 
     return dst;
-};/**
+};
+
+
+/**
  * @param {Function} fn
  * @param {*} context
  */
-var bind = MetaphorJs.bind = Function.prototype.bind ?
+var bind = Function.prototype.bind ?
               function(fn, context){
                   return fn.bind(context);
               } :
@@ -88,44 +108,85 @@ var bind = MetaphorJs.bind = Function.prototype.bind ?
                       return fn.apply(context, arguments);
                   };
               };
-var addListener = MetaphorJs.addListener = function(el, event, func) {
-    if (el.attachEvent) {
-        el.attachEvent('on' + event, func);
-    } else {
-        el.addEventListener(event, func, false);
-    }
+
+
+var isString = function(value) {
+    return typeof value == "string";
 };
+
+
 /**
  * @param {String} value
  */
-var trim = MetaphorJs.trim = (function() {
+var trim = function() {
     // native trim is way faster: http://jsperf.com/angular-trim-test
     // but IE doesn't have it... :-(
     if (!String.prototype.trim) {
         return function(value) {
-            return typeof value == "string" ? value.replace(/^\s\s*/, '').replace(/\s\s*$/, '') : value;
+            return isString(value) ? value.replace(/^\s\s*/, '').replace(/\s\s*$/, '') : value;
         };
     }
     return function(value) {
-        return typeof value == "string" ? value.trim() : value;
+        return isString(value) ? value.trim() : value;
     };
-})();
-var toString    = Object.prototype.toString;
+}();/**
+ * @param {Function} fn
+ * @param {Object} context
+ * @param {[]} args
+ */
+var async = function(fn, context, args) {
+    setTimeout(function(){
+        fn.apply(context, args || []);
+    }, 0);
+};
+
+var emptyFn = function(){};
+
+
+var parseJSON = function() {
+
+    return isUndefined(JSON) ?
+           function(data) {
+               return JSON.parse(data);
+           } :
+           function(data) {
+               return (new Function("return " + data))();
+           };
+}();
+
+
+
+
+var parseXML = function(data, type) {
+
+    var xml, tmp;
+
+    if (!data || !isString(data)) {
+        return null;
+    }
+
+    // Support: IE9
+    try {
+        tmp = new DOMParser();
+        xml = tmp.parseFromString(data, type || "text/xml");
+    } catch (thrownError) {
+        xml = undefined;
+    }
+
+    if (!xml || xml.getElementsByTagName("parsererror").length) {
+        throw "Invalid XML: " + data;
+    }
+
+    return xml;
+};
+
 
 /**
- * @param {*} value
- * @returns {boolean}
- */
-var isArray = MetaphorJs.isArray = function(value) {
-    return !!(value && typeof value == 'object' &&
-              typeof value.length == 'number' &&
-                toString.call(value) == '[object Array]' || false);
-};/**
  * @param {*} list
  * @returns {[]}
  */
-var toArray = MetaphorJs.toArray = function(list) {
-    if (list && list.length != undefined && typeof list != "string") {
+var toArray = function(list) {
+    if (list && !isUndefined(list.length) && !isString(list)) {
         for(var a = [], i =- 1, l = list.length>>>0; ++i !== l; a[i] = list[i]){}
         return a;
     }
@@ -137,6 +198,7 @@ var toArray = MetaphorJs.toArray = function(list) {
     }
 };
 
+
 /**
  * Modified version of YASS (http://yass.webo.in)
  */
@@ -146,7 +208,7 @@ var toArray = MetaphorJs.toArray = function(list) {
  * @param {String} selector
  * @param {Element} root to look into
  */
-var select = MetaphorJs.select = function() {
+var select = function() {
 
     var rGeneric    = /^[\w[:#.][\w\]*^|=!]*$/,
         rQuote      = /=([^\]]+)/,
@@ -701,699 +763,35 @@ var select = MetaphorJs.select = function() {
         return sets;
     };
 }();
-
-var emptyFn = MetaphorJs.emptyFn = function(){};var parseJSON   = function(data) {
-    if (typeof JSON != "undefined") {
-        return JSON.parse(data);
-    }
-    else {
-        return (new Function("return " + data))();
-    }
-};var parseXML = function(data, type) {
-
-    var xml, tmp;
-
-    if (!data || typeof data !== "string") {
-        return null;
-    }
-
-    // Support: IE9
-    try {
-        tmp = new DOMParser();
-        xml = tmp.parseFromString(data, type || "text/xml");
-    } catch (thrownError) {
-        xml = undefined;
-    }
-
-    if (!xml || xml.getElementsByTagName("parsererror").length) {
-        throw "Invalid XML: " + data;
-    }
-
-    return xml;
-};/**
- * @param {Function} fn
- * @param {Object} context
- * @param {[]} args
- */
-var async = MetaphorJs.async = function(fn, context, args) {
-    setTimeout(function(){
-        fn.apply(context, args || []);
-    }, 0);
+var toString = Object.prototype.toString;
+var isObject = function(value) {
+    return value != null && typeof value === 'object';
 };
-/**
- * Returns 'then' function or false
- * @param {*} any
- * @returns {Function|false}
- */
-var isThenable = MetaphorJs.isThenable = function(any) {
-    var then;
-    if (!any) {
-        return false;
-    }
-    if (typeof any != "object" && typeof any != "function") {
-        return false;
-    }
-    return typeof (then = any.then) == "function" ?
-           then : false;
+var isNumber = function(value) {
+    return typeof value == "number" && !isNaN(value);
 };
 
 
-(function(){
-
-    "use strict";
-
-    var PENDING     = 0,
-        FULFILLED   = 1,
-        REJECTED    = 2,
-
-        queue       = [],
-        qRunning    = false,
-
-
-        nextTick    = typeof process != "undefined" ?
-                        process.nextTick :
-                        function(fn) {
-                            setTimeout(fn, 0);
-                        },
-
-        // synchronous queue of asynchronous functions:
-        // callbacks must be called in "platform stack"
-        // which means setTimeout/nextTick;
-        // also, they must be called in a strict order.
-        nextInQueue = function() {
-            qRunning    = true;
-            var next    = queue.shift();
-            nextTick(function(){
-                next[0].apply(next[1], next[2]);
-                if (queue.length) {
-                    nextInQueue();
-                }
-                else {
-                    qRunning = false;
-                }
-            }, 0);
-        },
-
-        /**
-         * add to execution queue
-         * @param {Function} fn
-         * @param {Object} scope
-         * @param {[]} args
-         */
-        next        = function(fn, scope, args) {
-            args = args || [];
-            queue.push([fn, scope, args]);
-            if (!qRunning) {
-                nextInQueue();
-            }
-        },
-
-        /**
-         * returns function which receives value from previous promise
-         * and tries to resolve next promise with new value returned from given function(prev value)
-         * or reject on error.
-         * promise1.then(success, failure) -> promise2
-         * wrapper(success, promise2) -> fn
-         * fn(promise1 resolve value) -> new value
-         * promise2.resolve(new value)
-         *
-         * @param {Function} fn
-         * @param {Promise} promise
-         * @returns {Function}
-         */
-        wrapper     = function(fn, promise) {
-            return function(value) {
-                try {
-                    promise.resolve(fn(value));
-                }
-                catch (thrownError) {
-                    promise.reject(thrownError);
-                }
-            };
-        };
-
-
-    /**
-     * @param {Function} fn -- function(resolve, reject)
-     * @param {Object} fnScope
-     * @returns {Promise}
-     * @constructor
-     */
-    var Promise = function(fn, fnScope) {
-
-        if (fn instanceof Promise) {
-            return fn;
-        }
-
-        if (!(this instanceof Promise)) {
-            return new Promise(fn, fnScope);
-        }
-
-        var self = this;
-
-        self._fulfills   = [];
-        self._rejects    = [];
-        self._dones      = [];
-        self._fails      = [];
-
-        if (typeof fn != "undefined") {
-
-            if (isThenable(fn) || typeof fn != "function") {
-                self.resolve(fn);
-            }
-            else {
-                try {
-                    fn.call(fnScope,
-                            bind(self.resolve, self),
-                            bind(self.reject, self));
-                }
-                catch (thrownError) {
-                    self.reject(thrownError);
-                }
-            }
-        }
-    };
-
-    Promise.prototype = {
-
-        _state: PENDING,
-
-        _fulfills: null,
-        _rejects: null,
-        _dones: null,
-        _fails: null,
-
-        _wait: 0,
-
-        _value: null,
-        _reason: null,
-
-        _triggered: false,
-
-        isPending: function() {
-            return this._state == PENDING;
-        },
-
-        isFulfilled: function() {
-            return this._state == FULFILLED;
-        },
-
-        isRejected: function() {
-            return this._state == REJECTED;
-        },
-
-        _cleanup: function() {
-            var self    = this;
-
-            delete self._fulfills;
-            delete self._rejects;
-            delete self._dones;
-            delete self._fails;
-        },
-
-        _processValue: function(value, cb) {
-
-            var self    = this,
-                then;
-
-            if (self._state != PENDING) {
-                return;
-            }
-
-            if (value === self) {
-                self._doReject(new TypeError("cannot resolve promise with itself"));
-                return;
-            }
-
-            try {
-                if (then = isThenable(value)) {
-                    if (value instanceof Promise) {
-                        value.then(
-                            bind(self._processResolveValue, self),
-                            bind(self._processRejectReason, self));
-                    }
-                    else {
-                        (new Promise(then, value)).then(
-                            bind(self._processResolveValue, self),
-                            bind(self._processRejectReason, self));
-                    }
-                    return;
-                }
-            }
-            catch (thrownError) {
-                if (self._state == PENDING) {
-                    self._doReject(thrownError);
-                }
-                return;
-            }
-
-            cb.call(self, value);
-        },
-
-
-        _callResolveHandlers: function() {
-
-            var self    = this;
-
-            self._done();
-
-            var cbs  = self._fulfills,
-                cb;
-
-            while (cb = cbs.shift()) {
-                next(cb[0], cb[1], [self._value]);
-            }
-
-            self._cleanup();
-        },
-
-
-        _doResolve: function(value) {
-            var self    = this;
-
-            self._value = value;
-            self._state = FULFILLED;
-
-            if (self._wait == 0) {
-                self._callResolveHandlers();
-            }
-        },
-
-        _processResolveValue: function(value) {
-            this._processValue(value, this._doResolve);
-        },
-
-        /**
-         * @param {*} value
-         */
-        resolve: function(value) {
-
-            var self    = this;
-
-            if (self._triggered) {
-                return self;
-            }
-
-            self._triggered = true;
-            self._processResolveValue(value);
-
-            return self;
-        },
-
-
-        _callRejectHandlers: function() {
-
-            var self    = this;
-
-            self._fail();
-
-            var cbs  = self._rejects,
-                cb;
-
-            while (cb = cbs.shift()) {
-                next(cb[0], cb[1], [self._reason]);
-            }
-
-            self._cleanup();
-        },
-
-        _doReject: function(reason) {
-
-            var self        = this;
-
-            self._state     = REJECTED;
-            self._reason    = reason;
-
-            if (self._wait == 0) {
-                self._callRejectHandlers();
-            }
-        },
-
-
-        _processRejectReason: function(reason) {
-            this._processValue(reason, this._doReject);
-        },
-
-        /**
-         * @param {*} reason
-         */
-        reject: function(reason) {
-
-            var self    = this;
-
-            if (self._triggered) {
-                return self;
-            }
-
-            self._triggered = true;
-
-            self._processRejectReason(reason);
-
-            return self;
-        },
-
-        /**
-         * @param {Function} resolve -- called when this promise is resolved; returns new resolve value
-         * @param {Function} reject -- called when this promise is rejects; returns new reject reason
-         * @returns {Promise} new promise
-         */
-        then: function(resolve, reject) {
-
-            var self            = this,
-                promise         = new Promise,
-                state           = self._state;
-
-            if (state == PENDING || self._wait != 0) {
-
-                if (resolve && typeof resolve == "function") {
-                    self._fulfills.push([wrapper(resolve, promise), null]);
-                }
-                else {
-                    self._fulfills.push([promise.resolve, promise])
-                }
-
-                if (reject && typeof reject == "function") {
-                    self._rejects.push([wrapper(reject, promise), null]);
-                }
-                else {
-                    self._rejects.push([promise.reject, promise]);
-                }
-            }
-            else if (state == FULFILLED) {
-
-                if (resolve && typeof resolve == "function") {
-                    next(wrapper(resolve, promise), null, [self._value]);
-                }
-                else {
-                    promise.resolve(self._value);
-                }
-            }
-            else if (state == REJECTED) {
-                if (reject && typeof reject == "function") {
-                    next(wrapper(reject, promise), null, [self._reason]);
-                }
-                else {
-                    promise.reject(self._reason);
-                }
-            }
-
-            return promise;
-        },
-
-        /**
-         * @param {Function} reject -- same as then(null, reject)
-         * @returns {Promise} new promise
-         */
-        "catch": function(reject) {
-            return this.then(null, reject);
-        },
-
-        _done: function() {
-
-            var self    = this,
-                cbs     = self._dones,
-                cb;
-
-            while (cb = cbs.shift()) {
-                cb[0].call(cb[1] || null, self._value);
-            }
-        },
-
-        /**
-         * @param {Function} fn -- function to call when promise is resolved
-         * @param {Object} fnScope -- function's "this" object
-         * @returns {Promise} same promise
-         */
-        done: function(fn, fnScope) {
-            var self    = this,
-                state   = self._state;
-
-            if (state == FULFILLED && self._wait == 0) {
-                fn.call(fnScope || null, self._value);
-            }
-            else if (state == PENDING) {
-                self._dones.push([fn, fnScope]);
-            }
-
-            return self;
-        },
-
-        _fail: function() {
-
-            var self    = this,
-                cbs     = self._fails,
-                cb;
-
-            while (cb = cbs.shift()) {
-                cb[0].call(cb[1] || null, self._reason);
-            }
-        },
-
-        /**
-         * @param {Function} fn -- function to call when promise is rejected.
-         * @param {Object} fnScope -- function's "this" object
-         * @returns {Promise} same promise
-         */
-        fail: function(fn, fnScope) {
-
-            var self    = this,
-                state   = self._state;
-
-            if (state == REJECTED && self._wait == 0) {
-                fn.call(fnScope || null, self._reason);
-            }
-            else if (state == PENDING) {
-                self._fails.push([fn, fnScope]);
-            }
-
-            return self;
-        },
-
-        /**
-         * @param {Function} fn -- function to call when promise resolved or rejected
-         * @param {Object} fnScope -- function's "this" object
-         * @return {Promise} same promise
-         */
-        always: function(fn, fnScope) {
-            this.done(fn, fnScope);
-            this.fail(fn, fnScope);
-            return this;
-        },
-
-        /**
-         * @returns {{then: function, done: function, fail: function, always: function}}
-         */
-        promise: function() {
-            var self = this;
-            return {
-                then: bind(self.then, self),
-                done: bind(self.done, self),
-                fail: bind(self.fail, self),
-                always: bind(self.always, self)
-            };
-        },
-
-        after: function(value) {
-
-            var self = this;
-
-            if (isThenable(value)) {
-
-                self._wait++;
-
-                var done = function() {
-                    self._wait--;
-                    if (self._wait == 0 && self._state != PENDING) {
-                        self._state == FULFILLED ?
-                            self._callResolveHandlers() :
-                            self._callRejectHandlers();
-                    }
-                };
-
-                if (typeof value.done == "function") {
-                    value.done(done);
-                }
-                else {
-                    value.then(done);
-                }
-            }
-
-            return self;
-        }
-    };
-
-    /**
-     * @param {*} value
-     * @returns {Promise}
-     */
-    Promise.resolve = function(value) {
-        return new Promise(value);
-    };
-
-
-    /**
-     * @param {*} reason
-     * @returns {Promise}
-     */
-    Promise.reject = function(reason) {
-        var p = new Promise;
-        p.reject(reason);
-        return p;
-    };
-
-
-    /**
-     * @param {[]} promises -- array of promises or resolve values
-     * @returns {Promise}
-     */
-    Promise.all = function(promises) {
-
-        if (!promises.length) {
-            return Promise.resolve(null);
-        }
-
-        var p       = new Promise,
-            len     = promises.length,
-            values  = new Array(len),
-            cnt     = len,
-            i,
-            item,
-            done    = function(value, inx) {
-                values[inx] = value;
-                cnt--;
-
-                if (cnt == 0) {
-                    p.resolve(values);
-                }
-            };
-
-        for (i = 0; i < len; i++) {
-
-            (function(inx){
-                item = promises[i];
-
-                if (item instanceof Promise) {
-                    item.done(function(value){
-                        done(value, inx);
-                    })
-                        .fail(p.reject, p);
-                }
-                else if (isThenable(item) || typeof item == "function") {
-                    (new Promise(item))
-                        .done(function(value){
-                            done(value, inx);
-                        })
-                        .fail(p.reject, p);
-                }
-                else {
-                    done(item, inx);
-                }
-            })(i);
-        }
-
-        return p;
-    };
-
-    /**
-     * @param {Promise|*} promise1
-     * @param {Promise|*} promise2
-     * @param {Promise|*} promiseN
-     * @returns {Promise}
-     */
-    Promise.when = function() {
-        return Promise.all(arguments);
-    };
-
-    /**
-     * @param {[]} promises -- array of promises or resolve values
-     * @returns {Promise}
-     */
-    Promise.allResolved = function(promises) {
-
-        if (!promises.length) {
-            return Promise.resolve(null);
-        }
-
-        var p       = new Promise,
-            len     = promises.length,
-            values  = [],
-            cnt     = len,
-            i,
-            item,
-            settle  = function(value) {
-                values.push(value);
-                proceed();
-            },
-            proceed = function() {
-                cnt--;
-                if (cnt == 0) {
-                    p.resolve(values);
-                }
-            };
-
-        for (i = 0; i < len; i++) {
-            item = promises[i];
-
-            if (item instanceof Promise) {
-                item.done(settle).fail(proceed);
-            }
-            else if (isThenable(item) || typeof item == "function") {
-                (new Promise(item)).done(settle).fail(proceed);
-            }
-            else {
-                settle(item);
-            }
-        }
-
-        return p;
-    };
-
-    /**
-     * @param {[]} promises -- array of promises or resolve values
-     * @returns {Promise}
-     */
-    Promise.race = function(promises) {
-
-        if (!promises.length) {
-            return Promise.resolve(null);
-        }
-
-        var p   = new Promise,
-            len = promises.length,
-            i,
-            item;
-
-        for (i = 0; i < len; i++) {
-            item = promises[i];
-
-            if (item instanceof Promise) {
-                item.done(p.resolve, p).fail(p.reject, p);
-            }
-            else if (isThenable(item) || typeof item == "function") {
-                (new Promise(item)).done(p.resolve, p).fail(p.reject, p);
-            }
-            else {
-                p.resolve(item);
-            }
-
-            if (!p.isPending()) {
-                break;
-            }
-        }
-
-        return p;
-    };
-
-
-    MetaphorJs.lib.Promise = Promise;
-
-}());
-
-var Promise = MetaphorJs.lib.Promise;
 /**
- * @return {String}
+ * @param {*} value
+ * @returns {boolean}
  */
-var nextUid = MetaphorJs.nextUid = function(){
+var isArray = function(value) {
+    return !!(value && isObject(value) && isNumber(value.length) &&
+                toString.call(value) == '[object Array]' || false);
+};
+var addListener = function(el, event, func) {
+    if (el.attachEvent) {
+        el.attachEvent('on' + event, func);
+    } else {
+        el.addEventListener(event, func, false);
+    }
+};
+
+/**
+ * @returns {String}
+ */
+var nextUid = function(){
     var uid = ['0', '0', '0'];
 
     // from AngularJs
@@ -1420,14 +818,11 @@ var nextUid = MetaphorJs.nextUid = function(){
     };
 }();
 
+var isFunction = function(value) {
+    return typeof value === 'function';
+};
 
 
-
-
-
-(function(){
-
-"use strict";
 
 
 /**
@@ -1640,24 +1035,6 @@ Observable.prototype = {
     },
 
     /**
-     * @returns {[]}
-     */
-    triggerAsync: function() {
-
-        var name = arguments[0],
-            events  = this.events;
-
-        name = name.toLowerCase();
-
-        if (!events[name]) {
-            return [];
-        }
-
-        var e = events[name];
-        return e.triggerAsync.apply(e, slice.call(arguments, 1));
-    },
-
-    /**
     * Trigger an event -- call all listeners.
     * @method
     * @access public
@@ -1787,7 +1164,7 @@ Observable.prototype = {
 
             var methods = [
                     "createEvent", "getEvent", "on", "un", "once", "hasListener", "removeAllListeners",
-                    "triggerAsync", "trigger", "suspendEvent", "suspendAllEvents", "resumeEvent",
+                    "trigger", "suspendEvent", "suspendAllEvents", "resumeEvent",
                     "resumeAllEvents", "destroyEvent"
                 ],
                 api = {},
@@ -1822,7 +1199,7 @@ var Event = function(name, returnResult) {
     self.uni            = '$$' + name + '_' + self.hash;
     self.suspended      = false;
     self.lid            = 0;
-    self.returnResult   = returnResult || false; // first|last|all
+    self.returnResult   = isUndefined(returnResult) ? null : returnResult; // first|last|all
 };
 
 
@@ -1972,7 +1349,7 @@ Event.prototype = {
 
             scope   = scope || fn;
 
-            if (typeof fn != "function") {
+            if (!isFunction(fn)) {
                 id  = fn;
             }
             else {
@@ -2048,82 +1425,6 @@ Event.prototype = {
     },
 
     /**
-     * Usage: Promise.all(event.triggerAsync()).done(function(returnValues){});
-     * Requires Promise class to be present
-     * @method
-     * @return {[]} Collection of promises
-     */
-    triggerAsync: function() {
-
-        if (typeof Promise == "undefined") {
-            throw Error("Promises are not defined");
-        }
-
-        var self            = this,
-            listeners       = self.listeners,
-            returnResult    = self.returnResult,
-            triggerArgs     = slice.call(arguments),
-            q               = [],
-            promises        = [],
-            args,
-            l, i, len;
-
-        if (self.suspended || listeners.length == 0) {
-            return Promise.resolve(null);
-        }
-
-        // create a snapshot of listeners list
-        for (i = 0, len = listeners.length; i < len; i++) {
-            q.push(listeners[i]);
-        }
-
-        var next = function(l) {
-
-            args = self._prepareArgs(l, triggerArgs);
-
-            return new Promise(function(resolve, reject){
-
-                async(function(){
-
-                    try {
-                        resolve(l.fn.apply(l.scope, args));
-                    }
-                    catch (thrownError) {
-                        reject(thrownError);
-                    }
-
-                    l.called++;
-
-                    if (l.called == l.limit) {
-                        self.un(l.id);
-                    }
-                }, 0);
-            });
-        };
-
-        while (l = q.shift()) {
-            // listener may already have unsubscribed
-            if (!l || !self.map[l.id]) {
-                continue;
-            }
-
-            l.count++;
-
-            if (l.count < l.start) {
-                continue;
-            }
-
-            promises.push(next(l));
-
-            if (returnResult == "first") {
-                break;
-            }
-        }
-
-        return returnResult == "last" ? [promises.pop()] : promises;
-    },
-
-    /**
      * @method
      * @return {*}
      */
@@ -2196,22 +1497,664 @@ Event.prototype = {
     }
 };
 
-
-var globalObservable    = new Observable;
-extend(MetaphorJs, globalObservable.getApi(), true, false);
+(function(){
+    var globalObservable    = new Observable;
+    extend(MetaphorJs, globalObservable.getApi(), true, false);
+}());
 
 MetaphorJs.lib.Observable = Observable;
 
-})();
-
-
-var Observable = MetaphorJs.lib.Observable;
 
 
 
+/**
+ * Returns 'then' function or false
+ * @param {*} any
+ * @returns {Function|boolean}
+ */
+var isThenable = function(any) {
+    var then;
+    if (!any) {
+        return false;
+    }
+    if (!isObject(any) && !isFunction(any)) {
+        return false;
+    }
+    return isFunction((then = any.then)) ?
+           then : false;
+};
 
 
 
+
+var Promise = function(){
+
+    var PENDING     = 0,
+        FULFILLED   = 1,
+        REJECTED    = 2,
+
+        queue       = [],
+        qRunning    = false,
+
+
+        nextTick    = typeof process != strUndef ?
+                        process.nextTick :
+                        function(fn) {
+                            setTimeout(fn, 0);
+                        },
+
+        // synchronous queue of asynchronous functions:
+        // callbacks must be called in "platform stack"
+        // which means setTimeout/nextTick;
+        // also, they must be called in a strict order.
+        nextInQueue = function() {
+            qRunning    = true;
+            var next    = queue.shift();
+            nextTick(function(){
+                next[0].apply(next[1], next[2]);
+                if (queue.length) {
+                    nextInQueue();
+                }
+                else {
+                    qRunning = false;
+                }
+            }, 0);
+        },
+
+        /**
+         * add to execution queue
+         * @param {Function} fn
+         * @param {Object} scope
+         * @param {[]} args
+         */
+        next        = function(fn, scope, args) {
+            args = args || [];
+            queue.push([fn, scope, args]);
+            if (!qRunning) {
+                nextInQueue();
+            }
+        },
+
+        /**
+         * returns function which receives value from previous promise
+         * and tries to resolve next promise with new value returned from given function(prev value)
+         * or reject on error.
+         * promise1.then(success, failure) -> promise2
+         * wrapper(success, promise2) -> fn
+         * fn(promise1 resolve value) -> new value
+         * promise2.resolve(new value)
+         *
+         * @param {Function} fn
+         * @param {Promise} promise
+         * @returns {Function}
+         */
+        wrapper     = function(fn, promise) {
+            return function(value) {
+                try {
+                    promise.resolve(fn(value));
+                }
+                catch (thrownError) {
+                    promise.reject(thrownError);
+                }
+            };
+        };
+
+
+    /**
+     * @param {Function} fn -- function(resolve, reject)
+     * @param {Object} fnScope
+     * @returns {Promise}
+     * @constructor
+     */
+    var Promise = function(fn, fnScope) {
+
+        if (fn instanceof Promise) {
+            return fn;
+        }
+
+        if (!(this instanceof Promise)) {
+            return new Promise(fn, fnScope);
+        }
+
+        var self = this;
+
+        self._fulfills   = [];
+        self._rejects    = [];
+        self._dones      = [];
+        self._fails      = [];
+
+        if (!isUndefined(fn)) {
+
+            if (isThenable(fn) || !isFunction(fn)) {
+                self.resolve(fn);
+            }
+            else {
+                try {
+                    fn.call(fnScope,
+                            bind(self.resolve, self),
+                            bind(self.reject, self));
+                }
+                catch (thrownError) {
+                    self.reject(thrownError);
+                }
+            }
+        }
+    };
+
+    Promise.prototype = {
+
+        _state: PENDING,
+
+        _fulfills: null,
+        _rejects: null,
+        _dones: null,
+        _fails: null,
+
+        _wait: 0,
+
+        _value: null,
+        _reason: null,
+
+        _triggered: false,
+
+        isPending: function() {
+            return this._state == PENDING;
+        },
+
+        isFulfilled: function() {
+            return this._state == FULFILLED;
+        },
+
+        isRejected: function() {
+            return this._state == REJECTED;
+        },
+
+        _cleanup: function() {
+            var self    = this;
+
+            delete self._fulfills;
+            delete self._rejects;
+            delete self._dones;
+            delete self._fails;
+        },
+
+        _processValue: function(value, cb) {
+
+            var self    = this,
+                then;
+
+            if (self._state != PENDING) {
+                return;
+            }
+
+            if (value === self) {
+                self._doReject(new TypeError("cannot resolve promise with itself"));
+                return;
+            }
+
+            try {
+                if (then = isThenable(value)) {
+                    if (value instanceof Promise) {
+                        value.then(
+                            bind(self._processResolveValue, self),
+                            bind(self._processRejectReason, self));
+                    }
+                    else {
+                        (new Promise(then, value)).then(
+                            bind(self._processResolveValue, self),
+                            bind(self._processRejectReason, self));
+                    }
+                    return;
+                }
+            }
+            catch (thrownError) {
+                if (self._state == PENDING) {
+                    self._doReject(thrownError);
+                }
+                return;
+            }
+
+            cb.call(self, value);
+        },
+
+
+        _callResolveHandlers: function() {
+
+            var self    = this;
+
+            self._done();
+
+            var cbs  = self._fulfills,
+                cb;
+
+            while (cb = cbs.shift()) {
+                next(cb[0], cb[1], [self._value]);
+            }
+
+            self._cleanup();
+        },
+
+
+        _doResolve: function(value) {
+            var self    = this;
+
+            self._value = value;
+            self._state = FULFILLED;
+
+            if (self._wait == 0) {
+                self._callResolveHandlers();
+            }
+        },
+
+        _processResolveValue: function(value) {
+            this._processValue(value, this._doResolve);
+        },
+
+        /**
+         * @param {*} value
+         */
+        resolve: function(value) {
+
+            var self    = this;
+
+            if (self._triggered) {
+                return self;
+            }
+
+            self._triggered = true;
+            self._processResolveValue(value);
+
+            return self;
+        },
+
+
+        _callRejectHandlers: function() {
+
+            var self    = this;
+
+            self._fail();
+
+            var cbs  = self._rejects,
+                cb;
+
+            while (cb = cbs.shift()) {
+                next(cb[0], cb[1], [self._reason]);
+            }
+
+            self._cleanup();
+        },
+
+        _doReject: function(reason) {
+
+            var self        = this;
+
+            self._state     = REJECTED;
+            self._reason    = reason;
+
+            if (self._wait == 0) {
+                self._callRejectHandlers();
+            }
+        },
+
+
+        _processRejectReason: function(reason) {
+            this._processValue(reason, this._doReject);
+        },
+
+        /**
+         * @param {*} reason
+         */
+        reject: function(reason) {
+
+            var self    = this;
+
+            if (self._triggered) {
+                return self;
+            }
+
+            self._triggered = true;
+
+            self._processRejectReason(reason);
+
+            return self;
+        },
+
+        /**
+         * @param {Function} resolve -- called when this promise is resolved; returns new resolve value
+         * @param {Function} reject -- called when this promise is rejects; returns new reject reason
+         * @returns {Promise} new promise
+         */
+        then: function(resolve, reject) {
+
+            var self            = this,
+                promise         = new Promise,
+                state           = self._state;
+
+            if (state == PENDING || self._wait != 0) {
+
+                if (resolve && isFunction(resolve)) {
+                    self._fulfills.push([wrapper(resolve, promise), null]);
+                }
+                else {
+                    self._fulfills.push([promise.resolve, promise])
+                }
+
+                if (reject && isFunction(reject)) {
+                    self._rejects.push([wrapper(reject, promise), null]);
+                }
+                else {
+                    self._rejects.push([promise.reject, promise]);
+                }
+            }
+            else if (state == FULFILLED) {
+
+                if (resolve && isFunction(resolve)) {
+                    next(wrapper(resolve, promise), null, [self._value]);
+                }
+                else {
+                    promise.resolve(self._value);
+                }
+            }
+            else if (state == REJECTED) {
+                if (reject && isFunction(reject)) {
+                    next(wrapper(reject, promise), null, [self._reason]);
+                }
+                else {
+                    promise.reject(self._reason);
+                }
+            }
+
+            return promise;
+        },
+
+        /**
+         * @param {Function} reject -- same as then(null, reject)
+         * @returns {Promise} new promise
+         */
+        "catch": function(reject) {
+            return this.then(null, reject);
+        },
+
+        _done: function() {
+
+            var self    = this,
+                cbs     = self._dones,
+                cb;
+
+            while (cb = cbs.shift()) {
+                cb[0].call(cb[1] || null, self._value);
+            }
+        },
+
+        /**
+         * @param {Function} fn -- function to call when promise is resolved
+         * @param {Object} fnScope -- function's "this" object
+         * @returns {Promise} same promise
+         */
+        done: function(fn, fnScope) {
+            var self    = this,
+                state   = self._state;
+
+            if (state == FULFILLED && self._wait == 0) {
+                fn.call(fnScope || null, self._value);
+            }
+            else if (state == PENDING) {
+                self._dones.push([fn, fnScope]);
+            }
+
+            return self;
+        },
+
+        _fail: function() {
+
+            var self    = this,
+                cbs     = self._fails,
+                cb;
+
+            while (cb = cbs.shift()) {
+                cb[0].call(cb[1] || null, self._reason);
+            }
+        },
+
+        /**
+         * @param {Function} fn -- function to call when promise is rejected.
+         * @param {Object} fnScope -- function's "this" object
+         * @returns {Promise} same promise
+         */
+        fail: function(fn, fnScope) {
+
+            var self    = this,
+                state   = self._state;
+
+            if (state == REJECTED && self._wait == 0) {
+                fn.call(fnScope || null, self._reason);
+            }
+            else if (state == PENDING) {
+                self._fails.push([fn, fnScope]);
+            }
+
+            return self;
+        },
+
+        /**
+         * @param {Function} fn -- function to call when promise resolved or rejected
+         * @param {Object} fnScope -- function's "this" object
+         * @return {Promise} same promise
+         */
+        always: function(fn, fnScope) {
+            this.done(fn, fnScope);
+            this.fail(fn, fnScope);
+            return this;
+        },
+
+        /**
+         * @returns {{then: function, done: function, fail: function, always: function}}
+         */
+        promise: function() {
+            var self = this;
+            return {
+                then: bind(self.then, self),
+                done: bind(self.done, self),
+                fail: bind(self.fail, self),
+                always: bind(self.always, self)
+            };
+        },
+
+        after: function(value) {
+
+            var self = this;
+
+            if (isThenable(value)) {
+
+                self._wait++;
+
+                var done = function() {
+                    self._wait--;
+                    if (self._wait == 0 && self._state != PENDING) {
+                        self._state == FULFILLED ?
+                            self._callResolveHandlers() :
+                            self._callRejectHandlers();
+                    }
+                };
+
+                if (isFunction(value.done)) {
+                    value.done(done);
+                }
+                else {
+                    value.then(done);
+                }
+            }
+
+            return self;
+        }
+    };
+
+    /**
+     * @param {*} value
+     * @returns {Promise}
+     */
+    Promise.resolve = function(value) {
+        return new Promise(value);
+    };
+
+
+    /**
+     * @param {*} reason
+     * @returns {Promise}
+     */
+    Promise.reject = function(reason) {
+        var p = new Promise;
+        p.reject(reason);
+        return p;
+    };
+
+
+    /**
+     * @param {[]} promises -- array of promises or resolve values
+     * @returns {Promise}
+     */
+    Promise.all = function(promises) {
+
+        if (!promises.length) {
+            return Promise.resolve(null);
+        }
+
+        var p       = new Promise,
+            len     = promises.length,
+            values  = new Array(len),
+            cnt     = len,
+            i,
+            item,
+            done    = function(value, inx) {
+                values[inx] = value;
+                cnt--;
+
+                if (cnt == 0) {
+                    p.resolve(values);
+                }
+            };
+
+        for (i = 0; i < len; i++) {
+
+            (function(inx){
+                item = promises[i];
+
+                if (item instanceof Promise) {
+                    item.done(function(value){
+                        done(value, inx);
+                    })
+                        .fail(p.reject, p);
+                }
+                else if (isThenable(item) || isFunction(item)) {
+                    (new Promise(item))
+                        .done(function(value){
+                            done(value, inx);
+                        })
+                        .fail(p.reject, p);
+                }
+                else {
+                    done(item, inx);
+                }
+            })(i);
+        }
+
+        return p;
+    };
+
+    /**
+     * @param {Promise|*} promise1
+     * @param {Promise|*} promise2
+     * @param {Promise|*} promiseN
+     * @returns {Promise}
+     */
+    Promise.when = function() {
+        return Promise.all(arguments);
+    };
+
+    /**
+     * @param {[]} promises -- array of promises or resolve values
+     * @returns {Promise}
+     */
+    Promise.allResolved = function(promises) {
+
+        if (!promises.length) {
+            return Promise.resolve(null);
+        }
+
+        var p       = new Promise,
+            len     = promises.length,
+            values  = [],
+            cnt     = len,
+            i,
+            item,
+            settle  = function(value) {
+                values.push(value);
+                proceed();
+            },
+            proceed = function() {
+                cnt--;
+                if (cnt == 0) {
+                    p.resolve(values);
+                }
+            };
+
+        for (i = 0; i < len; i++) {
+            item = promises[i];
+
+            if (item instanceof Promise) {
+                item.done(settle).fail(proceed);
+            }
+            else if (isThenable(item) || isFunction(item)) {
+                (new Promise(item)).done(settle).fail(proceed);
+            }
+            else {
+                settle(item);
+            }
+        }
+
+        return p;
+    };
+
+    /**
+     * @param {[]} promises -- array of promises or resolve values
+     * @returns {Promise}
+     */
+    Promise.race = function(promises) {
+
+        if (!promises.length) {
+            return Promise.resolve(null);
+        }
+
+        var p   = new Promise,
+            len = promises.length,
+            i,
+            item;
+
+        for (i = 0; i < len; i++) {
+            item = promises[i];
+
+            if (item instanceof Promise) {
+                item.done(p.resolve, p).fail(p.reject, p);
+            }
+            else if (isThenable(item) || isFunction(item)) {
+                (new Promise(item)).done(p.resolve, p).fail(p.reject, p);
+            }
+            else {
+                p.resolve(item);
+            }
+
+            if (!p.isPending()) {
+                break;
+            }
+        }
+
+        return p;
+    };
+
+    return Promise;
+}();
+
+MetaphorJs.lib.Promise = Promise;
 
 
 
@@ -2222,9 +2165,9 @@ var Observable = MetaphorJs.lib.Observable;
 * Contents of this file are partially taken from jQuery
 */
 
-(function(){
+var ajax = function(){
 
-    "use strict";
+    
 
     var rhash       = /#.*$/,
 
@@ -2242,7 +2185,7 @@ var Observable = MetaphorJs.lib.Observable;
 
             var i, len;
 
-            if (typeof data == "string" && name) {
+            if (isString(data) && name) {
                 params.push(encodeURIComponent(name) + "=" + encodeURIComponent(data));
             }
             else if (isArray(data) && name) {
@@ -2250,7 +2193,7 @@ var Observable = MetaphorJs.lib.Observable;
                     buildParams(data[i], params, name + "["+i+"]");
                 }
             }
-            else if (typeof data == "object") {
+            else if (isObject(data)) {
                 for (i in data) {
                     if (data.hasOwnProperty(i)) {
                         buildParams(data[i], params, name ? name + "["+i+"]" : i);
@@ -2281,7 +2224,7 @@ var Observable = MetaphorJs.lib.Observable;
             }
 
             if (opt.data && (!window.FormData || !(opt.data instanceof window.FormData))) {
-                opt.data = typeof opt.data != "string" ? prepareParams(opt.data) : opt.data;
+                opt.data = !isString(opt.data) ? prepareParams(opt.data) : opt.data;
                 if (rgethead.test(opt.method)) {
                     url += (rquery.test(url) ? "&" : "?") + opt.data;
                     opt.data = null;
@@ -2363,7 +2306,7 @@ var Observable = MetaphorJs.lib.Observable;
 
             var i, input, len;
 
-            if (typeof data != "object" && typeof data != "function" && name) {
+            if (!isObject(data) && !isFunction(data) && name) {
                 input   = document.createElement("input");
                 input.setAttribute("type", "hidden");
                 input.setAttribute("name", name);
@@ -2375,7 +2318,7 @@ var Observable = MetaphorJs.lib.Observable;
                     data2form(data[i], form, name + "["+i+"]");
                 }
             }
-            else if (typeof data == "object") {
+            else if (isObject(data)) {
                 for (i in data) {
                     if (data.hasOwnProperty(i)) {
                         data2form(data[i], form, name ? name + "["+i+"]" : i);
@@ -2416,7 +2359,7 @@ var Observable = MetaphorJs.lib.Observable;
 
         httpSuccess     = function(r) {
             try {
-                return (!r.status && typeof location != "undefined" && location.protocol == "file:")
+                return (!r.status && !isUndefined(location) && location.protocol == "file:")
                            || (r.status >= 200 && r.status < 300)
                            || r.status === 304 || r.status === 1223; // || r.status === 0;
             } catch(thrownError){}
@@ -2429,7 +2372,7 @@ var Observable = MetaphorJs.lib.Observable;
                 selector    = opt ? opt.selector : null,
                 doc;
 
-            if (typeof data != "string") {
+            if (!isString(data)) {
                 return data;
             }
 
@@ -2471,7 +2414,7 @@ var Observable = MetaphorJs.lib.Observable;
     var AJAX    = function(opt) {
 
         var self        = this,
-            href        = typeof window != "undefined" ? window.location.href : "",
+            href        = !isUndefined(window) ? window.location.href : "",
             local       = rurl.exec(href.toLowerCase()) || [],
             parts       = rurl.exec(opt.url.toLowerCase());
 
@@ -2491,7 +2434,7 @@ var Observable = MetaphorJs.lib.Observable;
         }
         else if (opt.form) {
             self._form = opt.form;
-            if (opt.method == "POST" && (typeof window == "undefined" || !window.FormData) &&
+            if (opt.method == "POST" && (isUndefined(window) || !window.FormData) &&
                 opt.transport != "iframe") {
 
                 opt.transport = "iframe";
@@ -2611,10 +2554,10 @@ var Observable = MetaphorJs.lib.Observable;
 
             self._jsonpName = cbName;
 
-            if (typeof window != "undefined") {
+            if (!isUndefined(window)) {
                 window[cbName] = bind(self.jsonpCallback, self);
             }
-            if (typeof global != "undefined") {
+            if (!isUndefined(global)) {
                 global[cbName] = bind(self.jsonpCallback, self);
             }
 
@@ -2705,10 +2648,10 @@ var Observable = MetaphorJs.lib.Observable;
             delete self._form;
 
             if (self._jsonpName) {
-                if (typeof window != "undefined") {
+                if (!isUndefined(window)) {
                     delete window[self._jsonpName];
                 }
-                if (typeof global != "undefined") {
+                if (!isUndefined(global)) {
                     delete global[self._jsonpName];
                 }
             }
@@ -2721,7 +2664,7 @@ var Observable = MetaphorJs.lib.Observable;
 
         opt = opt || {};
 
-        if (url && typeof url != "string") {
+        if (url && !isString(url)) {
             opt = url;
         }
         else {
@@ -2783,7 +2726,7 @@ var Observable = MetaphorJs.lib.Observable;
 
         opt = opt || {};
 
-        if (typeof url != "string") {
+        if (!isString(url)) {
             opt = url;
         }
 
@@ -2884,7 +2827,7 @@ var Observable = MetaphorJs.lib.Observable;
                 if (httpSuccess(xhr)) {
 
                     self._ajax.processResponse(
-                        typeof xhr.responseText == "string" ? xhr.responseText : undefined,
+                        isString(xhr.responseText) ? xhr.responseText : undefined,
                         xhr.getResponseHeader("content-type") || ''
                     );
                 }
@@ -3085,7 +3028,9 @@ var Observable = MetaphorJs.lib.Observable;
 
     };
 
-    MetaphorJs.ajax = ajax;
+    return ajax;
+}();
 
-}());
+
+
 }());

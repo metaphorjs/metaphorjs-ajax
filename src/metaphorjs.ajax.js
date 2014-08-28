@@ -1,21 +1,29 @@
-//#require ../../metaphorjs/src/func/extend.js
-//#require ../../metaphorjs/src/func/bind.js
-//#require ../../metaphorjs/src/func/event/addListener.js
-//#require ../../metaphorjs/src/func/trim.js
-//#require ../../metaphorjs/src/func/array/isArray.js
-//#require ../../metaphorjs/src/func/dom/select.js
-//#require ../../metaphorjs/src/func/emptyFn.js
-//#require ../../metaphorjs/src/func/parseJSON.js
-//#require ../../metaphorjs/src/func/parseXML.js
-//#require ../../metaphorjs/src/func/async.js
-//#require ../../metaphorjs/src/vars/Promise.js
-//#require ../../metaphorjs/src/vars/Observable.js
+
+var MetaphorJs  = require("../../metaphorjs/src/MetaphorJs.js"),
+    extend      = require("../../metaphorjs/src/func/extend.js"),
+    bind        = require("../../metaphorjs/src/func/bind.js"),
+    trim        = require("../../metaphorjs/src/func/trim.js"),
+    async       = require("../../metaphorjs/src/func/async.js"),
+    emptyFn     = require("../../metaphorjs/src/func/emptyFn.js"),
+    parseJSON   = require("../../metaphorjs/src/func/parseJSON.js"),
+    parseXML    = require("../../metaphorjs/src/func/parseXML.js"),
+    select      = require("../../metaphorjs/src/func/dom/select.js"),
+    isArray     = require("../../metaphorjs/src/func/isArray.js"),
+    addListener = require("../../metaphorjs/src/func/event/addListener.js"),
+    Observable  = require("../../metaphorjs-observable/src/metaphorjs.observable.js"),
+    Promise     = require("../../metaphorjs-promise/src/metaphorjs.promise.js"),
+    isString    = require("../../metaphorjs/src/func/isString.js"),
+    isFunction  = require("../../metaphorjs/src/func/isFunction.js"),
+    isUndefined = require("../../metaphorjs/src/func/isUndefined.js"),
+    isObject    = require("../../metaphorjs/src/func/isObject.js");
+
+
 
 /*
 * Contents of this file are partially taken from jQuery
 */
 
-(function(){
+var ajax = function(){
 
     "use strict";
 
@@ -35,7 +43,7 @@
 
             var i, len;
 
-            if (typeof data == "string" && name) {
+            if (isString(data) && name) {
                 params.push(encodeURIComponent(name) + "=" + encodeURIComponent(data));
             }
             else if (isArray(data) && name) {
@@ -43,7 +51,7 @@
                     buildParams(data[i], params, name + "["+i+"]");
                 }
             }
-            else if (typeof data == "object") {
+            else if (isObject(data)) {
                 for (i in data) {
                     if (data.hasOwnProperty(i)) {
                         buildParams(data[i], params, name ? name + "["+i+"]" : i);
@@ -74,7 +82,7 @@
             }
 
             if (opt.data && (!window.FormData || !(opt.data instanceof window.FormData))) {
-                opt.data = typeof opt.data != "string" ? prepareParams(opt.data) : opt.data;
+                opt.data = !isString(opt.data) ? prepareParams(opt.data) : opt.data;
                 if (rgethead.test(opt.method)) {
                     url += (rquery.test(url) ? "&" : "?") + opt.data;
                     opt.data = null;
@@ -156,7 +164,7 @@
 
             var i, input, len;
 
-            if (typeof data != "object" && typeof data != "function" && name) {
+            if (!isObject(data) && !isFunction(data) && name) {
                 input   = document.createElement("input");
                 input.setAttribute("type", "hidden");
                 input.setAttribute("name", name);
@@ -168,7 +176,7 @@
                     data2form(data[i], form, name + "["+i+"]");
                 }
             }
-            else if (typeof data == "object") {
+            else if (isObject(data)) {
                 for (i in data) {
                     if (data.hasOwnProperty(i)) {
                         data2form(data[i], form, name ? name + "["+i+"]" : i);
@@ -209,7 +217,7 @@
 
         httpSuccess     = function(r) {
             try {
-                return (!r.status && typeof location != "undefined" && location.protocol == "file:")
+                return (!r.status && !isUndefined(location) && location.protocol == "file:")
                            || (r.status >= 200 && r.status < 300)
                            || r.status === 304 || r.status === 1223; // || r.status === 0;
             } catch(thrownError){}
@@ -222,7 +230,7 @@
                 selector    = opt ? opt.selector : null,
                 doc;
 
-            if (typeof data != "string") {
+            if (!isString(data)) {
                 return data;
             }
 
@@ -264,7 +272,7 @@
     var AJAX    = function(opt) {
 
         var self        = this,
-            href        = typeof window != "undefined" ? window.location.href : "",
+            href        = !isUndefined(window) ? window.location.href : "",
             local       = rurl.exec(href.toLowerCase()) || [],
             parts       = rurl.exec(opt.url.toLowerCase());
 
@@ -284,7 +292,7 @@
         }
         else if (opt.form) {
             self._form = opt.form;
-            if (opt.method == "POST" && (typeof window == "undefined" || !window.FormData) &&
+            if (opt.method == "POST" && (isUndefined(window) || !window.FormData) &&
                 opt.transport != "iframe") {
 
                 opt.transport = "iframe";
@@ -404,10 +412,10 @@
 
             self._jsonpName = cbName;
 
-            if (typeof window != "undefined") {
+            if (!isUndefined(window)) {
                 window[cbName] = bind(self.jsonpCallback, self);
             }
-            if (typeof global != "undefined") {
+            if (!isUndefined(global)) {
                 global[cbName] = bind(self.jsonpCallback, self);
             }
 
@@ -498,10 +506,10 @@
             delete self._form;
 
             if (self._jsonpName) {
-                if (typeof window != "undefined") {
+                if (!isUndefined(window)) {
                     delete window[self._jsonpName];
                 }
-                if (typeof global != "undefined") {
+                if (!isUndefined(global)) {
                     delete global[self._jsonpName];
                 }
             }
@@ -514,7 +522,7 @@
 
         opt = opt || {};
 
-        if (url && typeof url != "string") {
+        if (url && !isString(url)) {
             opt = url;
         }
         else {
@@ -576,7 +584,7 @@
 
         opt = opt || {};
 
-        if (typeof url != "string") {
+        if (!isString(url)) {
             opt = url;
         }
 
@@ -677,7 +685,7 @@
                 if (httpSuccess(xhr)) {
 
                     self._ajax.processResponse(
-                        typeof xhr.responseText == "string" ? xhr.responseText : undefined,
+                        isString(xhr.responseText) ? xhr.responseText : undefined,
                         xhr.getResponseHeader("content-type") || ''
                     );
                 }
@@ -878,6 +886,8 @@
 
     };
 
-    MetaphorJs.ajax = ajax;
+    return ajax;
+}();
 
-}());
+
+module.exports = ajax;
