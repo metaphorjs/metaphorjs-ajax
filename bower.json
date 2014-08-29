@@ -1,0 +1,23 @@
+{
+  "name": "metaphorjs-ajax",
+  "version": "0.1.0",
+  "authors": [
+    "kuindji <kuindji@gmail.com>"
+  ],
+  "description": "MetaphorJs ajax implementation",
+  "main": "dist/metaphorjs.ajax.amd.min.js",
+  "moduleType": [
+    "amd"
+  ],
+  "keywords": [
+    "ajax"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/kuindji/metaphorjs-ajax",
+  "ignore": [
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
