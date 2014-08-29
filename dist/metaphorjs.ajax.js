@@ -2,10 +2,10 @@
 "use strict";
 
 var MetaphorJs = {
-    lib: {}
+    lib: {},
+    cmp: {},
+    view: {}
 };
-
-
 
 
 var slice = Array.prototype.slice;
@@ -228,11 +228,11 @@ var select = function() {
         bcn         = !!doc.getElementsByClassName,
         qsa         = !!doc.querySelectorAll,
 
-    /*
-     function calls for CSS2/3 modificatos. Specification taken from
-     http://www.w3.org/TR/2005/WD-css3-selectors-20051215/
-     on success return negative result.
-     */
+        /*
+         function calls for CSS2/3 modificatos. Specification taken from
+         http://www.w3.org/TR/2005/WD-css3-selectors-20051215/
+         on success return negative result.
+         */
         mods        = {
             /* W3C: "an E element, first child of its parent" */
             'first-child': function (child) {
@@ -405,7 +405,7 @@ var select = function() {
         };
 
 
-    return function (selector, root) {
+    var select = function (selector, root) {
 
         /* clean root with document */
         root = root || doc;
@@ -762,6 +762,21 @@ var select = function() {
         /* return and cache results */
         return sets;
     };
+
+    select.is = function(el, selector) {
+
+        var els = select(selector, el.parentNode),
+            i, l;
+
+        for (i = -1, l = els.length; ++i < l;) {
+            if (els[i] === el) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    return select;
 }();
 var toString = Object.prototype.toString;
 var isObject = function(value) {
@@ -1497,12 +1512,6 @@ Event.prototype = {
     }
 };
 
-(function(){
-    var globalObservable    = new Observable;
-    extend(MetaphorJs, globalObservable.getApi(), true, false);
-}());
-
-MetaphorJs.lib.Observable = Observable;
 
 
 
@@ -2153,8 +2162,6 @@ var Promise = function(){
 
     return Promise;
 }();
-
-MetaphorJs.lib.Promise = Promise;
 
 
 
@@ -3032,5 +3039,9 @@ var ajax = function(){
 }();
 
 
+
+MetaphorJs['ajax'] = ajax;
+
+typeof global != "undefined" ? (global['MetaphorJs'] = MetaphorJs) : (window['MetaphorJs'] = MetaphorJs);
 
 }());

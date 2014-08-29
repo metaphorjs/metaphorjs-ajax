@@ -1,20 +1,205 @@
+define("metaphorjs-ajax", ['metaphorjs-observable', 'metaphorjs-promise', 'metaphorjs-select'], function(Observable, Promise, select) {
 
-var extend      = require("../../metaphorjs/src/func/extend.js"),
-    bind        = require("../../metaphorjs/src/func/bind.js"),
-    trim        = require("../../metaphorjs/src/func/trim.js"),
-    async       = require("../../metaphorjs/src/func/async.js"),
-    emptyFn     = require("../../metaphorjs/src/func/emptyFn.js"),
-    parseJSON   = require("../../metaphorjs/src/func/parseJSON.js"),
-    parseXML    = require("../../metaphorjs/src/func/parseXML.js"),
-    select      = require("../../metaphorjs-select/src/metaphorjs.select.js"),
-    isArray     = require("../../metaphorjs/src/func/isArray.js"),
-    addListener = require("../../metaphorjs/src/func/event/addListener.js"),
-    Observable  = require("../../metaphorjs-observable/src/metaphorjs.observable.js"),
-    Promise     = require("../../metaphorjs-promise/src/metaphorjs.promise.js"),
-    isString    = require("../../metaphorjs/src/func/isString.js"),
-    isFunction  = require("../../metaphorjs/src/func/isFunction.js"),
-    isUndefined = require("../../metaphorjs/src/func/isUndefined.js"),
-    isObject    = require("../../metaphorjs/src/func/isObject.js");
+
+var slice = Array.prototype.slice;
+/**
+ * @param {*} obj
+ * @returns {boolean}
+ */
+var isPlainObject = function(obj) {
+    return !!(obj && obj.constructor === Object);
+};
+
+var isBool = function(value) {
+    return typeof value == "boolean";
+};
+var strUndef = "undefined";
+
+
+var isUndefined = function(any) {
+    return typeof any == strUndef;
+};
+
+var isNull = function(value) {
+    return value === null;
+};
+
+
+/**
+ * @param {Object} dst
+ * @param {Object} src
+ * @param {Object} src2 ... srcN
+ * @param {boolean} override = false
+ * @param {boolean} deep = false
+ * @returns {*}
+ */
+var extend = function extend() {
+
+
+    var override    = false,
+        deep        = false,
+        args        = slice.call(arguments),
+        dst         = args.shift(),
+        src,
+        k,
+        value;
+
+    if (isBool(args[args.length - 1])) {
+        override    = args.pop();
+    }
+    if (isBool(args[args.length - 1])) {
+        deep        = override;
+        override    = args.pop();
+    }
+
+    while (args.length) {
+        if (src = args.shift()) {
+            for (k in src) {
+
+                if (src.hasOwnProperty(k) && !isUndefined((value = src[k]))) {
+
+                    if (deep) {
+                        if (dst[k] && isPlainObject(dst[k]) && isPlainObject(value)) {
+                            extend(dst[k], value, override, deep);
+                        }
+                        else {
+                            if (override === true || isUndefined(dst[k]) || isNull(dst[k])) {
+                                if (isPlainObject(value)) {
+                                    dst[k] = {};
+                                    extend(dst[k], value, override, true);
+                                }
+                                else {
+                                    dst[k] = value;
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        if (override === true || isUndefined(dst[k]) || isNull(dst[k])) {
+                            dst[k] = value;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return dst;
+};
+
+
+/**
+ * @param {Function} fn
+ * @param {*} context
+ */
+var bind = Function.prototype.bind ?
+              function(fn, context){
+                  return fn.bind(context);
+              } :
+              function(fn, context) {
+                  return function() {
+                      return fn.apply(context, arguments);
+                  };
+              };
+
+
+var isString = function(value) {
+    return typeof value == "string";
+};
+
+
+/**
+ * @param {String} value
+ */
+var trim = function() {
+    // native trim is way faster: http://jsperf.com/angular-trim-test
+    // but IE doesn't have it... :-(
+    if (!String.prototype.trim) {
+        return function(value) {
+            return isString(value) ? value.replace(/^\s\s*/, '').replace(/\s\s*$/, '') : value;
+        };
+    }
+    return function(value) {
+        return isString(value) ? value.trim() : value;
+    };
+}();/**
+ * @param {Function} fn
+ * @param {Object} context
+ * @param {[]} args
+ */
+var async = function(fn, context, args) {
+    setTimeout(function(){
+        fn.apply(context, args || []);
+    }, 0);
+};
+
+var emptyFn = function(){};
+
+
+var parseJSON = function() {
+
+    return isUndefined(JSON) ?
+           function(data) {
+               return JSON.parse(data);
+           } :
+           function(data) {
+               return (new Function("return " + data))();
+           };
+}();
+
+
+
+
+var parseXML = function(data, type) {
+
+    var xml, tmp;
+
+    if (!data || !isString(data)) {
+        return null;
+    }
+
+    // Support: IE9
+    try {
+        tmp = new DOMParser();
+        xml = tmp.parseFromString(data, type || "text/xml");
+    } catch (thrownError) {
+        xml = undefined;
+    }
+
+    if (!xml || xml.getElementsByTagName("parsererror").length) {
+        throw "Invalid XML: " + data;
+    }
+
+    return xml;
+};
+var toString = Object.prototype.toString;
+var isObject = function(value) {
+    return value != null && typeof value === 'object';
+};
+var isNumber = function(value) {
+    return typeof value == "number" && !isNaN(value);
+};
+
+
+/**
+ * @param {*} value
+ * @returns {boolean}
+ */
+var isArray = function(value) {
+    return !!(value && isObject(value) && isNumber(value.length) &&
+                toString.call(value) == '[object Array]' || false);
+};
+var addListener = function(el, event, func) {
+    if (el.attachEvent) {
+        el.attachEvent('on' + event, func);
+    } else {
+        el.addEventListener(event, func, false);
+    }
+};
+var isFunction = function(value) {
+    return typeof value === 'function';
+};
+
 
 
 
@@ -22,9 +207,9 @@ var extend      = require("../../metaphorjs/src/func/extend.js"),
 * Contents of this file are partially taken from jQuery
 */
 
-module.exports = function(){
+return function(){
 
-    "use strict";
+    
 
     var rhash       = /#.*$/,
 
@@ -889,3 +1074,5 @@ module.exports = function(){
 }();
 
 
+
+});

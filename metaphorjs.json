@@ -2,15 +2,42 @@
 
     "standalone": {
         "wrap": true,
-        "auto": true,
+        "global": true,
         "target": "dist/metaphorjs.ajax.js",
         "files": [
-            "src/metaphorjs.ajax.js"
-        ]
+            "../metaphorjs/src/MetaphorJs.js",
+            ["src/metaphorjs.ajax.js", {"as": "ajax"}]
+        ],
+        "expose": ["ajax"]
+    },
+
+    "amd": {
+        "target": "dist/metaphorjs.ajax.amd.js",
+        "files": [
+            ["src/metaphorjs.ajax.js", {"returnExports": true}]
+        ],
+        "omit": [
+            "../metaphorjs-observable/src/metaphorjs.observable.js",
+            "../metaphorjs-promise/src/metaphorjs.promise.js",
+            "../metaphorjs-select/src/metaphorjs.select.js"
+        ],
+        "define": {
+            "name": "metaphorjs-ajax",
+            "deps": {
+                "metaphorjs-observable": "Observable",
+                "metaphorjs-promise": "Promise",
+                "metaphorjs-select": "select"
+            }
+        }
     },
 
     "compile-standalone": {
         "target": "dist/metaphorjs.ajax.min.js",
         "compile": "standalone"
+    },
+
+    "compile-amd": {
+        "target": "dist/metaphorjs.ajax.amd.min.js",
+        "compile": "amd"
     }
 }
