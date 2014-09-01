@@ -1,7 +1,7 @@
 (function(){
 "use strict";
 
-var MetaphorJs = {
+ {
     lib: {},
     cmp: {},
     view: {}
@@ -1534,6 +1534,21 @@ var isThenable = function(any) {
 };
 
 
+var error = function(e) {
+
+    var stack = e.stack || (new Error).stack;
+
+    async(function(){
+        if (!isUndefined(console) && console.log) {
+            console.log(e);
+            if (stack) {
+                console.log(stack);
+            }
+        }
+    });
+};
+
+
 
 
 var Promise = function(){
@@ -1625,7 +1640,8 @@ var Promise = function(){
             return new Promise(fn, fnScope);
         }
 
-        var self = this;
+        var self = this,
+            then;
 
         self._fulfills   = [];
         self._rejects    = [];
@@ -1634,10 +1650,19 @@ var Promise = function(){
 
         if (!isUndefined(fn)) {
 
-            if (isThenable(fn) || !isFunction(fn)) {
-                self.resolve(fn);
+            if (then = isThenable(fn)) {
+                if (fn instanceof Promise) {
+                    fn.then(
+                        bind(self.resolve, self),
+                        bind(self.reject, self));
+                }
+                else {
+                    (new Promise(then, fn)).then(
+                        bind(self.resolve, self),
+                        bind(self.reject, self));
+                }
             }
-            else {
+            else if (isFunction(fn)) {
                 try {
                     fn.call(fnScope,
                             bind(self.resolve, self),
@@ -1646,6 +1671,9 @@ var Promise = function(){
                 catch (thrownError) {
                     self.reject(thrownError);
                 }
+            }
+            else {
+                self.resolve(fn);
             }
         }
     };
@@ -1891,7 +1919,12 @@ var Promise = function(){
                 cb;
 
             while (cb = cbs.shift()) {
-                cb[0].call(cb[1] || null, self._value);
+                try {
+                    cb[0].call(cb[1] || null, self._value);
+                }
+                catch (thrown) {
+                    error(thrown);
+                }
             }
         },
 
@@ -1921,7 +1954,12 @@ var Promise = function(){
                 cb;
 
             while (cb = cbs.shift()) {
-                cb[0].call(cb[1] || null, self._reason);
+                try {
+                    cb[0].call(cb[1] || null, self._reason);
+                }
+                catch (thrown) {
+                    error(thrown);
+                }
             }
         },
 
@@ -1998,12 +2036,19 @@ var Promise = function(){
         }
     };
 
+
+    Promise.fcall = function(fn, context, args) {
+        return Promise.resolve(fn.apply(context, args || []));
+    };
+
     /**
      * @param {*} value
      * @returns {Promise}
      */
     Promise.resolve = function(value) {
-        return new Promise(value);
+        var p = new Promise;
+        p.resolve(value);
+        return p;
     };
 
 
@@ -2158,6 +2203,35 @@ var Promise = function(){
         }
 
         return p;
+    };
+
+    /**
+     * @param {[]} functions -- array of promises or resolve values or functions
+     * @returns {Promise}
+     */
+    Promise.waterfall = function(functions) {
+
+        if (!functions.length) {
+            return Promise.resolve(null);
+        }
+
+        var promise = Promise.fcall(functions.shift()),
+            fn;
+
+        while (fn = functions.shift()) {
+            if (isThenable(fn)) {
+                promise = promise.then(function(fn){
+                    return function(){
+                        return fn;
+                    };
+                }(fn));
+            }
+            else {
+                promise = promise.then(fn);
+            }
+        }
+
+        return promise;
     };
 
     return Promise;
@@ -2604,15 +2678,18 @@ var ajax = function(){
         processResponse: function(data, contentType) {
 
             var self        = this,
-                deferred    = self._deferred;
+                deferred    = self._deferred,
+                result;
 
             if (!self._opt.jsonp) {
                 try {
-                    deferred.resolve(self.processResponseData(data, contentType));
+                    result = self.processResponseData(data, contentType)
                 }
                 catch (thrownError) {
                     deferred.reject(thrownError);
                 }
+
+                deferred.resolve(result);
             }
             else {
                 if (!data) {

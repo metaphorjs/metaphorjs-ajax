@@ -641,15 +641,18 @@ module.exports = function(){
         processResponse: function(data, contentType) {
 
             var self        = this,
-                deferred    = self._deferred;
+                deferred    = self._deferred,
+                result;
 
             if (!self._opt.jsonp) {
                 try {
-                    deferred.resolve(self.processResponseData(data, contentType));
+                    result = self.processResponseData(data, contentType)
                 }
                 catch (thrownError) {
                     deferred.reject(thrownError);
                 }
+
+                deferred.resolve(result);
             }
             else {
                 if (!data) {

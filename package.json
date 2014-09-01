@@ -1,27 +1,27 @@
 {
-  "name": "metaphorjs-ajax",
-  "version": "0.1.0",
-  "description": "",
-  "main": "dist/metaphorjs.ajax.npm.js",
-  "directories": {
-    "test": "test"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/kuindji/metaphorjs-ajax.git"
-  },
-  "author": "kuindji",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/kuindji/metaphorjs-ajax/issues"
-  },
-  "homepage": "https://github.com/kuindji/metaphorjs-ajax",
-  "dependencies": {
-      "metaphorjs-select": "*",
-      "metaphorjs-observable": "*",
-      "metaphorjs-promise": "*"
-  }
+    "name": "metaphorjs-ajax",
+    "version": "0.1.1",
+    "description": "",
+    "main": "dist/metaphorjs.ajax.npm.js",
+    "directories": {
+        "test": "test"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/kuindji/metaphorjs-ajax.git"
+    },
+    "author": "kuindji",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/kuindji/metaphorjs-ajax/issues"
+    },
+    "homepage": "https://github.com/kuindji/metaphorjs-ajax",
+    "dependencies": {
+        "metaphorjs-select": "*",
+        "metaphorjs-observable": "*",
+        "metaphorjs-promise": "*"
+    }
 }
