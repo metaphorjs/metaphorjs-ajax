@@ -2,24 +2,74 @@ define("metaphorjs-ajax", ['metaphorjs-observable', 'metaphorjs-promise', 'metap
 
 
 var slice = Array.prototype.slice;
-/**
- * @param {*} obj
- * @returns {boolean}
- */
-var isPlainObject = function(obj) {
-    return !!(obj && obj.constructor === Object);
+var toString = Object.prototype.toString;
+var undf = undefined;
+
+
+
+var varType = function(){
+
+    var types = {
+        '[object String]': 0,
+        '[object Number]': 1,
+        '[object Boolean]': 2,
+        '[object Object]': 3,
+        '[object Function]': 4,
+        '[object Array]': 5,
+        '[object RegExp]': 9,
+        '[object Date]': 10
+    };
+
+
+    /**
+        'string': 0,
+        'number': 1,
+        'boolean': 2,
+        'object': 3,
+        'function': 4,
+        'array': 5,
+        'null': 6,
+        'undefined': 7,
+        'NaN': 8,
+        'regexp': 9,
+        'date': 10
+    */
+
+    return function(val) {
+
+        if (!val) {
+            if (val === null) {
+                return 6;
+            }
+            if (val === undf) {
+                return 7;
+            }
+        }
+
+        var num = types[toString.call(val)];
+
+        if (num === undf) {
+            return -1;
+        }
+
+        if (num == 1 && isNaN(val)) {
+            num = 8;
+        }
+
+        return num;
+    };
+
+}();
+
+
+var isPlainObject = function(value) {
+    return varType(value) === 3;
 };
+
 
 var isBool = function(value) {
-    return typeof value == "boolean";
+    return varType(value) === 2;
 };
-var strUndef = "undefined";
-
-
-var isUndefined = function(any) {
-    return typeof any == strUndef;
-};
-
 var isNull = function(value) {
     return value === null;
 };
@@ -56,14 +106,14 @@ var extend = function extend() {
         if (src = args.shift()) {
             for (k in src) {
 
-                if (src.hasOwnProperty(k) && !isUndefined((value = src[k]))) {
+                if (src.hasOwnProperty(k) && (value = src[k]) !== undf) {
 
                     if (deep) {
                         if (dst[k] && isPlainObject(dst[k]) && isPlainObject(value)) {
                             extend(dst[k], value, override, deep);
                         }
                         else {
-                            if (override === true || isUndefined(dst[k]) || isNull(dst[k])) {
+                            if (override === true || dst[k] == undf) { // == checks for null and undefined
                                 if (isPlainObject(value)) {
                                     dst[k] = {};
                                     extend(dst[k], value, override, true);
@@ -75,7 +125,7 @@ var extend = function extend() {
                         }
                     }
                     else {
-                        if (override === true || isUndefined(dst[k]) || isNull(dst[k])) {
+                        if (override === true || dst[k] == undf) {
                             dst[k] = value;
                         }
                     }
@@ -103,8 +153,10 @@ var bind = Function.prototype.bind ?
               };
 
 
+
+
 var isString = function(value) {
-    return typeof value == "string";
+    return varType(value) === 0;
 };
 
 
@@ -134,11 +186,12 @@ var async = function(fn, context, args) {
 };
 
 var emptyFn = function(){};
+var strUndef = "undefined";
 
 
 var parseJSON = function() {
 
-    return isUndefined(JSON) ?
+    return typeof JSON != strUndef ?
            function(data) {
                return JSON.parse(data);
            } :
@@ -163,7 +216,7 @@ var parseXML = function(data, type) {
         tmp = new DOMParser();
         xml = tmp.parseFromString(data, type || "text/xml");
     } catch (thrownError) {
-        xml = undefined;
+        xml = undf;
     }
 
     if (!xml || xml.getElementsByTagName("parsererror").length) {
@@ -172,13 +225,6 @@ var parseXML = function(data, type) {
 
     return xml;
 };
-var toString = Object.prototype.toString;
-var isObject = function(value) {
-    return value != null && typeof value === 'object';
-};
-var isNumber = function(value) {
-    return typeof value == "number" && !isNaN(value);
-};
 
 
 /**
@@ -186,8 +232,7 @@ var isNumber = function(value) {
  * @returns {boolean}
  */
 var isArray = function(value) {
-    return !!(value && isObject(value) && isNumber(value.length) &&
-                toString.call(value) == '[object Array]' || false);
+    return varType(value) === 5;
 };
 var addListener = function(el, event, func) {
     if (el.attachEvent) {
@@ -197,7 +242,30 @@ var addListener = function(el, event, func) {
     }
 };
 var isFunction = function(value) {
-    return typeof value === 'function';
+    return typeof value == 'function';
+};
+
+
+var isObject = function(value) {
+    return value !== null && typeof value == "object" && varType(value) > 2;
+};
+
+
+var error = function(e) {
+
+    var stack = e.stack || (new Error).stack;
+
+    if (typeof console != strUndef && console.log) {
+        async(function(){
+            console.log(e);
+            if (stack) {
+                console.log(stack);
+            }
+        });
+    }
+    else {
+        throw e;
+    }
 };
 
 
@@ -401,7 +469,7 @@ return function(){
 
         httpSuccess     = function(r) {
             try {
-                return (!r.status && !isUndefined(location) && location.protocol == "file:")
+                return (!r.status && location && location.protocol == "file:")
                            || (r.status >= 200 && r.status < 300)
                            || r.status === 304 || r.status === 1223; // || r.status === 0;
             } catch(thrownError){}
@@ -456,7 +524,7 @@ return function(){
     var AJAX    = function(opt) {
 
         var self        = this,
-            href        = !isUndefined(window) ? window.location.href : "",
+            href        = window ? window.location.href : "",
             local       = rurl.exec(href.toLowerCase()) || [],
             parts       = rurl.exec(opt.url.toLowerCase());
 
@@ -476,9 +544,7 @@ return function(){
         }
         else if (opt.form) {
             self._form = opt.form;
-            if (opt.method == "POST" && (isUndefined(window) || !window.FormData) &&
-                opt.transport != "iframe") {
-
+            if (opt.method == "POST" && (!window || !window.FormData)) {
                 opt.transport = "iframe";
             }
         }
@@ -596,10 +662,10 @@ return function(){
 
             self._jsonpName = cbName;
 
-            if (!isUndefined(window)) {
+            if (window) {
                 window[cbName] = bind(self.jsonpCallback, self);
             }
-            if (!isUndefined(global)) {
+            if (global) {
                 global[cbName] = bind(self.jsonpCallback, self);
             }
 
@@ -693,10 +759,10 @@ return function(){
             delete self._form;
 
             if (self._jsonpName) {
-                if (!isUndefined(window)) {
+                if (window) {
                     delete window[self._jsonpName];
                 }
-                if (!isUndefined(global)) {
+                if (global) {
                     delete global[self._jsonpName];
                 }
             }
@@ -824,8 +890,22 @@ return function(){
             addListener(xhr.upload, "progress", bind(opt.uploadProgress, opt.callbackScope));
         }
 
-        try {
-            var i;
+        xhr.onreadystatechange = bind(self.onReadyStateChange, self);
+    };
+
+    XHRTransport.prototype = {
+
+        _xhr: null,
+        _deferred: null,
+        _ajax: null,
+
+        setHeaders: function() {
+
+            var self = this,
+                opt = self._opt,
+                xhr = self._xhr,
+                i;
+
             if (opt.xhrFields) {
                 for (i in opt.xhrFields) {
                     xhr[i] = opt.xhrFields[i];
@@ -843,16 +923,8 @@ return function(){
             for (i in opt.headers) {
                 xhr.setRequestHeader(i, opt.headers[i]);
             }
-        } catch(thrownError){}
 
-        xhr.onreadystatechange = bind(self.onReadyStateChange, self);
-    };
-
-    XHRTransport.prototype = {
-
-        _xhr: null,
-        _deferred: null,
-        _ajax: null,
+        },
 
         onReadyStateChange: function() {
 
@@ -872,7 +944,7 @@ return function(){
                 if (httpSuccess(xhr)) {
 
                     self._ajax.processResponse(
-                        isString(xhr.responseText) ? xhr.responseText : undefined,
+                        isString(xhr.responseText) ? xhr.responseText : undf,
                         xhr.getResponseHeader("content-type") || ''
                     );
                 }
@@ -895,6 +967,7 @@ return function(){
 
             try {
                 self._xhr.open(opt.method, opt.url, true, opt.username, opt.password);
+                self.setHeaders();
                 self._xhr.send(opt.data);
             }
             catch (thrownError) {

@@ -13,8 +13,9 @@ var extend      = require("../../metaphorjs/src/func/extend.js"),
     Promise     = require("../../metaphorjs-promise/src/metaphorjs.promise.js"),
     isString    = require("../../metaphorjs/src/func/isString.js"),
     isFunction  = require("../../metaphorjs/src/func/isFunction.js"),
-    isUndefined = require("../../metaphorjs/src/func/isUndefined.js"),
-    isObject    = require("../../metaphorjs/src/func/isObject.js");
+    undf        = require("../../metaphorjs/src/var/undf.js"),
+    isObject    = require("../../metaphorjs/src/func/isObject.js"),
+    error       = require("../../metaphorjs/src/func/error.js");
 
 
 
@@ -216,7 +217,7 @@ module.exports = function(){
 
         httpSuccess     = function(r) {
             try {
-                return (!r.status && !isUndefined(location) && location.protocol == "file:")
+                return (!r.status && location && location.protocol == "file:")
                            || (r.status >= 200 && r.status < 300)
                            || r.status === 304 || r.status === 1223; // || r.status === 0;
             } catch(thrownError){}
@@ -271,7 +272,7 @@ module.exports = function(){
     var AJAX    = function(opt) {
 
         var self        = this,
-            href        = !isUndefined(window) ? window.location.href : "",
+            href        = window ? window.location.href : "",
             local       = rurl.exec(href.toLowerCase()) || [],
             parts       = rurl.exec(opt.url.toLowerCase());
 
@@ -291,9 +292,7 @@ module.exports = function(){
         }
         else if (opt.form) {
             self._form = opt.form;
-            if (opt.method == "POST" && (isUndefined(window) || !window.FormData) &&
-                opt.transport != "iframe") {
-
+            if (opt.method == "POST" && (!window || !window.FormData)) {
                 opt.transport = "iframe";
             }
         }
@@ -411,10 +410,10 @@ module.exports = function(){
 
             self._jsonpName = cbName;
 
-            if (!isUndefined(window)) {
+            if (window) {
                 window[cbName] = bind(self.jsonpCallback, self);
             }
-            if (!isUndefined(global)) {
+            if (global) {
                 global[cbName] = bind(self.jsonpCallback, self);
             }
 
@@ -508,10 +507,10 @@ module.exports = function(){
             delete self._form;
 
             if (self._jsonpName) {
-                if (!isUndefined(window)) {
+                if (window) {
                     delete window[self._jsonpName];
                 }
-                if (!isUndefined(global)) {
+                if (global) {
                     delete global[self._jsonpName];
                 }
             }
@@ -639,8 +638,22 @@ module.exports = function(){
             addListener(xhr.upload, "progress", bind(opt.uploadProgress, opt.callbackScope));
         }
 
-        try {
-            var i;
+        xhr.onreadystatechange = bind(self.onReadyStateChange, self);
+    };
+
+    XHRTransport.prototype = {
+
+        _xhr: null,
+        _deferred: null,
+        _ajax: null,
+
+        setHeaders: function() {
+
+            var self = this,
+                opt = self._opt,
+                xhr = self._xhr,
+                i;
+
             if (opt.xhrFields) {
                 for (i in opt.xhrFields) {
                     xhr[i] = opt.xhrFields[i];
@@ -658,16 +671,8 @@ module.exports = function(){
             for (i in opt.headers) {
                 xhr.setRequestHeader(i, opt.headers[i]);
             }
-        } catch(thrownError){}
 
-        xhr.onreadystatechange = bind(self.onReadyStateChange, self);
-    };
-
-    XHRTransport.prototype = {
-
-        _xhr: null,
-        _deferred: null,
-        _ajax: null,
+        },
 
         onReadyStateChange: function() {
 
@@ -687,7 +692,7 @@ module.exports = function(){
                 if (httpSuccess(xhr)) {
 
                     self._ajax.processResponse(
-                        isString(xhr.responseText) ? xhr.responseText : undefined,
+                        isString(xhr.responseText) ? xhr.responseText : undf,
                         xhr.getResponseHeader("content-type") || ''
                     );
                 }
@@ -710,6 +715,7 @@ module.exports = function(){
 
             try {
                 self._xhr.open(opt.method, opt.url, true, opt.username, opt.password);
+                self.setHeaders();
                 self._xhr.send(opt.data);
             }
             catch (thrownError) {
