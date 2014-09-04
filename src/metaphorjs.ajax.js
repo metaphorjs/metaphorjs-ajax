@@ -15,7 +15,8 @@ var extend      = require("../../metaphorjs/src/func/extend.js"),
     isFunction  = require("../../metaphorjs/src/func/isFunction.js"),
     undf        = require("../../metaphorjs/src/var/undf.js"),
     isObject    = require("../../metaphorjs/src/func/isObject.js"),
-    error       = require("../../metaphorjs/src/func/error.js");
+    error       = require("../../metaphorjs/src/func/error.js"),
+    strUndef    = require("../../metaphorjs/src/var/strUndef.js");
 
 
 
@@ -278,10 +279,12 @@ module.exports = function(){
 
         self._opt       = opt;
 
-        opt.crossDomain = !!(parts &&
-                             (parts[1] !== local[1] || parts[2] !== local[2] ||
-                              (parts[3] || (parts[1] === "http:" ? "80" : "443")) !==
-                              (local[3] || (local[1] === "http:" ? "80" : "443"))));
+        if (opt.crossDomain !== true) {
+            opt.crossDomain = !!(parts &&
+                                 (parts[1] !== local[1] || parts[2] !== local[2] ||
+                                  (parts[3] || (parts[1] === "http:" ? "80" : "443")) !==
+                                  (local[3] || (local[1] === "http:" ? "80" : "443"))));
+        }
 
         var deferred    = new Promise,
             transport;
@@ -410,10 +413,10 @@ module.exports = function(){
 
             self._jsonpName = cbName;
 
-            if (window) {
+            if (typeof window != strUndef) {
                 window[cbName] = bind(self.jsonpCallback, self);
             }
-            if (global) {
+            if (typeof global != strUndef) {
                 global[cbName] = bind(self.jsonpCallback, self);
             }
 
@@ -422,13 +425,23 @@ module.exports = function(){
 
         jsonpCallback: function(data) {
 
-            var self    = this;
+            var self    = this,
+                res;
 
             try {
-                self._deferred.resolve(self.processResponseData(data));
+                res = self.processResponseData(data);
             }
             catch (thrownError) {
-                self._deferred.reject(thrownError);
+                if (self._deferred) {
+                    self._deferred.reject(thrownError);
+                }
+                else {
+                    error(thrownError);
+                }
+            }
+
+            if (self._deferred) {
+                self._deferred.resolve(res);
             }
         },
 
@@ -507,10 +520,10 @@ module.exports = function(){
             delete self._form;
 
             if (self._jsonpName) {
-                if (window) {
+                if (typeof window != strUndef) {
                     delete window[self._jsonpName];
                 }
-                if (global) {
+                if (typeof global != strUndef) {
                     delete global[self._jsonpName];
                 }
             }
