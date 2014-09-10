@@ -1,6 +1,6 @@
 {
     "name": "metaphorjs-ajax",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "description": "",
     "main": "dist/metaphorjs.ajax.npm.js",
     "directories": {

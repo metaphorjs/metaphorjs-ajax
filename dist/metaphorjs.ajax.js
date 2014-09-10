@@ -60,7 +60,7 @@ var varType = function(){
         }
 
         if (num == 1 && isNaN(val)) {
-            num = 8;
+            return 8;
         }
 
         return num;
@@ -70,12 +70,13 @@ var varType = function(){
 
 
 var isPlainObject = function(value) {
-    return varType(value) === 3;
+    // IE < 9 returns [object Object] from toString(htmlElement)
+    return typeof value == "object" && varType(value) === 3 && !value.nodeType;
 };
 
 
 var isBool = function(value) {
-    return varType(value) === 2;
+    return value === true || value === false;
 };
 var isNull = function(value) {
     return value === null;
@@ -90,61 +91,64 @@ var isNull = function(value) {
  * @param {boolean} deep = false
  * @returns {*}
  */
-var extend = function extend() {
+var extend = function(){
+
+    var extend = function extend() {
 
 
-    var override    = false,
-        deep        = false,
-        args        = slice.call(arguments),
-        dst         = args.shift(),
-        src,
-        k,
-        value;
+        var override    = false,
+            deep        = false,
+            args        = slice.call(arguments),
+            dst         = args.shift(),
+            src,
+            k,
+            value;
 
-    if (isBool(args[args.length - 1])) {
-        override    = args.pop();
-    }
-    if (isBool(args[args.length - 1])) {
-        deep        = override;
-        override    = args.pop();
-    }
+        if (isBool(args[args.length - 1])) {
+            override    = args.pop();
+        }
+        if (isBool(args[args.length - 1])) {
+            deep        = override;
+            override    = args.pop();
+        }
 
-    while (args.length) {
-        if (src = args.shift()) {
-            for (k in src) {
+        while (args.length) {
+            if (src = args.shift()) {
+                for (k in src) {
 
-                if (src.hasOwnProperty(k) && (value = src[k]) !== undf) {
+                    if (src.hasOwnProperty(k) && (value = src[k]) !== undf) {
 
-                    if (deep) {
-                        if (dst[k] && isPlainObject(dst[k]) && isPlainObject(value)) {
-                            extend(dst[k], value, override, deep);
-                        }
-                        else {
-                            if (override === true || dst[k] == undf) { // == checks for null and undefined
-                                if (isPlainObject(value)) {
-                                    dst[k] = {};
-                                    extend(dst[k], value, override, true);
-                                }
-                                else {
-                                    dst[k] = value;
+                        if (deep) {
+                            if (dst[k] && isPlainObject(dst[k]) && isPlainObject(value)) {
+                                extend(dst[k], value, override, deep);
+                            }
+                            else {
+                                if (override === true || dst[k] == undf) { // == checks for null and undefined
+                                    if (isPlainObject(value)) {
+                                        dst[k] = {};
+                                        extend(dst[k], value, override, true);
+                                    }
+                                    else {
+                                        dst[k] = value;
+                                    }
                                 }
                             }
                         }
-                    }
-                    else {
-                        if (override === true || dst[k] == undf) {
-                            dst[k] = value;
+                        else {
+                            if (override === true || dst[k] == undf) {
+                                dst[k] = value;
+                            }
                         }
                     }
                 }
             }
         }
-    }
 
-    return dst;
-};
+        return dst;
+    };
 
-
+    return extend;
+}();
 /**
  * @param {Function} fn
  * @param {*} context
@@ -163,7 +167,7 @@ var bind = Function.prototype.bind ?
 
 
 var isString = function(value) {
-    return varType(value) === 0;
+    return typeof value == "string" || varType(value) === 0;
 };
 
 
@@ -405,7 +409,7 @@ var select = function() {
         attrMods    = {
             /* W3C "an E element with a "attr" attribute" */
             '': function (child, attr) {
-                return !!child.getAttribute(attr);
+                return child.getAttribute(attr) !== null;
             },
             /*
              W3C "an E element whose "attr" attribute value is
@@ -838,7 +842,7 @@ var select = function() {
  * @returns {boolean}
  */
 var isArray = function(value) {
-    return varType(value) === 5;
+    return typeof value == "object" && varType(value) === 5;
 };
 var addListener = function(el, event, func) {
     if (el.attachEvent) {
@@ -1562,8 +1566,11 @@ Event.prototype = {
 
 
 var isObject = function(value) {
+    if (value === null || typeof value != "object") {
+        return false;
+    }
     var vt = varType(value);
-    return value !== null && typeof value == "object" && (vt > 2 || vt == -1);
+    return vt > 2 || vt == -1;
 };
 
 
@@ -2266,7 +2273,8 @@ var Promise = function(){
             return Promise.resolve(null);
         }
 
-        var promise = Promise.fcall(functions.shift()),
+        var first   = functions.shift(),
+            promise = isFunction(first) ? Promise.fcall(first) : Promise.resolve(fn),
             fn;
 
         while (fn = functions.shift()) {
@@ -2277,10 +2285,27 @@ var Promise = function(){
                     };
                 }(fn));
             }
-            else {
+            else if (isFunction(fn)) {
                 promise = promise.then(fn);
             }
+            else {
+                promise.resolve(fn);
+            }
         }
+
+        return promise;
+    };
+
+    Promise.counter = function(cnt) {
+
+        var promise     = new Promise;
+
+        promise.countdown = function() {
+            cnt--;
+            if (cnt == 0) {
+                promise.resolve();
+            }
+        };
 
         return promise;
     };
@@ -2289,6 +2314,12 @@ var Promise = function(){
 }();
 
 
+
+
+var isPrimitive = function(value) {
+    var vt = varType(value);
+    return vt < 3 && vt > -1;
+};
 
 
 
@@ -2311,14 +2342,12 @@ var ajax = function(){
 
         rgethead    = /^(?:GET|HEAD)$/i,
 
-        jsonpCb     = 0,
-
         buildParams     = function(data, params, name) {
 
             var i, len;
 
-            if (isString(data) && name) {
-                params.push(encodeURIComponent(name) + "=" + encodeURIComponent(data));
+            if (isPrimitive(data) && name) {
+                params.push(encodeURIComponent(name) + "=" + encodeURIComponent(""+data));
             }
             else if (isArray(data) && name) {
                 for (i = 0, len = data.length; i < len; i++) {
@@ -2356,7 +2385,9 @@ var ajax = function(){
             }
 
             if (opt.data && (!window.FormData || !(opt.data instanceof window.FormData))) {
+
                 opt.data = !isString(opt.data) ? prepareParams(opt.data) : opt.data;
+
                 if (rgethead.test(opt.method)) {
                     url += (rquery.test(url) ? "&" : "?") + opt.data;
                     opt.data = null;
@@ -2680,7 +2711,7 @@ var ajax = function(){
             var self        = this,
                 opt         = self._opt,
                 paramName   = opt.jsonpParam || "callback",
-                cbName      = opt.jsonpCallback || "jsonp_" + (++jsonpCb);
+                cbName      = opt.jsonpCallback || "jsonp_" + nextUid();
 
             opt.url += (rquery.test(opt.url) ? "&" : "?") + paramName + "=" + cbName;
 
@@ -3114,7 +3145,7 @@ var ajax = function(){
 
             var self    = this,
                 frame   = document.createElement("iframe"),
-                id      = "frame-" + (++jsonpCb),
+                id      = "frame-" + nextUid(),
                 form    = self._opt.form;
 
             frame.setAttribute("id", id);

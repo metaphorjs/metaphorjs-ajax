@@ -15,8 +15,10 @@ var extend      = require("../../metaphorjs/src/func/extend.js"),
     isFunction  = require("../../metaphorjs/src/func/isFunction.js"),
     undf        = require("../../metaphorjs/src/var/undf.js"),
     isObject    = require("../../metaphorjs/src/func/isObject.js"),
+    isPrimitive = require("../../metaphorjs/src/func/isPrimitive.js"),
     error       = require("../../metaphorjs/src/func/error.js"),
-    strUndef    = require("../../metaphorjs/src/var/strUndef.js");
+    strUndef    = require("../../metaphorjs/src/var/strUndef.js"),
+    nextUid     = require("../../metaphorjs/src/func/nextUid.js");
 
 
 
@@ -38,14 +40,12 @@ module.exports = function(){
 
         rgethead    = /^(?:GET|HEAD)$/i,
 
-        jsonpCb     = 0,
-
         buildParams     = function(data, params, name) {
 
             var i, len;
 
-            if (isString(data) && name) {
-                params.push(encodeURIComponent(name) + "=" + encodeURIComponent(data));
+            if (isPrimitive(data) && name) {
+                params.push(encodeURIComponent(name) + "=" + encodeURIComponent(""+data));
             }
             else if (isArray(data) && name) {
                 for (i = 0, len = data.length; i < len; i++) {
@@ -83,7 +83,9 @@ module.exports = function(){
             }
 
             if (opt.data && (!window.FormData || !(opt.data instanceof window.FormData))) {
+
                 opt.data = !isString(opt.data) ? prepareParams(opt.data) : opt.data;
+
                 if (rgethead.test(opt.method)) {
                     url += (rquery.test(url) ? "&" : "?") + opt.data;
                     opt.data = null;
@@ -407,7 +409,7 @@ module.exports = function(){
             var self        = this,
                 opt         = self._opt,
                 paramName   = opt.jsonpParam || "callback",
-                cbName      = opt.jsonpCallback || "jsonp_" + (++jsonpCb);
+                cbName      = opt.jsonpCallback || "jsonp_" + nextUid();
 
             opt.url += (rquery.test(opt.url) ? "&" : "?") + paramName + "=" + cbName;
 
@@ -841,7 +843,7 @@ module.exports = function(){
 
             var self    = this,
                 frame   = document.createElement("iframe"),
-                id      = "frame-" + (++jsonpCb),
+                id      = "frame-" + nextUid(),
                 form    = self._opt.form;
 
             frame.setAttribute("id", id);
