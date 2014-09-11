@@ -316,6 +316,22 @@ var nextUid = function(){
 
 
 
+var attr = function(el, name, value) {
+    if (!el || !el.getAttribute) {
+        return null;
+    }
+    if (value === undf) {
+        return el.getAttribute(name);
+    }
+    else if (value === null) {
+        return el.removeAttribute(name);
+    }
+    else {
+        return el.setAttribute(name, value);
+    }
+};
+
+
 
 
 /*
@@ -465,9 +481,9 @@ module.exports = function(){
 
             if (!isObject(data) && !isFunction(data) && name) {
                 input   = document.createElement("input");
-                input.setAttribute("type", "hidden");
-                input.setAttribute("name", name);
-                input.setAttribute("value", data);
+                attr(input, "type", "hidden");
+                attr(input, "name", name);
+                attr(input, "value", data);
                 form.appendChild(input);
             }
             else if (isArray(data) && name) {
@@ -493,12 +509,12 @@ module.exports = function(){
 
                 oField = form.elements[nItem];
 
-                if (!oField.hasAttribute("name")) {
+                if (attr(oField, "name") === null) {
                     continue;
                 }
 
                 sFieldType = oField.nodeName.toUpperCase() === "INPUT" ?
-                             oField.getAttribute("type").toUpperCase() : "TEXT";
+                             attr(oField, "type").toUpperCase() : "TEXT";
 
                 if (sFieldType === "FILE") {
                     for (nFile = 0;
@@ -690,7 +706,7 @@ module.exports = function(){
                 form    = document.createElement("form");
 
             form.style.display = "none";
-            form.setAttribute("method", self._opt.method);
+            attr(form, "method", self._opt.method);
 
             data2form(self._opt.data, form, null);
 
@@ -843,7 +859,7 @@ module.exports = function(){
 
         if (!opt.url) {
             if (opt.form) {
-                opt.url = opt.form.getAttribute("action");
+                opt.url = attr(opt.form, "action");
             }
             if (!opt.url) {
                 throw "Must provide url";
@@ -855,7 +871,7 @@ module.exports = function(){
 
         if (!opt.method) {
             if (opt.form) {
-                opt.method = opt.form.getAttribute("method").toUpperCase() || "GET";
+                opt.method = attr(opt.form, "method").toUpperCase() || "GET";
             }
             else {
                 opt.method = "GET";
@@ -1071,9 +1087,9 @@ module.exports = function(){
             var self    = this,
                 script  = document.createElement("script");
 
-            script.setAttribute("async", "async");
-            script.setAttribute("charset", "utf-8");
-            script.setAttribute("src", self._opt.url);
+            attr(script, "async", "async");
+            attr(script, "charset", "utf-8");
+            attr(script, "src", self._opt.url);
 
             addListener(script, "load", bind(self.onLoad, self));
             addListener(script, "error", bind(self.onError, self));
@@ -1142,13 +1158,13 @@ module.exports = function(){
                 id      = "frame-" + nextUid(),
                 form    = self._opt.form;
 
-            frame.setAttribute("id", id);
-            frame.setAttribute("name", id);
+            attr(frame, "id", id);
+            attr(frame, "name", id);
             frame.style.display = "none";
             document.body.appendChild(frame);
 
-            form.setAttribute("action", self._opt.url);
-            form.setAttribute("target", id);
+            attr(form, "action", self._opt.url);
+            attr(form, "target", id);
 
             addListener(frame, "load", bind(self.onLoad, self));
             addListener(frame, "error", bind(self.onError, self));
