@@ -160,7 +160,8 @@ var bind = Function.prototype.bind ?
 
 
 var isString = function(value) {
-    return typeof value == "string" || varType(value) === 0;
+    return typeof value == "string" || value === ""+value;
+    //return typeof value == "string" || varType(value) === 0;
 };
 
 
@@ -182,11 +183,12 @@ var trim = function() {
  * @param {Function} fn
  * @param {Object} context
  * @param {[]} args
+ * @param {number} timeout
  */
-var async = function(fn, context, args) {
+var async = function(fn, context, args, timeout) {
     setTimeout(function(){
         fn.apply(context, args || []);
-    }, 0);
+    }, timeout || 0);
 };
 
 var emptyFn = function(){};
@@ -312,21 +314,11 @@ var nextUid = function(){
     };
 }();
 
-
-
-var attr = function(el, name, value) {
-    if (!el || !el.getAttribute) {
-        return null;
-    }
-    if (value === undf) {
-        return el.getAttribute(name);
-    }
-    else if (value === null) {
-        return el.removeAttribute(name);
-    }
-    else {
-        return el.setAttribute(name, value);
-    }
+var getAttr = function(el, name) {
+    return el.getAttribute(name);
+};
+var setAttr = function(el, name, value) {
+    return el.setAttribute(name, value);
 };
 
 
@@ -479,9 +471,9 @@ return function(){
 
             if (!isObject(data) && !isFunction(data) && name) {
                 input   = document.createElement("input");
-                attr(input, "type", "hidden");
-                attr(input, "name", name);
-                attr(input, "value", data);
+                setAttr(input, "type", "hidden");
+                setAttr(input, "name", name);
+                setAttr(input, "value", data);
                 form.appendChild(input);
             }
             else if (isArray(data) && name) {
@@ -507,12 +499,12 @@ return function(){
 
                 oField = form.elements[nItem];
 
-                if (attr(oField, "name") === null) {
+                if (getAttr(oField, "name") === null) {
                     continue;
                 }
 
                 sFieldType = oField.nodeName.toUpperCase() === "INPUT" ?
-                             attr(oField, "type").toUpperCase() : "TEXT";
+                             getAttr(oField, "type").toUpperCase() : "TEXT";
 
                 if (sFieldType === "FILE") {
                     for (nFile = 0;
@@ -704,7 +696,7 @@ return function(){
                 form    = document.createElement("form");
 
             form.style.display = "none";
-            attr(form, "method", self._opt.method);
+            setAttr(form, "method", self._opt.method);
 
             data2form(self._opt.data, form, null);
 
@@ -857,7 +849,7 @@ return function(){
 
         if (!opt.url) {
             if (opt.form) {
-                opt.url = attr(opt.form, "action");
+                opt.url = getAttr(opt.form, "action");
             }
             if (!opt.url) {
                 throw "Must provide url";
@@ -869,7 +861,7 @@ return function(){
 
         if (!opt.method) {
             if (opt.form) {
-                opt.method = attr(opt.form, "method").toUpperCase() || "GET";
+                opt.method = getAttr(opt.form, "method").toUpperCase() || "GET";
             }
             else {
                 opt.method = "GET";
@@ -1085,9 +1077,9 @@ return function(){
             var self    = this,
                 script  = document.createElement("script");
 
-            attr(script, "async", "async");
-            attr(script, "charset", "utf-8");
-            attr(script, "src", self._opt.url);
+            setAttr(script, "async", "async");
+            setAttr(script, "charset", "utf-8");
+            setAttr(script, "src", self._opt.url);
 
             addListener(script, "load", bind(self.onLoad, self));
             addListener(script, "error", bind(self.onError, self));
@@ -1156,13 +1148,13 @@ return function(){
                 id      = "frame-" + nextUid(),
                 form    = self._opt.form;
 
-            attr(frame, "id", id);
-            attr(frame, "name", id);
+            setAttr(frame, "id", id);
+            setAttr(frame, "name", id);
             frame.style.display = "none";
             document.body.appendChild(frame);
 
-            attr(form, "action", self._opt.url);
-            attr(form, "target", id);
+            setAttr(form, "action", self._opt.url);
+            setAttr(form, "target", id);
 
             addListener(frame, "load", bind(self.onLoad, self));
             addListener(frame, "error", bind(self.onError, self));

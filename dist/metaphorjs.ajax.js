@@ -167,7 +167,8 @@ var bind = Function.prototype.bind ?
 
 
 var isString = function(value) {
-    return typeof value == "string" || varType(value) === 0;
+    return typeof value == "string" || value === ""+value;
+    //return typeof value == "string" || varType(value) === 0;
 };
 
 
@@ -189,11 +190,12 @@ var trim = function() {
  * @param {Function} fn
  * @param {Object} context
  * @param {[]} args
+ * @param {number} timeout
  */
-var async = function(fn, context, args) {
+var async = function(fn, context, args, timeout) {
     setTimeout(function(){
         fn.apply(context, args || []);
-    }, 0);
+    }, timeout || 0);
 };
 
 var emptyFn = function(){};
@@ -243,7 +245,7 @@ var parseXML = function(data, type) {
  * @returns {[]}
  */
 var toArray = function(list) {
-    if (list && !list.length != undf && !isString(list)) {
+    if (list && !list.length != undf && list !== ""+list) {
         for(var a = [], i =- 1, l = list.length>>>0; ++i !== l; a[i] = list[i]){}
         return a;
     }
@@ -254,21 +256,8 @@ var toArray = function(list) {
         return [];
     }
 };
-
-
-var attr = function(el, name, value) {
-    if (!el || !el.getAttribute) {
-        return null;
-    }
-    if (value === undf) {
-        return el.getAttribute(name);
-    }
-    else if (value === null) {
-        return el.removeAttribute(name);
-    }
-    else {
-        return el.setAttribute(name, value);
-    }
+var getAttr = function(el, name) {
+    return el.getAttribute(name);
 };
 
 
@@ -425,7 +414,7 @@ var select = function() {
         attrMods    = {
             /* W3C "an E element with a "attr" attribute" */
             '': function (child, name) {
-                return attr(child, name) !== null;
+                return getAttr(child, name) !== null;
             },
             /*
              W3C "an E element whose "attr" attribute value is
@@ -433,7 +422,7 @@ var select = function() {
              */
             '=': function (child, name, value) {
                 var attrValue;
-                return (attrValue = attr(child, name)) && attrValue === value;
+                return (attrValue = getAttr(child, name)) && attrValue === value;
             },
             /*
              from w3.prg "an E element whose "attr" attribute value is
@@ -442,7 +431,7 @@ var select = function() {
              */
             '&=': function (child, name, value) {
                 var attrValue;
-                return (attrValue = attr(child, name)) && getAttrReg(value).test(attrValue);
+                return (attrValue = getAttr(child, name)) && getAttrReg(value).test(attrValue);
             },
             /*
              from w3.prg "an E element whose "attr" attribute value
@@ -450,7 +439,7 @@ var select = function() {
              */
             '^=': function (child, name, value) {
                 var attrValue;
-                return (attrValue = attr(child, name) + '') && !attrValue.indexOf(value);
+                return (attrValue = getAttr(child, name) + '') && !attrValue.indexOf(value);
             },
             /*
              W3C "an E element whose "attr" attribute value
@@ -458,7 +447,7 @@ var select = function() {
              */
             '$=': function (child, name, value) {
                 var attrValue;
-                return (attrValue = attr(child, name) + '') &&
+                return (attrValue = getAttr(child, name) + '') &&
                        attrValue.indexOf(value) == attrValue.length - value.length;
             },
             /*
@@ -467,7 +456,7 @@ var select = function() {
              */
             '*=': function (child, name, value) {
                 var attrValue;
-                return (attrValue = attr(child, name) + '') && attrValue.indexOf(value) != -1;
+                return (attrValue = getAttr(child, name) + '') && attrValue.indexOf(value) != -1;
             },
             /*
              W3C "an E element whose "attr" attribute has
@@ -476,13 +465,13 @@ var select = function() {
              */
             '|=': function (child, name, value) {
                 var attrValue;
-                return (attrValue = attr(child, name) + '') &&
+                return (attrValue = getAttr(child, name) + '') &&
                        (attrValue === value || !!attrValue.indexOf(value + '-'));
             },
             /* attr doesn't contain given value */
             '!=': function (child, name, value) {
                 var attrValue;
-                return !(attrValue = attr(child, name)) || !getAttrReg(value).test(attrValue);
+                return !(attrValue = getAttr(child, name)) || !getAttrReg(value).test(attrValue);
             }
         };
 
@@ -1590,23 +1579,18 @@ Event.prototype = {
 
 
 
-var isObject = function(value) {
-    if (value === null || typeof value != "object") {
-        return false;
-    }
-    var vt = varType(value);
-    return vt > 2 || vt == -1;
-};
-
-
 /**
  * Returns 'then' function or false
  * @param {*} any
  * @returns {Function|boolean}
  */
 var isThenable = function(any) {
-    var then;
-    if (!any || (!isObject(any) && !isFunction(any))) {
+    if (!any || !any.then) {
+        return false;
+    }
+    var then, t;
+    //if (!any || (!isObject(any) && !isFunction(any))) {
+    if (((t = typeof any) != "object" && t != "function")) {
         return false;
     }
     return isFunction((then = any.then)) ?
@@ -2021,7 +2005,12 @@ var Promise = function(){
                 state   = self._state;
 
             if (state == FULFILLED && self._wait == 0) {
-                fn.call(fnScope || null, self._value);
+                try {
+                    fn.call(fnScope || null, self._value);
+                }
+                catch (thrown) {
+                    error(thrown);
+                }
             }
             else if (state == PENDING) {
                 self._dones.push([fn, fnScope]);
@@ -2057,7 +2046,12 @@ var Promise = function(){
                 state   = self._state;
 
             if (state == REJECTED && self._wait == 0) {
-                fn.call(fnScope || null, self._reason);
+                try {
+                    fn.call(fnScope || null, self._reason);
+                }
+                catch (thrown) {
+                    error(thrown);
+                }
             }
             else if (state == PENDING) {
                 self._fails.push([fn, fnScope]);
@@ -2341,9 +2335,21 @@ var Promise = function(){
 
 
 
+var isObject = function(value) {
+    if (value === null || typeof value != "object") {
+        return false;
+    }
+    var vt = varType(value);
+    return vt > 2 || vt == -1;
+};
+
+
 var isPrimitive = function(value) {
     var vt = varType(value);
     return vt < 3 && vt > -1;
+};
+var setAttr = function(el, name, value) {
+    return el.setAttribute(name, value);
 };
 
 
@@ -2496,9 +2502,9 @@ var ajax = function(){
 
             if (!isObject(data) && !isFunction(data) && name) {
                 input   = document.createElement("input");
-                attr(input, "type", "hidden");
-                attr(input, "name", name);
-                attr(input, "value", data);
+                setAttr(input, "type", "hidden");
+                setAttr(input, "name", name);
+                setAttr(input, "value", data);
                 form.appendChild(input);
             }
             else if (isArray(data) && name) {
@@ -2524,12 +2530,12 @@ var ajax = function(){
 
                 oField = form.elements[nItem];
 
-                if (attr(oField, "name") === null) {
+                if (getAttr(oField, "name") === null) {
                     continue;
                 }
 
                 sFieldType = oField.nodeName.toUpperCase() === "INPUT" ?
-                             attr(oField, "type").toUpperCase() : "TEXT";
+                             getAttr(oField, "type").toUpperCase() : "TEXT";
 
                 if (sFieldType === "FILE") {
                     for (nFile = 0;
@@ -2721,7 +2727,7 @@ var ajax = function(){
                 form    = document.createElement("form");
 
             form.style.display = "none";
-            attr(form, "method", self._opt.method);
+            setAttr(form, "method", self._opt.method);
 
             data2form(self._opt.data, form, null);
 
@@ -2874,7 +2880,7 @@ var ajax = function(){
 
         if (!opt.url) {
             if (opt.form) {
-                opt.url = attr(opt.form, "action");
+                opt.url = getAttr(opt.form, "action");
             }
             if (!opt.url) {
                 throw "Must provide url";
@@ -2886,7 +2892,7 @@ var ajax = function(){
 
         if (!opt.method) {
             if (opt.form) {
-                opt.method = attr(opt.form, "method").toUpperCase() || "GET";
+                opt.method = getAttr(opt.form, "method").toUpperCase() || "GET";
             }
             else {
                 opt.method = "GET";
@@ -3102,9 +3108,9 @@ var ajax = function(){
             var self    = this,
                 script  = document.createElement("script");
 
-            attr(script, "async", "async");
-            attr(script, "charset", "utf-8");
-            attr(script, "src", self._opt.url);
+            setAttr(script, "async", "async");
+            setAttr(script, "charset", "utf-8");
+            setAttr(script, "src", self._opt.url);
 
             addListener(script, "load", bind(self.onLoad, self));
             addListener(script, "error", bind(self.onError, self));
@@ -3173,13 +3179,13 @@ var ajax = function(){
                 id      = "frame-" + nextUid(),
                 form    = self._opt.form;
 
-            attr(frame, "id", id);
-            attr(frame, "name", id);
+            setAttr(frame, "id", id);
+            setAttr(frame, "name", id);
             frame.style.display = "none";
             document.body.appendChild(frame);
 
-            attr(form, "action", self._opt.url);
-            attr(form, "target", id);
+            setAttr(form, "action", self._opt.url);
+            setAttr(form, "target", id);
 
             addListener(frame, "load", bind(self.onLoad, self));
             addListener(frame, "error", bind(self.onError, self));
