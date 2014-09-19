@@ -35,7 +35,7 @@ var varType = function(){
         'date': 10
     */
 
-    return function(val) {
+    return function varType(val) {
 
         if (!val) {
             if (val === null) {
@@ -62,16 +62,20 @@ var varType = function(){
 }();
 
 
-var isPlainObject = function(value) {
+function isPlainObject(value) {
     // IE < 9 returns [object Object] from toString(htmlElement)
-    return typeof value == "object" && varType(value) === 3 && !value.nodeType;
+    return typeof value == "object" &&
+           varType(value) === 3 &&
+            !value.nodeType &&
+            value.constructor === Object;
+
 };
 
 
-var isBool = function(value) {
+function isBool(value) {
     return value === true || value === false;
 };
-var isNull = function(value) {
+function isNull(value) {
     return value === null;
 };
 
@@ -159,7 +163,7 @@ var bind = Function.prototype.bind ?
 
 
 
-var isString = function(value) {
+function isString(value) {
     return typeof value == "string" || value === ""+value;
     //return typeof value == "string" || varType(value) === 0;
 };
@@ -185,13 +189,13 @@ var trim = function() {
  * @param {[]} args
  * @param {number} timeout
  */
-var async = function(fn, context, args, timeout) {
+function async(fn, context, args, timeout) {
     setTimeout(function(){
         fn.apply(context, args || []);
     }, timeout || 0);
 };
 
-var emptyFn = function(){};
+function emptyFn(){};
 var strUndef = "undefined";
 
 
@@ -209,7 +213,7 @@ var parseJSON = function() {
 
 
 
-var parseXML = function(data, type) {
+function parseXML(data, type) {
 
     var xml, tmp;
 
@@ -237,22 +241,22 @@ var parseXML = function(data, type) {
  * @param {*} value
  * @returns {boolean}
  */
-var isArray = function(value) {
+function isArray(value) {
     return typeof value == "object" && varType(value) === 5;
 };
-var addListener = function(el, event, func) {
+function addListener(el, event, func) {
     if (el.attachEvent) {
         el.attachEvent('on' + event, func);
     } else {
         el.addEventListener(event, func, false);
     }
 };
-var isFunction = function(value) {
+function isFunction(value) {
     return typeof value == 'function';
 };
 
 
-var isObject = function(value) {
+function isObject(value) {
     if (value === null || typeof value != "object") {
         return false;
     }
@@ -261,13 +265,13 @@ var isObject = function(value) {
 };
 
 
-var isPrimitive = function(value) {
+function isPrimitive(value) {
     var vt = varType(value);
     return vt < 3 && vt > -1;
 };
 
 
-var error = function(e) {
+function error(e) {
 
     var stack = e.stack || (new Error).stack;
 
@@ -291,7 +295,7 @@ var nextUid = function(){
     var uid = ['0', '0', '0'];
 
     // from AngularJs
-    return function() {
+    return function nextUid() {
         var index = uid.length;
         var digit;
 
@@ -314,10 +318,10 @@ var nextUid = function(){
     };
 }();
 
-var getAttr = function(el, name) {
+function getAttr(el, name) {
     return el.getAttribute(name);
 };
-var setAttr = function(el, name, value) {
+function setAttr(el, name, value) {
     return el.setAttribute(name, value);
 };
 
@@ -666,7 +670,7 @@ return function(){
         }
     };
 
-    AJAX.prototype = {
+    extend(AJAX.prototype, {
 
         _jsonpName: null,
         _transport: null,
@@ -816,12 +820,12 @@ return function(){
 
             self._transport.destroy();
 
-            delete self._transport;
-            delete self._opt;
-            delete self._deferred;
-            delete self._promise;
-            delete self._timeout;
-            delete self._form;
+            self._transport = null;
+            self._opt = null;
+            self._deferred = null;
+            self._promise = null;
+            self._timeout = null;
+            self._form = null;
 
             if (self._jsonpName) {
                 if (typeof window != strUndef) {
@@ -832,7 +836,7 @@ return function(){
                 }
             }
         }
-    };
+    }, true, false);
 
 
 
@@ -958,7 +962,7 @@ return function(){
         xhr.onreadystatechange = bind(self.onReadyStateChange, self);
     };
 
-    XHRTransport.prototype = {
+    extend(XHRTransport.prototype, {
 
         _xhr: null,
         _deferred: null,
@@ -1043,14 +1047,14 @@ return function(){
         destroy: function() {
             var self    = this;
 
-            delete self._xhr;
-            delete self._deferred;
-            delete self._opt;
-            delete self._ajax;
+            self._xhr = null;
+            self._deferred = null;
+            self._opt = null;
+            self._ajax = null;
 
         }
 
-    };
+    }, true, false);
 
 
 
@@ -1065,7 +1069,7 @@ return function(){
 
     };
 
-    ScriptTransport.prototype = {
+    extend(ScriptTransport.prototype, {
 
         _opt: null,
         _deferred: null,
@@ -1115,14 +1119,14 @@ return function(){
                 self._el.parentNode.removeChild(self._el);
             }
 
-            delete self._el;
-            delete self._opt;
-            delete self._ajax;
-            delete self._deferred;
+            self._el = null;
+            self._opt = null;
+            self._ajax = null;
+            self._deferred = null;
 
         }
 
-    };
+    }, true, false);
 
 
 
@@ -1134,7 +1138,7 @@ return function(){
         self._deferred  = deferred;
     };
 
-    IframeTransport.prototype = {
+    extend(IframeTransport.prototype, {
 
         _opt: null,
         _deferred: null,
@@ -1202,14 +1206,14 @@ return function(){
                 self._el.parentNode.removeChild(self._el);
             }
 
-            delete self._el;
-            delete self._opt;
-            delete self._ajax;
-            delete self._deferred;
+            self._el = null;
+            self._opt = null;
+            self._ajax = null;
+            self._deferred = null;
 
         }
 
-    };
+    }, true, false);
 
     return ajax;
 }();

@@ -366,7 +366,7 @@ module.exports = function(){
         }
     };
 
-    AJAX.prototype = {
+    extend(AJAX.prototype, {
 
         _jsonpName: null,
         _transport: null,
@@ -516,12 +516,12 @@ module.exports = function(){
 
             self._transport.destroy();
 
-            delete self._transport;
-            delete self._opt;
-            delete self._deferred;
-            delete self._promise;
-            delete self._timeout;
-            delete self._form;
+            self._transport = null;
+            self._opt = null;
+            self._deferred = null;
+            self._promise = null;
+            self._timeout = null;
+            self._form = null;
 
             if (self._jsonpName) {
                 if (typeof window != strUndef) {
@@ -532,7 +532,7 @@ module.exports = function(){
                 }
             }
         }
-    };
+    }, true, false);
 
 
 
@@ -658,7 +658,7 @@ module.exports = function(){
         xhr.onreadystatechange = bind(self.onReadyStateChange, self);
     };
 
-    XHRTransport.prototype = {
+    extend(XHRTransport.prototype, {
 
         _xhr: null,
         _deferred: null,
@@ -743,14 +743,14 @@ module.exports = function(){
         destroy: function() {
             var self    = this;
 
-            delete self._xhr;
-            delete self._deferred;
-            delete self._opt;
-            delete self._ajax;
+            self._xhr = null;
+            self._deferred = null;
+            self._opt = null;
+            self._ajax = null;
 
         }
 
-    };
+    }, true, false);
 
 
 
@@ -765,7 +765,7 @@ module.exports = function(){
 
     };
 
-    ScriptTransport.prototype = {
+    extend(ScriptTransport.prototype, {
 
         _opt: null,
         _deferred: null,
@@ -815,14 +815,14 @@ module.exports = function(){
                 self._el.parentNode.removeChild(self._el);
             }
 
-            delete self._el;
-            delete self._opt;
-            delete self._ajax;
-            delete self._deferred;
+            self._el = null;
+            self._opt = null;
+            self._ajax = null;
+            self._deferred = null;
 
         }
 
-    };
+    }, true, false);
 
 
 
@@ -834,7 +834,7 @@ module.exports = function(){
         self._deferred  = deferred;
     };
 
-    IframeTransport.prototype = {
+    extend(IframeTransport.prototype, {
 
         _opt: null,
         _deferred: null,
@@ -902,14 +902,14 @@ module.exports = function(){
                 self._el.parentNode.removeChild(self._el);
             }
 
-            delete self._el;
-            delete self._opt;
-            delete self._ajax;
-            delete self._deferred;
+            self._el = null;
+            self._opt = null;
+            self._ajax = null;
+            self._deferred = null;
 
         }
 
-    };
+    }, true, false);
 
     return ajax;
 }();
