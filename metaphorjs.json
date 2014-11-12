@@ -24,16 +24,24 @@
         "npm": {
             "target": "dist/metaphorjs.ajax.npm.js",
             "compile": false,
+            "wrap": {
+                "exported": true,
+                "deferred": true,
+                "args": ["window"]
+            },
             "files": [
                 [
                     "src/metaphorjs.ajax.js",
                     {
-                        "keepExports": true
+                        "as": "ajax"
                     }
                 ]
             ],
             "require": {
-                "metaphorjs-select": "select",
+                "metaphorjs-select": {
+                    "as": "select",
+                    "args": ["window"]
+                },
                 "metaphorjs-observable": "Observable",
                 "metaphorjs-promise": "Promise"
             },
@@ -41,7 +49,8 @@
                 "../metaphorjs-observable/src/metaphorjs.observable.js",
                 "../metaphorjs-promise/src/metaphorjs.promise.js",
                 "../metaphorjs-select/src/metaphorjs.select.js"
-            ]
+            ],
+            "returns": "ajax"
         },
         "amd": {
             "target": "dist/metaphorjs.ajax.amd.js",

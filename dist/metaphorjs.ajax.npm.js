@@ -1,11 +1,16 @@
-var select = require('metaphorjs-select');
+module.exports = function (window) {
+"use strict";
+var select = require('metaphorjs-select')(window);
 var Observable = require('metaphorjs-observable');
 var Promise = require('metaphorjs-promise');
 
 
 var slice = Array.prototype.slice;
+
 var toString = Object.prototype.toString;
+
 var undf = undefined;
+
 
 
 
@@ -24,19 +29,21 @@ var varType = function(){
 
 
     /**
-        'string': 0,
-        'number': 1,
-        'boolean': 2,
-        'object': 3,
-        'function': 4,
-        'array': 5,
-        'null': 6,
-        'undefined': 7,
-        'NaN': 8,
-        'regexp': 9,
-        'date': 10
-    */
-
+     * 'string': 0,
+     * 'number': 1,
+     * 'boolean': 2,
+     * 'object': 3,
+     * 'function': 4,
+     * 'array': 5,
+     * 'null': 6,
+     * 'undefined': 7,
+     * 'NaN': 8,
+     * 'regexp': 9,
+     * 'date': 10,
+     * unknown: -1
+     * @param {*} value
+     * @returns {number}
+     */
     return function varType(val) {
 
         if (!val) {
@@ -64,6 +71,7 @@ var varType = function(){
 }();
 
 
+
 function isPlainObject(value) {
     // IE < 9 returns [object Object] from toString(htmlElement)
     return typeof value == "object" &&
@@ -73,25 +81,23 @@ function isPlainObject(value) {
 
 };
 
-
 function isBool(value) {
     return value === true || value === false;
 };
-function isNull(value) {
-    return value === null;
-};
 
 
-/**
- * @param {Object} dst
- * @param {Object} src
- * @param {Object} src2 ... srcN
- * @param {boolean} override = false
- * @param {boolean} deep = false
- * @returns {*}
- */
+
+
 var extend = function(){
 
+    /**
+     * @param {Object} dst
+     * @param {Object} src
+     * @param {Object} src2 ... srcN
+     * @param {boolean} override = false
+     * @param {boolean} deep = false
+     * @returns {object}
+     */
     var extend = function extend() {
 
 
@@ -148,6 +154,7 @@ var extend = function(){
 
     return extend;
 }();
+
 /**
  * @param {Function} fn
  * @param {*} context
@@ -165,14 +172,18 @@ var bind = Function.prototype.bind ?
 
 
 
+
 function isString(value) {
     return typeof value == "string" || value === ""+value;
     //return typeof value == "string" || varType(value) === 0;
 };
 
 
+
 /**
+ * @function trim
  * @param {String} value
+ * @returns {string}
  */
 var trim = function() {
     // native trim is way faster: http://jsperf.com/angular-trim-test
@@ -185,7 +196,8 @@ var trim = function() {
     return function(value) {
         return isString(value) ? value.trim() : value;
     };
-}();/**
+}();
+/**
  * @param {Function} fn
  * @param {Object} context
  * @param {[]} args
@@ -197,8 +209,11 @@ function async(fn, context, args, timeout) {
     }, timeout || 0);
 };
 
+
 function emptyFn(){};
+
 var strUndef = "undefined";
+
 
 
 var parseJSON = function() {
@@ -211,6 +226,7 @@ var parseJSON = function() {
                return (new Function("return " + data))();
            };
 }();
+
 
 
 
@@ -239,6 +255,7 @@ function parseXML(data, type) {
 };
 
 
+
 /**
  * @param {*} value
  * @returns {boolean}
@@ -246,6 +263,7 @@ function parseXML(data, type) {
 function isArray(value) {
     return typeof value == "object" && varType(value) === 5;
 };
+
 function addListener(el, event, func) {
     if (el.attachEvent) {
         el.attachEvent('on' + event, func);
@@ -253,9 +271,11 @@ function addListener(el, event, func) {
         el.addEventListener(event, func, false);
     }
 };
+
 function isFunction(value) {
     return typeof value == 'function';
 };
+
 
 
 function isObject(value) {
@@ -267,10 +287,12 @@ function isObject(value) {
 };
 
 
+
 function isPrimitive(value) {
     var vt = varType(value);
     return vt < 3 && vt > -1;
 };
+
 
 
 function error(e) {
@@ -290,13 +312,14 @@ function error(e) {
     }
 };
 
-/**
- * @returns {String}
- */
+
 var nextUid = function(){
     var uid = ['0', '0', '0'];
 
     // from AngularJs
+    /**
+     * @returns {String}
+     */
     return function nextUid() {
         var index = uid.length;
         var digit;
@@ -320,12 +343,15 @@ var nextUid = function(){
     };
 }();
 
+
 function getAttr(el, name) {
-    return el.getAttribute(name);
+    return el.getAttribute ? el.getAttribute(name) : null;
 };
+
 function setAttr(el, name, value) {
     return el.setAttribute(name, value);
 };
+
 
 
 
@@ -334,9 +360,9 @@ function setAttr(el, name, value) {
 * Contents of this file are partially taken from jQuery
 */
 
-module.exports = function(){
+var ajax = function(){
 
-    "use strict";
+    
 
     var rhash       = /#.*$/,
 
@@ -1221,3 +1247,7 @@ module.exports = function(){
 }();
 
 
+
+return ajax;
+
+};
