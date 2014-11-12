@@ -13,7 +13,7 @@
         "ajax"
     ],
     "license": "MIT",
-    "homepage": "https://github.com/kuindji/metaphorjs-ajax",
+    "homepage": "https://github.com/metaphorjs/metaphorjs-ajax",
     "ignore": [
         "node_modules",
         "bower_components",

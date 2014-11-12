@@ -1,5 +1,7 @@
 {
     "version": "0.1.7",
+    "description": "MetaphorJs ajax implementation",
+
     "push": [
         "github"
     ],

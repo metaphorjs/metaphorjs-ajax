@@ -1,7 +1,7 @@
 {
     "name": "metaphorjs-ajax",
     "version": "0.1.7",
-    "description": "",
+    "description": "MetaphorJs ajax implementation",
     "main": "dist/metaphorjs.ajax.npm.js",
     "directories": {
         "test": "test"
@@ -11,14 +11,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/kuindji/metaphorjs-ajax.git"
+        "url": "https://github.com/metaphorjs/metaphorjs-ajax.git"
     },
     "author": "kuindji",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/kuindji/metaphorjs-ajax/issues"
+        "url": "https://github.com/metaphorjs/metaphorjs-ajax/issues"
     },
-    "homepage": "https://github.com/kuindji/metaphorjs-ajax",
+    "homepage": "https://github.com/metaphorjs/metaphorjs-ajax",
     "dependencies": {
         "metaphorjs-select": "*",
         "metaphorjs-observable": "*",
