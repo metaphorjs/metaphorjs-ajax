@@ -702,7 +702,7 @@ return function(){
 
                 var stamp   = (new Date).getTime();
 
-                return rts.test(url) ?
+                url = rts.test(url) ?
                     // If there is already a '_' parameter, set its value
                        url.replace(rts, "$1_=" + stamp) :
                     // Otherwise add one to the end
