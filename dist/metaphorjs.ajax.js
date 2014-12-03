@@ -2,10 +2,7 @@
 "use strict";
 
 
-var MetaphorJs = {
 
-
-};
 
 
 
@@ -1388,6 +1385,12 @@ extend(Observable.prototype, {
     },
 
     /**
+     * @method hasListener
+     * @access public
+     * @return bool
+     */
+
+    /**
     * @method hasListener
     * @access public
     * @param {string} name Event name { @required }
@@ -1403,12 +1406,23 @@ extend(Observable.prototype, {
     * @return bool
     */
     hasListener: function(name, fn, context) {
-        name = name.toLowerCase();
-        var events  = this.events;
-        if (!events[name]) {
+        var events = this.events;
+
+        if (name) {
+            name = name.toLowerCase();
+            if (!events[name]) {
+                return false;
+            }
+            return events[name].hasListener(fn, context);
+        }
+        else {
+            for (name in events) {
+                if (events[name].hasListener()) {
+                    return true;
+                }
+            }
             return false;
         }
-        return events[name].hasListener(fn, context);
     },
 
 
@@ -3508,7 +3522,9 @@ var ajax = function(){
                 self._xhr.send(opt.data);
             }
             catch (thrownError) {
-                self._deferred.reject(thrownError);
+                if (self._deferred) {
+                    self._deferred.reject(thrownError);
+                }
             }
         },
 

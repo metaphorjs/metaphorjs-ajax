@@ -1365,7 +1365,9 @@ var ajax = function(){
                 self._xhr.send(opt.data);
             }
             catch (thrownError) {
-                self._deferred.reject(thrownError);
+                if (self._deferred) {
+                    self._deferred.reject(thrownError);
+                }
             }
         },
 
