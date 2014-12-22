@@ -349,7 +349,7 @@ module.exports = function(){
             self.createJsonp();
         }
 
-        if (globalEvents.trigger("beforeSend", opt, transport) === false) {
+        if (globalEvents.trigger("before-send", opt, transport) === false) {
             self._promise = Promise.reject();
         }
         if (opt.beforeSend && opt.beforeSend.call(opt.callbackScope, opt, transport) === false) {
@@ -456,8 +456,8 @@ module.exports = function(){
 
             data    = processData(data, opt, contentType);
 
-            if (globalEvents.hasListener("processResponse")) {
-                data    = globalEvents.trigger("processResponse", data, self._deferred);
+            if (globalEvents.hasListener("process-response")) {
+                data    = globalEvents.trigger("process-response", data, self._deferred);
             }
 
             if (opt.processResponse) {
