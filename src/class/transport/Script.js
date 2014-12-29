@@ -9,6 +9,7 @@ var defineClass = require("metaphorjs-class/src/func/defineClass.js"),
 module.exports = defineClass({
     $class: "ajax.transport.Script",
 
+    type: "script",
     _opt: null,
     _deferred: null,
     _ajax: null,

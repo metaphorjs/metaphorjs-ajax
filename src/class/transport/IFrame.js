@@ -11,6 +11,7 @@ module.exports = defineClass({
 
     $class: "ajax.transport.IFrame",
 
+    type: "iframe",
     _opt: null,
     _deferred: null,
     _ajax: null,
@@ -60,9 +61,15 @@ module.exports = defineClass({
             data;
 
         if (self._opt && !self._opt.jsonp) {
-            doc		= frame.contentDocument || frame.contentWindow.document;
-            data    = doc.body.innerHTML;
-            self._ajax.processResponse(data);
+
+            try {
+                doc = frame.contentDocument || frame.contentWindow.document;
+                data = doc.body.innerHTML;
+                self._ajax.processResponse(data);
+            }
+            catch (thrownError) {
+                self._deferred.reject(thrownError);
+            }
         }
     },
 

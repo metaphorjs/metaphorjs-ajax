@@ -48,6 +48,7 @@ module.exports = (function(){
 
         $class: "ajax.transport.XHR",
 
+        type: "xhr",
         _xhr: null,
         _deferred: null,
         _ajax: null,
@@ -63,10 +64,10 @@ module.exports = (function(){
             self._ajax          = ajax;
 
             if (opt.progress) {
-                addListener(xhr, "progress", bind(opt.progress, opt.callbackScope));
+                addListener(xhr, "progress", bind(opt.progress, opt.context));
             }
             if (opt.uploadProgress && xhr.upload) {
-                addListener(xhr.upload, "progress", bind(opt.uploadProgress, opt.callbackScope));
+                addListener(xhr.upload, "progress", bind(opt.uploadProgress, opt.context));
             }
 
             xhr.onreadystatechange = bind(self.onReadyStateChange, self);

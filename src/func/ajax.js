@@ -38,7 +38,7 @@ module.exports = function(){
             progress:       null,
             uploadProgress: null,
             processResponse:null,
-            callbackScope:  null
+            context:        null
         },
 
         defaultSetup    = {};
@@ -79,7 +79,7 @@ module.exports = function(){
             opt.method = opt.method.toUpperCase();
         }
 
-        return (new MetaphorJs.Ajax(opt)).promise();
+        return new MetaphorJs.Ajax(opt);
     };
 
     ajax.setup  = function(opt) {

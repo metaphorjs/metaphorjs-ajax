@@ -784,6 +784,39 @@ function setAttr(el, name, value) {
 };
 
 
+/**
+ * @mixin Promise
+ */
+ns.register("mixin.Promise", {
+
+    $$promise: null,
+
+    $beforeInit: function() {
+        this.$$promise = new Promise;
+    },
+
+    then: function(){
+        return this.$$promise.then.apply(this.$$promise, arguments);
+    },
+
+    done: function() {
+        this.$$promise.done.apply(this.$$promise, arguments);
+        return this;
+    },
+
+    always: function() {
+        this.$$promise.always.apply(this.$$promise, arguments);
+        return this;
+    },
+
+    fail: function() {
+        this.$$promise.fail.apply(this.$$promise, arguments);
+        return this;
+    }
+
+});
+
+
 function emptyFn(){};
 
 function returnFalse() {
@@ -1135,6 +1168,7 @@ var addListener = function(){
 
         $class: "ajax.transport.XHR",
 
+        type: "xhr",
         _xhr: null,
         _deferred: null,
         _ajax: null,
@@ -1150,10 +1184,10 @@ var addListener = function(){
             self._ajax          = ajax;
 
             if (opt.progress) {
-                addListener(xhr, "progress", bind(opt.progress, opt.callbackScope));
+                addListener(xhr, "progress", bind(opt.progress, opt.context));
             }
             if (opt.uploadProgress && xhr.upload) {
-                addListener(xhr.upload, "progress", bind(opt.uploadProgress, opt.callbackScope));
+                addListener(xhr.upload, "progress", bind(opt.uploadProgress, opt.context));
             }
 
             xhr.onreadystatechange = bind(self.onReadyStateChange, self);
@@ -1249,6 +1283,7 @@ var addListener = function(){
 defineClass({
     $class: "ajax.transport.Script",
 
+    type: "script",
     _opt: null,
     _deferred: null,
     _ajax: null,
@@ -1315,6 +1350,7 @@ defineClass({
 
     $class: "ajax.transport.IFrame",
 
+    type: "iframe",
     _opt: null,
     _deferred: null,
     _ajax: null,
@@ -1364,9 +1400,15 @@ defineClass({
             data;
 
         if (self._opt && !self._opt.jsonp) {
-            doc		= frame.contentDocument || frame.contentWindow.document;
-            data    = doc.body.innerHTML;
-            self._ajax.processResponse(data);
+
+            try {
+                doc = frame.contentDocument || frame.contentWindow.document;
+                data = doc.body.innerHTML;
+                self._ajax.processResponse(data);
+            }
+            catch (thrownError) {
+                self._deferred.reject(thrownError);
+            }
         }
     },
 
@@ -1399,6 +1441,7 @@ defineClass({
 
 
 
+
 (function(){
 
     var rquery          = /\?/,
@@ -1408,6 +1451,8 @@ defineClass({
         rgethead        = /^(?:GET|HEAD)$/i,
 
         globalEvents    = new Observable,
+
+        formDataSupport = !!(window && window.FormData),
 
         processData     = function(data, opt, ct) {
 
@@ -1493,7 +1538,7 @@ defineClass({
                       url + (rquery.test(url) ? "&" : "?" ) + "_=" + stamp;
             }
 
-            if (opt.data && (!window.FormData || !(opt.data instanceof window.FormData))) {
+            if (opt.data && (!formDataSupport || !(opt.data instanceof window.FormData))) {
 
                 opt.data = !isString(opt.data) ? prepareParams(opt.data) : opt.data;
 
@@ -1578,6 +1623,7 @@ defineClass({
     defineClass({
 
         $class: "Ajax",
+        $mixins: ["mixin.Promise"],
 
         _jsonpName: null,
         _transport: null,
@@ -1604,8 +1650,14 @@ defineClass({
                                       (local[3] || (local[1] === "http:" ? "80" : "443"))));
             }
 
-            var deferred    = new Promise,
-                transport;
+            //deferred    = new Promise,
+            var transport;
+
+            if (opt.files) {
+                if (!formDataSupport) {
+                    opt.transport = "iframe";
+                }
+            }
 
             if (opt.transport == "iframe" && !opt.form) {
                 self.createForm();
@@ -1613,7 +1665,7 @@ defineClass({
             }
             else if (opt.form) {
                 self._form = opt.form;
-                if (opt.method == "POST" && (!window || !window.FormData)) {
+                if (opt.method == "POST" && !formDataSupport) {
                     opt.transport = "iframe";
                 }
             }
@@ -1626,29 +1678,44 @@ defineClass({
                     opt.data = serializeForm(opt.form);
                 }
             }
+            else if (opt.method == "POST" && formDataSupport) {
+                var d = opt.data,
+                    k;
+                opt.data = new FormData;
+
+                if (isPlainObject(d)) {
+                    for (k in d) {
+                        opt.data.append(k, d[k]);
+                    }
+                }
+            }
+
+            if (opt.files) {
+                self.importFiles();
+            }
 
             opt.url = prepareUrl(opt.url, opt);
 
             if ((opt.crossDomain || opt.transport == "script") && !opt.form) {
-                transport   = new MetaphorJs.ajax.transport.Script(opt, deferred, self);
+                transport   = new MetaphorJs.ajax.transport.Script(opt, self.$$promise, self);
             }
             else if (opt.transport == "iframe") {
-                transport   = new MetaphorJs.ajax.transport.Iframe(opt, deferred, self);
+                transport   = new MetaphorJs.ajax.transport.IFrame(opt, self.$$promise, self);
             }
             else {
-                transport   = new MetaphorJs.ajax.transport.XHR(opt, deferred, self);
+                transport   = new MetaphorJs.ajax.transport.XHR(opt, self.$$promise, self);
             }
 
-            self._deferred      = deferred;
+            //self._deferred      = deferred;
             self._transport     = transport;
 
-            deferred.done(function(value) {
+            self.$$promise.done(function(value) {
                 globalEvents.trigger("success", value);
             });
-            deferred.fail(function(reason) {
+            self.$$promise.fail(function(reason) {
                 globalEvents.trigger("error", reason);
             });
-            deferred.always(function(){
+            self.$$promise.always(function(){
                 globalEvents.trigger("end");
             });
 
@@ -1666,32 +1733,37 @@ defineClass({
             if (globalEvents.trigger("before-send", opt, transport) === false) {
                 self._promise = Promise.reject();
             }
-            if (opt.beforeSend && opt.beforeSend.call(opt.callbackScope, opt, transport) === false) {
+            if (opt.beforeSend && opt.beforeSend.call(opt.context, opt, transport) === false) {
                 self._promise = Promise.reject();
             }
 
             if (!self._promise) {
                 async(transport.send, transport);
 
-                deferred.abort = bind(self.abort, self);
-                deferred.always(self.destroy, self);
+                //deferred.abort = bind(self.abort, self);
+                self.$$promise.always(self.$destroy, self);
 
-                self._promise = deferred;
+                //self._promise = deferred;
             }
         },
 
 
-        promise: function() {
+        /*promise: function() {
             return this._promise;
-        },
+        },*/
 
         abort: function(reason) {
             this._transport.abort();
-            this._deferred.reject(reason || "abort");
+            this.$$promise.reject(reason || "abort");
+            //this._deferred.reject(reason || "abort");
         },
 
         onTimeout: function() {
             this.abort("timeout");
+        },
+
+        getTransport: function() {
+            return this._transport;
         },
 
         createForm: function() {
@@ -1701,6 +1773,7 @@ defineClass({
 
             form.style.display = "none";
             setAttr(form, "method", self._opt.method);
+            setAttr(form, "enctype", "multipart/form-data");
 
             data2form(self._opt.data, form, null);
 
@@ -1708,6 +1781,62 @@ defineClass({
 
             self._form = form;
             self._removeForm = true;
+        },
+
+        importFiles: function() {
+
+            var self    = this,
+                opt     = self._opt,
+                files   = opt.files,
+                tr      = opt.transport,
+                form    = self._form,
+                data    = opt.data,
+                i, l,
+                j, jl,
+                name,
+                input,
+                file,
+                item;
+
+            for (i = 0, l = files.length; i < l; i++) {
+
+                item = files[i];
+
+                if (isArray(item)) {
+                    name = item[0];
+                    file = item[1];
+                }
+                else {
+                    if (item instanceof File) {
+                        name = "upload" + (l > 1 ? "[]" : "");
+                    }
+                    else {
+                        name = item.name || "upload" + (l > 1 ? "[]" : "");
+                    }
+                    file = item;
+                }
+
+                if (!(file instanceof File)) {
+                    input = file;
+                    file = null;
+                }
+
+                if (form) {
+                    if (input) {
+                        form.appendChild(input);
+                    }
+                }
+                else {
+                    if (file) {
+                        data.append(name, file);
+                    }
+                    else if (input.files && input.files.length) {
+                        for (j = 0, jl = input.files.length; j < jl; j++) {
+                            data.append(name, input.files[j]);
+                        }
+                    }
+                }
+            }
         },
 
         createJsonp: function() {
@@ -1740,16 +1869,16 @@ defineClass({
                 res = self.processResponseData(data);
             }
             catch (thrownError) {
-                if (self._deferred) {
-                    self._deferred.reject(thrownError);
+                if (self.$$promise) {
+                    self.$$promise.reject(thrownError);
                 }
                 else {
                     error(thrownError);
                 }
             }
 
-            if (self._deferred) {
-                self._deferred.resolve(res);
+            if (self.$$promise) {
+                self.$$promise.resolve(res);
             }
         },
 
@@ -1761,11 +1890,11 @@ defineClass({
             data    = processData(data, opt, contentType);
 
             if (globalEvents.hasListener("process-response")) {
-                data    = globalEvents.trigger("process-response", data, self._deferred);
+                data    = globalEvents.trigger("process-response", data, self.$$promise);
             }
 
             if (opt.processResponse) {
-                data    = opt.processResponse.call(opt.callbackScope, data, self._deferred);
+                data    = opt.processResponse.call(opt.context, data, self.$$promise);
             }
 
             return data;
@@ -1774,7 +1903,7 @@ defineClass({
         processResponse: function(data, contentType) {
 
             var self        = this,
-                deferred    = self._deferred,
+                deferred    = self.$$promise,
                 result;
 
             if (!self._opt.jsonp) {
@@ -1876,7 +2005,7 @@ var ajax = function(){
             progress:       null,
             uploadProgress: null,
             processResponse:null,
-            callbackScope:  null
+            context:        null
         },
 
         defaultSetup    = {};
@@ -1917,7 +2046,7 @@ var ajax = function(){
             opt.method = opt.method.toUpperCase();
         }
 
-        return (new MetaphorJs.Ajax(opt)).promise();
+        return new MetaphorJs.Ajax(opt);
     };
 
     ajax.setup  = function(opt) {
