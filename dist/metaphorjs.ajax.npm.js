@@ -3,6 +3,7 @@ module.exports = function (window) {
 var select = require('metaphorjs-select')(window);
 var Observable = require('metaphorjs-observable');
 var Promise = require('metaphorjs-promise');
+var Class = require('metaphorjs-class');
 
 
 var slice = Array.prototype.slice;
@@ -155,6 +156,470 @@ var extend = function(){
     return extend;
 }();
 
+
+
+function isString(value) {
+    return typeof value == "string" || value === ""+value;
+    //return typeof value == "string" || varType(value) === 0;
+};
+
+function getAttr(el, name) {
+    return el.getAttribute ? el.getAttribute(name) : null;
+};
+
+var strUndef = "undefined";
+
+
+
+function isObject(value) {
+    if (value === null || typeof value != "object") {
+        return false;
+    }
+    var vt = varType(value);
+    return vt > 2 || vt == -1;
+};
+
+
+
+var Cache = function(){
+
+    var globalCache;
+
+    /**
+     * @class Cache
+     * @param {bool} cacheRewritable
+     * @constructor
+     */
+    var Cache = function(cacheRewritable) {
+
+        var storage = {},
+
+            finders = [];
+
+        if (arguments.length == 0) {
+            cacheRewritable = true;
+        }
+
+        return {
+
+            /**
+             * @param {function} fn
+             * @param {object} context
+             * @param {bool} prepend
+             */
+            addFinder: function(fn, context, prepend) {
+                finders[prepend? "unshift" : "push"]({fn: fn, context: context});
+            },
+
+            /**
+             * @method
+             * @param {string} name
+             * @param {*} value
+             * @param {bool} rewritable
+             * @returns {*} value
+             */
+            add: function(name, value, rewritable) {
+
+                if (storage[name] && storage[name].rewritable === false) {
+                    return storage[name];
+                }
+
+                storage[name] = {
+                    rewritable: typeof rewritable != strUndef ? rewritable : cacheRewritable,
+                    value: value
+                };
+
+                return value;
+            },
+
+            /**
+             * @method
+             * @param {string} name
+             * @returns {*}
+             */
+            get: function(name) {
+
+                if (!storage[name]) {
+                    if (finders.length) {
+
+                        var i, l, res,
+                            self = this;
+
+                        for (i = 0, l = finders.length; i < l; i++) {
+
+                            res = finders[i].fn.call(finders[i].context, name, self);
+
+                            if (res !== undf) {
+                                return self.add(name, res, true);
+                            }
+                        }
+                    }
+
+                    return undf;
+                }
+
+                return storage[name].value;
+            },
+
+            /**
+             * @method
+             * @param {string} name
+             * @returns {*}
+             */
+            remove: function(name) {
+                var rec = storage[name];
+                if (rec && rec.rewritable === true) {
+                    delete storage[name];
+                }
+                return rec ? rec.value : undf;
+            },
+
+            /**
+             * @method
+             * @param {string} name
+             * @returns {boolean}
+             */
+            exists: function(name) {
+                return !!storage[name];
+            },
+
+            /**
+             * @param {function} fn
+             * @param {object} context
+             */
+            eachEntry: function(fn, context) {
+                var k;
+                for (k in storage) {
+                    fn.call(context, storage[k].value, k);
+                }
+            },
+
+            /**
+             * @method
+             */
+            destroy: function() {
+
+                var self = this;
+
+                if (self === globalCache) {
+                    globalCache = null;
+                }
+
+                storage = null;
+                cacheRewritable = null;
+
+                self.add = null;
+                self.get = null;
+                self.destroy = null;
+                self.exists = null;
+                self.remove = null;
+            }
+        };
+    };
+
+    /**
+     * @method
+     * @static
+     * @returns {Cache}
+     */
+    Cache.global = function() {
+
+        if (!globalCache) {
+            globalCache = new Cache(true);
+        }
+
+        return globalCache;
+    };
+
+    return Cache;
+
+}();
+
+
+
+
+
+/**
+ * @class Namespace
+ * @code ../examples/main.js
+ */
+var Namespace = function(){
+
+
+    /**
+     * @param {Object} root optional; usually window or global
+     * @param {String} rootName optional. If you want custom object to be root and
+     * this object itself is the first level of namespace
+     * @param {Cache} cache optional
+     * @constructor
+     */
+    var Namespace   = function(root, rootName, cache) {
+
+        cache       = cache || new Cache(false);
+        var self    = this,
+            rootL   = rootName ? rootName.length : null;
+
+        if (!root) {
+            if (typeof global != strUndef) {
+                root    = global;
+            }
+            else {
+                root    = window;
+            }
+        }
+
+        var normalize   = function(ns) {
+            if (ns && rootName && ns.substr(0, rootL) != rootName) {
+                return rootName + "." + ns;
+            }
+            return ns;
+        };
+
+        var parseNs     = function(ns) {
+
+            ns = normalize(ns);
+
+            var tmp     = ns.split("."),
+                i,
+                last    = tmp.pop(),
+                parent  = tmp.join("."),
+                len     = tmp.length,
+                name,
+                current = root;
+
+
+            if (cache[parent]) {
+                return [cache[parent], last, ns];
+            }
+
+            if (len > 0) {
+                for (i = 0; i < len; i++) {
+
+                    name    = tmp[i];
+
+                    if (rootName && i == 0 && name == rootName) {
+                        current = root;
+                        continue;
+                    }
+
+                    if (current[name] === undf) {
+                        current[name]   = {};
+                    }
+
+                    current = current[name];
+                }
+            }
+
+            return [current, last, ns];
+        };
+
+        /**
+         * Get namespace/cache object
+         * @method
+         * @param {string} ns
+         * @param {bool} cacheOnly
+         * @returns {*}
+         */
+        var get       = function(ns, cacheOnly) {
+
+            ns = normalize(ns);
+
+            if (cache.exists(ns)) {
+                return cache.get(ns);
+            }
+
+            if (cacheOnly) {
+                return undf;
+            }
+
+            var tmp     = ns.split("."),
+                i,
+                len     = tmp.length,
+                name,
+                current = root;
+
+            for (i = 0; i < len; i++) {
+
+                name    = tmp[i];
+
+                if (rootName && i == 0 && name == rootName) {
+                    current = root;
+                    continue;
+                }
+
+                if (current[name] === undf) {
+                    return undf;
+                }
+
+                current = current[name];
+            }
+
+            if (current) {
+                cache.add(ns, current);
+            }
+
+            return current;
+        };
+
+        /**
+         * Register item
+         * @method
+         * @param {string} ns
+         * @param {*} value
+         */
+        var register    = function(ns, value) {
+
+            var parse   = parseNs(ns),
+                parent  = parse[0],
+                name    = parse[1];
+
+            if (isObject(parent) && parent[name] === undf) {
+
+                parent[name]        = value;
+                cache.add(parse[2], value);
+            }
+
+            return value;
+        };
+
+        /**
+         * Item exists
+         * @method
+         * @param {string} ns
+         * @returns boolean
+         */
+        var exists      = function(ns) {
+            return get(ns, true) !== undf;
+        };
+
+        /**
+         * Add item only to the cache
+         * @function add
+         * @param {string} ns
+         * @param {*} value
+         */
+        var add = function(ns, value) {
+
+            ns = normalize(ns);
+            cache.add(ns, value);
+            return value;
+        };
+
+        /**
+         * Remove item from cache
+         * @method
+         * @param {string} ns
+         */
+        var remove = function(ns) {
+            ns = normalize(ns);
+            cache.remove(ns);
+        };
+
+        /**
+         * Make alias in the cache
+         * @method
+         * @param {string} from
+         * @param {string} to
+         */
+        var makeAlias = function(from, to) {
+
+            from = normalize(from);
+            to = normalize(to);
+
+            var value = cache.get(from);
+
+            if (value !== undf) {
+                cache.add(to, value);
+            }
+        };
+
+        /**
+         * Destroy namespace and all classes in it
+         * @method
+         */
+        var destroy     = function() {
+
+            var self = this,
+                k;
+
+            if (self === globalNs) {
+                globalNs = null;
+            }
+
+            cache.eachEntry(function(entry){
+                if (entry && entry.$destroy) {
+                    entry.$destroy();
+                }
+            });
+
+            cache.destroy();
+            cache = null;
+
+            for (k in self) {
+                self[k] = null;
+            }
+        };
+
+        self.register   = register;
+        self.exists     = exists;
+        self.get        = get;
+        self.add        = add;
+        self.remove     = remove;
+        self.normalize  = normalize;
+        self.makeAlias  = makeAlias;
+        self.destroy    = destroy;
+    };
+
+    Namespace.prototype.register = null;
+    Namespace.prototype.exists = null;
+    Namespace.prototype.get = null;
+    Namespace.prototype.add = null;
+    Namespace.prototype.remove = null;
+    Namespace.prototype.normalize = null;
+    Namespace.prototype.makeAlias = null;
+    Namespace.prototype.destroy = null;
+
+    var globalNs;
+
+    /**
+     * Get global namespace
+     * @method
+     * @static
+     * @returns {Namespace}
+     */
+    Namespace.global = function() {
+        if (!globalNs) {
+            globalNs = new Namespace;
+        }
+        return globalNs;
+    };
+
+    return Namespace;
+
+}();
+
+
+
+var MetaphorJs = {
+
+
+};
+
+
+
+
+var ns  = new Namespace(MetaphorJs, "MetaphorJs");
+
+
+
+var cs = new Class(ns);
+
+
+
+
+
+var defineClass = cs.define;
+
 /**
  * @param {Function} fn
  * @param {*} context
@@ -170,13 +635,6 @@ var bind = Function.prototype.bind ?
               };
 
 
-
-
-
-function isString(value) {
-    return typeof value == "string" || value === ""+value;
-    //return typeof value == "string" || varType(value) === 0;
-};
 
 
 
@@ -208,11 +666,6 @@ function async(fn, context, args, timeout) {
         fn.apply(context, args || []);
     }, timeout || 0);
 };
-
-
-function emptyFn(){};
-
-var strUndef = "undefined";
 
 
 
@@ -263,6 +716,75 @@ function parseXML(data, type) {
 function isArray(value) {
     return typeof value == "object" && varType(value) === 5;
 };
+
+function isFunction(value) {
+    return typeof value == 'function';
+};
+
+
+
+function isPrimitive(value) {
+    var vt = varType(value);
+    return vt < 3 && vt > -1;
+};
+
+
+
+function error(e) {
+
+    var stack = e.stack || (new Error).stack;
+
+    if (typeof console != strUndef && console.log) {
+        async(function(){
+            console.log(e);
+            if (stack) {
+                console.log(stack);
+            }
+        });
+    }
+    else {
+        throw e;
+    }
+};
+
+
+var nextUid = function(){
+    var uid = ['0', '0', '0'];
+
+    // from AngularJs
+    /**
+     * @returns {String}
+     */
+    return function nextUid() {
+        var index = uid.length;
+        var digit;
+
+        while(index) {
+            index--;
+            digit = uid[index].charCodeAt(0);
+            if (digit == 57 /*'9'*/) {
+                uid[index] = 'A';
+                return uid.join('');
+            }
+            if (digit == 90  /*'Z'*/) {
+                uid[index] = '0';
+            } else {
+                uid[index] = String.fromCharCode(digit + 1);
+                return uid.join('');
+            }
+        }
+        uid.unshift('0');
+        return uid.join('');
+    };
+}();
+
+
+function setAttr(el, name, value) {
+    return el.setAttribute(name, value);
+};
+
+
+function emptyFn(){};
 
 function returnFalse() {
     return false;
@@ -569,107 +1091,365 @@ var addListener = function(){
 
 }();
 
-function isFunction(value) {
-    return typeof value == 'function';
-};
 
 
 
-function isObject(value) {
-    if (value === null || typeof value != "object") {
-        return false;
-    }
-    var vt = varType(value);
-    return vt > 2 || vt == -1;
-};
+(function(){
 
 
 
-function isPrimitive(value) {
-    var vt = varType(value);
-    return vt < 3 && vt > -1;
-};
+    var accepts     = {
+            xml:        "application/xml, text/xml",
+            html:       "text/html",
+            script:     "text/javascript, application/javascript",
+            json:       "application/json, text/javascript",
+            text:       "text/plain",
+            _default:   "*/*"
+        },
 
+        createXHR       = function() {
 
+            var xhr;
 
-function error(e) {
-
-    var stack = e.stack || (new Error).stack;
-
-    if (typeof console != strUndef && console.log) {
-        async(function(){
-            console.log(e);
-            if (stack) {
-                console.log(stack);
+            if (!window.XMLHttpRequest || !(xhr = new XMLHttpRequest())) {
+                if (!(xhr = new ActiveXObject("Msxml2.XMLHTTP"))) {
+                    if (!(xhr = new ActiveXObject("Microsoft.XMLHTTP"))) {
+                        throw "Unable to create XHR object";
+                    }
+                }
             }
-        });
-    }
-    else {
-        throw e;
-    }
-};
 
+            return xhr;
+        },
 
-var nextUid = function(){
-    var uid = ['0', '0', '0'];
+        httpSuccess     = function(r) {
+            try {
+                return (!r.status && location && location.protocol == "file:")
+                       || (r.status >= 200 && r.status < 300)
+                       || r.status === 304 || r.status === 1223; // || r.status === 0;
+            } catch(thrownError){}
+            return false;
+        };
 
-    // from AngularJs
-    /**
-     * @returns {String}
-     */
-    return function nextUid() {
-        var index = uid.length;
-        var digit;
+    return defineClass({
 
-        while(index) {
-            index--;
-            digit = uid[index].charCodeAt(0);
-            if (digit == 57 /*'9'*/) {
-                uid[index] = 'A';
-                return uid.join('');
+        $class: "ajax.transport.XHR",
+
+        _xhr: null,
+        _deferred: null,
+        _ajax: null,
+
+        $init: function(opt, deferred, ajax) {
+
+            var self    = this,
+                xhr;
+
+            self._xhr = xhr     = createXHR();
+            self._deferred      = deferred;
+            self._opt           = opt;
+            self._ajax          = ajax;
+
+            if (opt.progress) {
+                addListener(xhr, "progress", bind(opt.progress, opt.callbackScope));
             }
-            if (digit == 90  /*'Z'*/) {
-                uid[index] = '0';
-            } else {
-                uid[index] = String.fromCharCode(digit + 1);
-                return uid.join('');
+            if (opt.uploadProgress && xhr.upload) {
+                addListener(xhr.upload, "progress", bind(opt.uploadProgress, opt.callbackScope));
+            }
+
+            xhr.onreadystatechange = bind(self.onReadyStateChange, self);
+        },
+
+        setHeaders: function() {
+
+            var self = this,
+                opt = self._opt,
+                xhr = self._xhr,
+                i;
+
+            if (opt.xhrFields) {
+                for (i in opt.xhrFields) {
+                    xhr[i] = opt.xhrFields[i];
+                }
+            }
+            if (opt.data && opt.contentType) {
+                xhr.setRequestHeader("Content-Type", opt.contentType);
+            }
+            xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+            xhr.setRequestHeader("Accept",
+                opt.dataType && accepts[opt.dataType] ?
+                accepts[opt.dataType] + ", */*; q=0.01" :
+                accepts._default
+            );
+            for (i in opt.headers) {
+                xhr.setRequestHeader(i, opt.headers[i]);
+            }
+
+        },
+
+        onReadyStateChange: function() {
+
+            var self        = this,
+                xhr         = self._xhr,
+                deferred    = self._deferred;
+
+            if (xhr.readyState === 0) {
+                xhr.onreadystatechange = emptyFn;
+                deferred.resolve(xhr);
+                return;
+            }
+
+            if (xhr.readyState === 4) {
+                xhr.onreadystatechange = emptyFn;
+
+                if (httpSuccess(xhr)) {
+
+                    self._ajax.processResponse(
+                        isString(xhr.responseText) ? xhr.responseText : undf,
+                        xhr.getResponseHeader("content-type") || ''
+                    );
+                }
+                else {
+                    deferred.reject(xhr);
+                }
+            }
+        },
+
+        abort: function() {
+            var self    = this;
+            self._xhr.onreadystatechange = emptyFn;
+            self._xhr.abort();
+        },
+
+        send: function() {
+
+            var self    = this,
+                opt     = self._opt;
+
+            try {
+                self._xhr.open(opt.method, opt.url, true, opt.username, opt.password);
+                self.setHeaders();
+                self._xhr.send(opt.data);
+            }
+            catch (thrownError) {
+                if (self._deferred) {
+                    self._deferred.reject(thrownError);
+                }
             }
         }
-        uid.unshift('0');
-        return uid.join('');
-    };
-}();
+    });
 
-
-function getAttr(el, name) {
-    return el.getAttribute ? el.getAttribute(name) : null;
-};
-
-function setAttr(el, name, value) {
-    return el.setAttribute(name, value);
-};
+}());
 
 
 
 
 
-/*
-* Contents of this file are partially taken from jQuery
-*/
 
-var ajax = function(){
 
-    
+defineClass({
+    $class: "ajax.transport.Script",
 
-    var rhash       = /#.*$/,
+    _opt: null,
+    _deferred: null,
+    _ajax: null,
+    _el: null,
 
-        rts         = /([?&])_=[^&]*/,
+    $init: function(opt, deferred, ajax) {
+        var self        = this;
 
-        rquery      = /\?/,
+        self._opt       = opt;
+        self._ajax      = ajax;
+        self._deferred  = deferred;
+    },
 
-        rurl        = /^([\w.+-]+:)(?:\/\/(?:[^\/?#]*@|)([^\/?#:]*)(?::(\d+)|)|)/,
+    send: function() {
 
-        rgethead    = /^(?:GET|HEAD)$/i,
+        var self    = this,
+            script  = document.createElement("script");
+
+        setAttr(script, "async", "async");
+        setAttr(script, "charset", "utf-8");
+        setAttr(script, "src", self._opt.url);
+
+        addListener(script, "load", bind(self.onLoad, self));
+        addListener(script, "error", bind(self.onError, self));
+
+        document.head.appendChild(script);
+
+        self._el = script;
+    },
+
+    onLoad: function(evt) {
+        if (this._deferred) { // haven't been destroyed yet
+            this._deferred.resolve(evt);
+        }
+    },
+
+    onError: function(evt) {
+        this._deferred.reject(evt);
+    },
+
+    abort: function() {
+        var self    = this;
+
+        if (self._el.parentNode) {
+            self._el.parentNode.removeChild(self._el);
+        }
+    },
+
+    destroy: function() {
+
+        var self    = this;
+
+        if (self._el.parentNode) {
+            self._el.parentNode.removeChild(self._el);
+        }
+    }
+});
+
+
+
+
+
+defineClass({
+
+    $class: "ajax.transport.IFrame",
+
+    _opt: null,
+    _deferred: null,
+    _ajax: null,
+    _el: null,
+
+    $init: function(opt, deferred, ajax) {
+        var self        = this;
+
+        self._opt       = opt;
+        self._ajax      = ajax;
+        self._deferred  = deferred;
+    },
+
+    send: function() {
+
+        var self    = this,
+            frame   = document.createElement("iframe"),
+            id      = "frame-" + nextUid(),
+            form    = self._opt.form;
+
+        setAttr(frame, "id", id);
+        setAttr(frame, "name", id);
+        frame.style.display = "none";
+        document.body.appendChild(frame);
+
+        setAttr(form, "action", self._opt.url);
+        setAttr(form, "target", id);
+
+        addListener(frame, "load", bind(self.onLoad, self));
+        addListener(frame, "error", bind(self.onError, self));
+
+        self._el = frame;
+
+        try {
+            form.submit();
+        }
+        catch (thrownError) {
+            self._deferred.reject(thrownError);
+        }
+    },
+
+    onLoad: function() {
+
+        var self    = this,
+            frame   = self._el,
+            doc,
+            data;
+
+        if (self._opt && !self._opt.jsonp) {
+            doc		= frame.contentDocument || frame.contentWindow.document;
+            data    = doc.body.innerHTML;
+            self._ajax.processResponse(data);
+        }
+    },
+
+    onError: function(evt) {
+        this._deferred.reject(evt);
+    },
+
+    abort: function() {
+        var self    = this;
+
+        if (self._el.parentNode) {
+            self._el.parentNode.removeChild(self._el);
+        }
+    },
+
+    destroy: function() {
+        var self    = this;
+
+        if (self._el.parentNode) {
+            self._el.parentNode.removeChild(self._el);
+        }
+    }
+
+});
+
+
+
+
+
+
+
+
+(function(){
+
+    var rquery          = /\?/,
+        rurl            = /^([\w.+-]+:)(?:\/\/(?:[^\/?#]*@|)([^\/?#:]*)(?::(\d+)|)|)/,
+        rhash           = /#.*$/,
+        rts             = /([?&])_=[^&]*/,
+        rgethead        = /^(?:GET|HEAD)$/i,
+
+        globalEvents    = new Observable,
+
+        processData     = function(data, opt, ct) {
+
+            var type        = opt ? opt.dataType : null,
+                selector    = opt ? opt.selector : null,
+                doc;
+
+            if (!isString(data)) {
+                return data;
+            }
+
+            ct = ct || "";
+
+            if (type === "xml" || !type && ct.indexOf("xml") >= 0) {
+                doc = parseXML(trim(data));
+                return selector ? select(selector, doc) : doc;
+            }
+            else if (type === "html") {
+                doc = parseXML(data, "text/html");
+                return selector ? select(selector, doc) : doc;
+            }
+            else if (type == "fragment") {
+                var fragment    = document.createDocumentFragment(),
+                    div         = document.createElement("div");
+
+                div.innerHTML   = data;
+
+                while (div.firstChild) {
+                    fragment.appendChild(div.firstChild);
+                }
+
+                return fragment;
+            }
+            else if (type === "json" || !type && ct.indexOf("json") >= 0) {
+                return parseJSON(trim(data));
+            }
+            else if (type === "script" || !type && ct.indexOf("javascript") >= 0) {
+                globalEval(data);
+            }
+
+            return data + "";
+        },
 
         buildParams     = function(data, params, name) {
 
@@ -708,9 +1488,9 @@ var ajax = function(){
 
                 url = rts.test(url) ?
                     // If there is already a '_' parameter, set its value
-                       url.replace(rts, "$1_=" + stamp) :
+                      url.replace(rts, "$1_=" + stamp) :
                     // Otherwise add one to the end
-                       url + (rquery.test(url) ? "&" : "?" ) + "_=" + stamp;
+                      url + (rquery.test(url) ? "&" : "?" ) + "_=" + stamp;
             }
 
             if (opt.data && (!window.FormData || !(opt.data instanceof window.FormData))) {
@@ -724,74 +1504,6 @@ var ajax = function(){
             }
 
             return url;
-        },
-
-        accepts     = {
-            xml:        "application/xml, text/xml",
-            html:       "text/html",
-            script:     "text/javascript, application/javascript",
-            json:       "application/json, text/javascript",
-            text:       "text/plain",
-            _default:   "*/*"
-        },
-
-        defaults    = {
-            url:            null,
-            data:           null,
-            method:         "GET",
-            headers:        null,
-            username:       null,
-            password:       null,
-            cache:          null,
-            dataType:       null,
-            timeout:        0,
-            contentType:    "application/x-www-form-urlencoded",
-            xhrFields:      null,
-            jsonp:          false,
-            jsonpParam:     null,
-            jsonpCallback:  null,
-            transport:      null,
-            replace:        false,
-            selector:       null,
-            form:           null,
-            beforeSend:     null,
-            progress:       null,
-            uploadProgress: null,
-            processResponse:null,
-            callbackScope:  null
-        },
-
-        defaultSetup    = {},
-
-        globalEvents    = new Observable,
-
-        createXHR       = function() {
-
-            var xhr;
-
-            if (!window.XMLHttpRequest || !(xhr = new XMLHttpRequest())) {
-                if (!(xhr = new ActiveXObject("Msxml2.XMLHTTP"))) {
-                    if (!(xhr = new ActiveXObject("Microsoft.XMLHTTP"))) {
-                        throw "Unable to create XHR object";
-                    }
-                }
-            }
-
-            return xhr;
-        },
-
-        globalEval      = function(code){
-            var script, indirect = eval;
-            if (code) {
-                if (/^[^\S]*use strict/.test(code)) {
-                    script = document.createElement("script");
-                    script.text = code;
-                    document.head.appendChild(script)
-                        .parentNode.removeChild(script);
-                } else {
-                    indirect(code);
-                }
-            }
         },
 
         data2form       = function(data, form, name) {
@@ -849,153 +1561,23 @@ var ajax = function(){
             return sSearch;
         },
 
-        httpSuccess     = function(r) {
-            try {
-                return (!r.status && location && location.protocol == "file:")
-                           || (r.status >= 200 && r.status < 300)
-                           || r.status === 304 || r.status === 1223; // || r.status === 0;
-            } catch(thrownError){}
-            return false;
-        },
-
-        processData     = function(data, opt, ct) {
-
-            var type        = opt ? opt.dataType : null,
-                selector    = opt ? opt.selector : null,
-                doc;
-
-            if (!isString(data)) {
-                return data;
-            }
-
-            ct = ct || "";
-
-            if (type === "xml" || !type && ct.indexOf("xml") >= 0) {
-                doc = parseXML(trim(data));
-                return selector ? select(selector, doc) : doc;
-            }
-            else if (type === "html") {
-                doc = parseXML(data, "text/html");
-                return selector ? select(selector, doc) : doc;
-            }
-            else if (type == "fragment") {
-                var fragment    = document.createDocumentFragment(),
-                    div         = document.createElement("div");
-
-                div.innerHTML   = data;
-
-                while (div.firstChild) {
-                    fragment.appendChild(div.firstChild);
+        globalEval = function(code){
+            var script, indirect = eval;
+            if (code) {
+                if (/^[^\S]*use strict/.test(code)) {
+                    script = document.createElement("script");
+                    script.text = code;
+                    document.head.appendChild(script)
+                        .parentNode.removeChild(script);
+                } else {
+                    indirect(code);
                 }
-
-                return fragment;
             }
-            else if (type === "json" || !type && ct.indexOf("json") >= 0) {
-                return parseJSON(trim(data));
-            }
-            else if (type === "script" || !type && ct.indexOf("javascript") >= 0) {
-                globalEval(data);
-            }
-
-            return data + "";
         };
 
+    defineClass({
 
-
-
-    var AJAX    = function(opt) {
-
-        var self        = this,
-            href        = window ? window.location.href : "",
-            local       = rurl.exec(href.toLowerCase()) || [],
-            parts       = rurl.exec(opt.url.toLowerCase());
-
-        self._opt       = opt;
-
-        if (opt.crossDomain !== true) {
-            opt.crossDomain = !!(parts &&
-                                 (parts[1] !== local[1] || parts[2] !== local[2] ||
-                                  (parts[3] || (parts[1] === "http:" ? "80" : "443")) !==
-                                  (local[3] || (local[1] === "http:" ? "80" : "443"))));
-        }
-
-        var deferred    = new Promise,
-            transport;
-
-        if (opt.transport == "iframe" && !opt.form) {
-            self.createForm();
-            opt.form = self._form;
-        }
-        else if (opt.form) {
-            self._form = opt.form;
-            if (opt.method == "POST" && (!window || !window.FormData)) {
-                opt.transport = "iframe";
-            }
-        }
-
-        if (opt.form && opt.transport != "iframe") {
-            if (opt.method == "POST") {
-                opt.data = new FormData(opt.form);
-            }
-            else {
-                opt.data = serializeForm(opt.form);
-            }
-        }
-
-        opt.url = prepareUrl(opt.url, opt);
-
-        if ((opt.crossDomain || opt.transport == "script") && !opt.form) {
-            transport   = new ScriptTransport(opt, deferred, self);
-        }
-        else if (opt.transport == "iframe") {
-            transport   = new IframeTransport(opt, deferred, self);
-        }
-        else {
-            transport   = new XHRTransport(opt, deferred, self);
-        }
-
-        self._deferred      = deferred;
-        self._transport     = transport;
-
-        deferred.done(function(value) {
-            globalEvents.trigger("success", value);
-        });
-        deferred.fail(function(reason) {
-            globalEvents.trigger("error", reason);
-        });
-        deferred.always(function(){
-            globalEvents.trigger("end");
-        });
-
-        globalEvents.trigger("start");
-
-
-        if (opt.timeout) {
-            self._timeout = setTimeout(bind(self.onTimeout, self), opt.timeout);
-        }
-
-        if (opt.jsonp) {
-            self.createJsonp();
-        }
-
-        if (globalEvents.trigger("before-send", opt, transport) === false) {
-            self._promise = Promise.reject();
-        }
-        if (opt.beforeSend && opt.beforeSend.call(opt.callbackScope, opt, transport) === false) {
-            self._promise = Promise.reject();
-        }
-
-        if (!self._promise) {
-            async(transport.send, transport);
-
-            deferred.abort = bind(self.abort, self);
-            deferred.always(self.destroy, self);
-
-            self._promise = deferred;
-        }
-    };
-
-    extend(AJAX.prototype, {
+        $class: "Ajax",
 
         _jsonpName: null,
         _transport: null,
@@ -1005,6 +1587,99 @@ var ajax = function(){
         _timeout: null,
         _form: null,
         _removeForm: false,
+
+        $init: function(opt) {
+
+            var self        = this,
+                href        = window ? window.location.href : "",
+                local       = rurl.exec(href.toLowerCase()) || [],
+                parts       = rurl.exec(opt.url.toLowerCase());
+
+            self._opt       = opt;
+
+            if (opt.crossDomain !== true) {
+                opt.crossDomain = !!(parts &&
+                                     (parts[1] !== local[1] || parts[2] !== local[2] ||
+                                      (parts[3] || (parts[1] === "http:" ? "80" : "443")) !==
+                                      (local[3] || (local[1] === "http:" ? "80" : "443"))));
+            }
+
+            var deferred    = new Promise,
+                transport;
+
+            if (opt.transport == "iframe" && !opt.form) {
+                self.createForm();
+                opt.form = self._form;
+            }
+            else if (opt.form) {
+                self._form = opt.form;
+                if (opt.method == "POST" && (!window || !window.FormData)) {
+                    opt.transport = "iframe";
+                }
+            }
+
+            if (opt.form && opt.transport != "iframe") {
+                if (opt.method == "POST") {
+                    opt.data = new FormData(opt.form);
+                }
+                else {
+                    opt.data = serializeForm(opt.form);
+                }
+            }
+
+            opt.url = prepareUrl(opt.url, opt);
+
+            if ((opt.crossDomain || opt.transport == "script") && !opt.form) {
+                transport   = new MetaphorJs.ajax.transport.Script(opt, deferred, self);
+            }
+            else if (opt.transport == "iframe") {
+                transport   = new MetaphorJs.ajax.transport.Iframe(opt, deferred, self);
+            }
+            else {
+                transport   = new MetaphorJs.ajax.transport.XHR(opt, deferred, self);
+            }
+
+            self._deferred      = deferred;
+            self._transport     = transport;
+
+            deferred.done(function(value) {
+                globalEvents.trigger("success", value);
+            });
+            deferred.fail(function(reason) {
+                globalEvents.trigger("error", reason);
+            });
+            deferred.always(function(){
+                globalEvents.trigger("end");
+            });
+
+            globalEvents.trigger("start");
+
+
+            if (opt.timeout) {
+                self._timeout = setTimeout(bind(self.onTimeout, self), opt.timeout);
+            }
+
+            if (opt.jsonp) {
+                self.createJsonp();
+            }
+
+            if (globalEvents.trigger("before-send", opt, transport) === false) {
+                self._promise = Promise.reject();
+            }
+            if (opt.beforeSend && opt.beforeSend.call(opt.callbackScope, opt, transport) === false) {
+                self._promise = Promise.reject();
+            }
+
+            if (!self._promise) {
+                async(transport.send, transport);
+
+                deferred.abort = bind(self.abort, self);
+                deferred.always(self.destroy, self);
+
+                self._promise = deferred;
+            }
+        },
+
 
         promise: function() {
             return this._promise;
@@ -1143,14 +1818,7 @@ var ajax = function(){
                 self._form.parentNode.removeChild(self._form);
             }
 
-            self._transport.destroy();
-
-            self._transport = null;
-            self._opt = null;
-            self._deferred = null;
-            self._promise = null;
-            self._timeout = null;
-            self._form = null;
+            self._transport.$destroy();
 
             if (self._jsonpName) {
                 if (typeof window != strUndef) {
@@ -1161,8 +1829,57 @@ var ajax = function(){
                 }
             }
         }
-    }, true, false);
 
+    }, {
+
+
+        global: globalEvents
+    });
+
+
+}());
+
+
+
+
+
+
+
+/*
+* Contents of this file are partially taken from jQuery
+*/
+
+var ajax = function(){
+
+    
+
+    var defaults    = {
+            url:            null,
+            data:           null,
+            method:         "GET",
+            headers:        null,
+            username:       null,
+            password:       null,
+            cache:          null,
+            dataType:       null,
+            timeout:        0,
+            contentType:    "application/x-www-form-urlencoded",
+            xhrFields:      null,
+            jsonp:          false,
+            jsonpParam:     null,
+            jsonpCallback:  null,
+            transport:      null,
+            replace:        false,
+            selector:       null,
+            form:           null,
+            beforeSend:     null,
+            progress:       null,
+            uploadProgress: null,
+            processResponse:null,
+            callbackScope:  null
+        },
+
+        defaultSetup    = {};
 
 
     var ajax    = function(url, opt) {
@@ -1200,7 +1917,7 @@ var ajax = function(){
             opt.method = opt.method.toUpperCase();
         }
 
-        return (new AJAX(opt)).promise();
+        return (new MetaphorJs.Ajax(opt)).promise();
     };
 
     ajax.setup  = function(opt) {
@@ -1208,11 +1925,11 @@ var ajax = function(){
     };
 
     ajax.on     = function() {
-        globalEvents.on.apply(globalEvents, arguments);
+        MetaphorJs.Ajax.global.on.apply(globalEvents, arguments);
     };
 
     ajax.un     = function() {
-        globalEvents.un.apply(globalEvents, arguments);
+        MetaphorJs.Ajax.global.un.apply(globalEvents, arguments);
     };
 
     ajax.get    = function(url, opt) {
@@ -1259,288 +1976,6 @@ var ajax = function(){
         return ajax(null, opt);
     };
 
-
-
-
-
-
-
-
-
-    var XHRTransport     = function(opt, deferred, ajax) {
-
-        var self    = this,
-            xhr;
-
-        self._xhr = xhr     = createXHR();
-        self._deferred      = deferred;
-        self._opt           = opt;
-        self._ajax          = ajax;
-
-        if (opt.progress) {
-            addListener(xhr, "progress", bind(opt.progress, opt.callbackScope));
-        }
-        if (opt.uploadProgress && xhr.upload) {
-            addListener(xhr.upload, "progress", bind(opt.uploadProgress, opt.callbackScope));
-        }
-
-        xhr.onreadystatechange = bind(self.onReadyStateChange, self);
-    };
-
-    extend(XHRTransport.prototype, {
-
-        _xhr: null,
-        _deferred: null,
-        _ajax: null,
-
-        setHeaders: function() {
-
-            var self = this,
-                opt = self._opt,
-                xhr = self._xhr,
-                i;
-
-            if (opt.xhrFields) {
-                for (i in opt.xhrFields) {
-                    xhr[i] = opt.xhrFields[i];
-                }
-            }
-            if (opt.data && opt.contentType) {
-                xhr.setRequestHeader("Content-Type", opt.contentType);
-            }
-            xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-            xhr.setRequestHeader("Accept",
-                opt.dataType && accepts[opt.dataType] ?
-                accepts[opt.dataType] + ", */*; q=0.01" :
-                accepts._default
-            );
-            for (i in opt.headers) {
-                xhr.setRequestHeader(i, opt.headers[i]);
-            }
-
-        },
-
-        onReadyStateChange: function() {
-
-            var self        = this,
-                xhr         = self._xhr,
-                deferred    = self._deferred;
-
-            if (xhr.readyState === 0) {
-                xhr.onreadystatechange = emptyFn;
-                deferred.resolve(xhr);
-                return;
-            }
-
-            if (xhr.readyState === 4) {
-                xhr.onreadystatechange = emptyFn;
-
-                if (httpSuccess(xhr)) {
-
-                    self._ajax.processResponse(
-                        isString(xhr.responseText) ? xhr.responseText : undf,
-                        xhr.getResponseHeader("content-type") || ''
-                    );
-                }
-                else {
-                    deferred.reject(xhr);
-                }
-            }
-        },
-
-        abort: function() {
-            var self    = this;
-            self._xhr.onreadystatechange = emptyFn;
-            self._xhr.abort();
-        },
-
-        send: function() {
-
-            var self    = this,
-                opt     = self._opt;
-
-            try {
-                self._xhr.open(opt.method, opt.url, true, opt.username, opt.password);
-                self.setHeaders();
-                self._xhr.send(opt.data);
-            }
-            catch (thrownError) {
-                if (self._deferred) {
-                    self._deferred.reject(thrownError);
-                }
-            }
-        },
-
-        destroy: function() {
-            var self    = this;
-
-            self._xhr = null;
-            self._deferred = null;
-            self._opt = null;
-            self._ajax = null;
-
-        }
-
-    }, true, false);
-
-
-
-    var ScriptTransport  = function(opt, deferred, ajax) {
-
-
-        var self        = this;
-
-        self._opt       = opt;
-        self._ajax      = ajax;
-        self._deferred  = deferred;
-
-    };
-
-    extend(ScriptTransport.prototype, {
-
-        _opt: null,
-        _deferred: null,
-        _ajax: null,
-        _el: null,
-
-        send: function() {
-
-            var self    = this,
-                script  = document.createElement("script");
-
-            setAttr(script, "async", "async");
-            setAttr(script, "charset", "utf-8");
-            setAttr(script, "src", self._opt.url);
-
-            addListener(script, "load", bind(self.onLoad, self));
-            addListener(script, "error", bind(self.onError, self));
-
-            document.head.appendChild(script);
-
-            self._el = script;
-        },
-
-        onLoad: function(evt) {
-            if (this._deferred) { // haven't been destroyed yet
-                this._deferred.resolve(evt);
-            }
-        },
-
-        onError: function(evt) {
-            this._deferred.reject(evt);
-        },
-
-        abort: function() {
-            var self    = this;
-
-            if (self._el.parentNode) {
-                self._el.parentNode.removeChild(self._el);
-            }
-        },
-
-        destroy: function() {
-
-            var self    = this;
-
-            if (self._el.parentNode) {
-                self._el.parentNode.removeChild(self._el);
-            }
-
-            self._el = null;
-            self._opt = null;
-            self._ajax = null;
-            self._deferred = null;
-
-        }
-
-    }, true, false);
-
-
-
-    var IframeTransport = function(opt, deferred, ajax) {
-        var self        = this;
-
-        self._opt       = opt;
-        self._ajax      = ajax;
-        self._deferred  = deferred;
-    };
-
-    extend(IframeTransport.prototype, {
-
-        _opt: null,
-        _deferred: null,
-        _ajax: null,
-        _el: null,
-
-        send: function() {
-
-            var self    = this,
-                frame   = document.createElement("iframe"),
-                id      = "frame-" + nextUid(),
-                form    = self._opt.form;
-
-            setAttr(frame, "id", id);
-            setAttr(frame, "name", id);
-            frame.style.display = "none";
-            document.body.appendChild(frame);
-
-            setAttr(form, "action", self._opt.url);
-            setAttr(form, "target", id);
-
-            addListener(frame, "load", bind(self.onLoad, self));
-            addListener(frame, "error", bind(self.onError, self));
-
-            self._el = frame;
-
-            try {
-                form.submit();
-            }
-            catch (thrownError) {
-                self._deferred.reject(thrownError);
-            }
-        },
-
-        onLoad: function() {
-
-            var self    = this,
-                frame   = self._el,
-                doc,
-                data;
-
-            if (self._opt && !self._opt.jsonp) {
-                doc		= frame.contentDocument || frame.contentWindow.document;
-                data    = doc.body.innerHTML;
-                self._ajax.processResponse(data);
-            }
-        },
-
-        onError: function(evt) {
-            this._deferred.reject(evt);
-        },
-
-        abort: function() {
-            var self    = this;
-
-            if (self._el.parentNode) {
-                self._el.parentNode.removeChild(self._el);
-            }
-        },
-
-        destroy: function() {
-            var self    = this;
-
-            if (self._el.parentNode) {
-                self._el.parentNode.removeChild(self._el);
-            }
-
-            self._el = null;
-            self._opt = null;
-            self._ajax = null;
-            self._deferred = null;
-
-        }
-
-    }, true, false);
 
     return ajax;
 }();

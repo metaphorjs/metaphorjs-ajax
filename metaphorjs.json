@@ -45,12 +45,14 @@
                     "args": ["window"]
                 },
                 "metaphorjs-observable": "Observable",
-                "metaphorjs-promise": "Promise"
+                "metaphorjs-promise": "Promise",
+                "metaphorjs-class": "Class"
             },
             "omit": [
                 "metaphorjs-observable/src/lib/Observable.js",
                 "metaphorjs-promise/src/lib/Promise.js",
-                "metaphorjs-select/src/func/select.js"
+                "metaphorjs-select/src/func/select.js",
+                "metaphorjs-class/src/lib/Class.js"
             ],
             "returns": "ajax"
         },
@@ -67,14 +69,16 @@
             "omit": [
                 "metaphorjs-observable/src/lib/Observable.js",
                 "metaphorjs-promise/src/lib/Promise.js",
-                "metaphorjs-select/src/func/select.js"
+                "metaphorjs-select/src/func/select.js",
+                "metaphorjs-class/src/lib/Class.js"
             ],
             "define": {
                 "name": "metaphorjs-ajax",
                 "deps": {
                     "metaphorjs-observable": "Observable",
                     "metaphorjs-promise": "Promise",
-                    "metaphorjs-select": "select"
+                    "metaphorjs-select": "select",
+                    "metaphorjs-class": "Class"
                 }
             }
         }
