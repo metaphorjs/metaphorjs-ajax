@@ -64,10 +64,23 @@ module.exports = (function(){
             self._ajax          = ajax;
 
             if (opt.progress) {
-                addListener(xhr, "progress", bind(opt.progress, opt.context));
+                /*if (xhr.addEventListener) {
+                    xhr.addEventListener("progress", bind(opt.progress, opt.context));
+                }
+                else {
+                    addListener(xhr, "progress", bind(opt.progress, opt.context));
+                }*/
+                xhr.onprogress = bind(opt.progress, opt.context);
             }
             if (opt.uploadProgress && xhr.upload) {
-                addListener(xhr.upload, "progress", bind(opt.uploadProgress, opt.context));
+                /*if (xhr.addEventListener) {
+                    xhr.upload.addEventListener("progress", bind(opt.uploadProgress, opt.context));
+                }
+                else {
+                    addListener(xhr.upload, "progress", bind(opt.uploadProgress, opt.context));
+                }*/
+
+                xhr.upload.onprogress = bind(opt.uploadProgress, opt.context);
             }
 
             xhr.onreadystatechange = bind(self.onReadyStateChange, self);
