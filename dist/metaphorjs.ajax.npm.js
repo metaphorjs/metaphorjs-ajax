@@ -730,22 +730,52 @@ function isPrimitive(value) {
 
 
 
-function error(e) {
+var error = (function(){
 
-    var stack = e.stack || (new Error).stack;
+    var listeners = [];
 
-    if (typeof console != strUndef && console.log) {
-        async(function(){
-            console.log(e);
-            if (stack) {
-                console.log(stack);
+    var error = function error(e) {
+
+        var i, l;
+
+        for (i = 0, l = listeners.length; i < l; i++) {
+            listeners[i][0].call(listeners[i][1], e);
+        }
+
+        var stack = e.stack || (new Error).stack;
+
+        if (typeof console != strUndef && console.log) {
+            async(function(){
+                console.log(e);
+                if (stack) {
+                    console.log(stack);
+                }
+            });
+        }
+        else {
+            throw e;
+        }
+    };
+
+    error.on = function(fn, context) {
+        error.un(fn, context);
+        listeners.push([fn, context]);
+    };
+
+    error.un = function(fn, context) {
+        var i, l;
+        for (i = 0, l = listeners.length; i < l; i++) {
+            if (listeners[i][0] === fn && listeners[i][1] === context) {
+                listeners.splice(i, 1);
+                break;
             }
-        });
-    }
-    else {
-        throw e;
-    }
-};
+        }
+    };
+
+    return error;
+}());
+
+
 
 
 var nextUid = function(){
@@ -928,6 +958,7 @@ extend(DomEvent.prototype, {
         var e = this.originalEvent;
 
         this.isPropagationStopped = returnTrue;
+        e.cancelBubble = true;
 
         if ( e && e.stopPropagation ) {
             e.stopPropagation();
@@ -1355,6 +1386,7 @@ defineClass({
     _deferred: null,
     _ajax: null,
     _el: null,
+    _sent: false,
 
     $init: function(opt, deferred, ajax) {
         var self        = this;
@@ -1384,12 +1416,27 @@ defineClass({
 
         self._el = frame;
 
-        try {
-            form.submit();
-        }
-        catch (thrownError) {
-            self._deferred.reject(thrownError);
-        }
+        var tries = 0;
+
+        var submit = function() {
+
+            tries++;
+
+            try {
+                form.submit();
+                self._sent = true;
+            }
+            catch (thrownError) {
+                if (tries > 2) {
+                    self._deferred.reject(thrownError);
+                }
+                else {
+                    async(submit, null, [], 1000);
+                }
+            }
+        };
+
+        submit();
     },
 
     onLoad: function() {
@@ -1398,6 +1445,10 @@ defineClass({
             frame   = self._el,
             doc,
             data;
+
+        if (!self._sent) {
+            return;
+        }
 
         if (self._opt && !self._opt.jsonp) {
 
@@ -1413,6 +1464,11 @@ defineClass({
     },
 
     onError: function(evt) {
+
+        if (!this._sent) {
+            return;
+        }
+
         this._deferred.reject(evt);
     },
 
@@ -1521,6 +1577,16 @@ defineClass({
             var params = [];
             buildParams(data, params, null);
             return params.join("&").replace(/%20/g, "+");
+        },
+
+        fixUrlDomain    = function(url) {
+
+            if (url.substr(0,1) == "/") {
+                return location.protocol + "//" + location.host + url;
+            }
+            else {
+                return url;
+            }
         },
 
         prepareUrl  = function(url, opt) {
@@ -1635,6 +1701,10 @@ defineClass({
         _removeForm: false,
 
         $init: function(opt) {
+
+            if (opt.url) {
+                opt.url = fixUrlDomain(opt.url);
+            }
 
             var self        = this,
                 href        = window ? window.location.href : "",
@@ -1807,7 +1877,7 @@ defineClass({
                     file = item[1];
                 }
                 else {
-                    if (item instanceof File) {
+                    if (window.File && item instanceof File) {
                         name = "upload" + (l > 1 ? "[]" : "");
                     }
                     else {
@@ -1816,7 +1886,7 @@ defineClass({
                     file = item;
                 }
 
-                if (!(file instanceof File)) {
+                if (!window.File || !(file instanceof File)) {
                     input = file;
                     file = null;
                 }

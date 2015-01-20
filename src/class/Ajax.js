@@ -106,6 +106,16 @@ module.exports = (function(){
             return params.join("&").replace(/%20/g, "+");
         },
 
+        fixUrlDomain    = function(url) {
+
+            if (url.substr(0,1) == "/") {
+                return location.protocol + "//" + location.host + url;
+            }
+            else {
+                return url;
+            }
+        },
+
         prepareUrl  = function(url, opt) {
 
             url.replace(rhash, "");
@@ -218,6 +228,10 @@ module.exports = (function(){
         _removeForm: false,
 
         $init: function(opt) {
+
+            if (opt.url) {
+                opt.url = fixUrlDomain(opt.url);
+            }
 
             var self        = this,
                 href        = window ? window.location.href : "",
@@ -390,7 +404,7 @@ module.exports = (function(){
                     file = item[1];
                 }
                 else {
-                    if (item instanceof File) {
+                    if (window.File && item instanceof File) {
                         name = "upload" + (l > 1 ? "[]" : "");
                     }
                     else {
@@ -399,7 +413,7 @@ module.exports = (function(){
                     file = item;
                 }
 
-                if (!(file instanceof File)) {
+                if (!window.File || !(file instanceof File)) {
                     input = file;
                     file = null;
                 }

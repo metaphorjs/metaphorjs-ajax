@@ -4,7 +4,8 @@ var defineClass = require("metaphorjs-class/src/func/defineClass.js"),
     addListener = require("metaphorjs/src/func/event/addListener.js"),
     error       = require("metaphorjs/src/func/error.js"),
     nextUid     = require("metaphorjs/src/func/nextUid.js"),
-    setAttr     = require("metaphorjs/src/func/dom/setAttr.js");
+    setAttr     = require("metaphorjs/src/func/dom/setAttr.js"),
+    async       = require("metaphorjs/src/func/async.js");
 
 
 module.exports = defineClass({
@@ -16,6 +17,7 @@ module.exports = defineClass({
     _deferred: null,
     _ajax: null,
     _el: null,
+    _sent: false,
 
     $init: function(opt, deferred, ajax) {
         var self        = this;
@@ -45,12 +47,27 @@ module.exports = defineClass({
 
         self._el = frame;
 
-        try {
-            form.submit();
-        }
-        catch (thrownError) {
-            self._deferred.reject(thrownError);
-        }
+        var tries = 0;
+
+        var submit = function() {
+
+            tries++;
+
+            try {
+                form.submit();
+                self._sent = true;
+            }
+            catch (thrownError) {
+                if (tries > 2) {
+                    self._deferred.reject(thrownError);
+                }
+                else {
+                    async(submit, null, [], 1000);
+                }
+            }
+        };
+
+        submit();
     },
 
     onLoad: function() {
@@ -59,6 +76,10 @@ module.exports = defineClass({
             frame   = self._el,
             doc,
             data;
+
+        if (!self._sent) {
+            return;
+        }
 
         if (self._opt && !self._opt.jsonp) {
 
@@ -74,6 +95,11 @@ module.exports = defineClass({
     },
 
     onError: function(evt) {
+
+        if (!this._sent) {
+            return;
+        }
+
         this._deferred.reject(evt);
     },
 
