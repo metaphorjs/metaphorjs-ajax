@@ -87,11 +87,11 @@ module.exports = function(){
     };
 
     ajax.on     = function() {
-        MetaphorJs.Ajax.global.on.apply(globalEvents, arguments);
+        MetaphorJs.Ajax.global.on.apply(MetaphorJs.Ajax.global, arguments);
     };
 
     ajax.un     = function() {
-        MetaphorJs.Ajax.global.un.apply(globalEvents, arguments);
+        MetaphorJs.Ajax.global.un.apply(MetaphorJs.Ajax.global, arguments);
     };
 
     ajax.get    = function(url, opt) {

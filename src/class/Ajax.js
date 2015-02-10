@@ -487,7 +487,7 @@ module.exports = (function(){
             data    = processData(data, opt, contentType);
 
             if (globalEvents.hasListener("process-response")) {
-                data    = globalEvents.trigger("process-response", data, self.$$promise);
+                globalEvents.trigger("process-response", data, self.$$promise);
             }
 
             if (opt.processResponse) {

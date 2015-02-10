@@ -119,7 +119,8 @@ var extend = function(){
         }
 
         while (args.length) {
-            if (src = args.shift()) {
+            // IE < 9 fix: check for hasOwnProperty presence
+            if ((src = args.shift()) && src.hasOwnProperty) {
                 for (k in src) {
 
                     if (src.hasOwnProperty(k) && (value = src[k]) !== undf) {
@@ -1981,7 +1982,7 @@ defineClass({
             data    = processData(data, opt, contentType);
 
             if (globalEvents.hasListener("process-response")) {
-                data    = globalEvents.trigger("process-response", data, self.$$promise);
+                globalEvents.trigger("process-response", data, self.$$promise);
             }
 
             if (opt.processResponse) {
@@ -2145,11 +2146,11 @@ var ajax = function(){
     };
 
     ajax.on     = function() {
-        MetaphorJs.Ajax.global.on.apply(globalEvents, arguments);
+        MetaphorJs.Ajax.global.on.apply(MetaphorJs.Ajax.global, arguments);
     };
 
     ajax.un     = function() {
-        MetaphorJs.Ajax.global.un.apply(globalEvents, arguments);
+        MetaphorJs.Ajax.global.un.apply(MetaphorJs.Ajax.global, arguments);
     };
 
     ajax.get    = function(url, opt) {
