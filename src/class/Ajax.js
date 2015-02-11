@@ -268,19 +268,22 @@ module.exports = (function(){
             }
 
             if (opt.form && opt.transport != "iframe") {
-                if (opt.method == "POST") {
+                if (opt.method == "POST" || opt.method == "PUT") {
                     opt.data = new FormData(opt.form);
                 }
                 else {
+                    opt.contentType = "application/x-www-form-urlencoded";
                     opt.data = serializeForm(opt.form);
                 }
             }
-            else if (opt.method == "POST" && formDataSupport) {
+            else if ((opt.method == "POST" || opt.method == "PUT") && formDataSupport) {
                 var d = opt.data,
                     k;
-                opt.data = new FormData;
 
                 if (isPlainObject(d)) {
+
+                    opt.data = new FormData;
+
                     for (k in d) {
                         opt.data.append(k, d[k]);
                     }

@@ -2873,11 +2873,13 @@ var error = (function(){
             listeners[i][0].call(listeners[i][1], e);
         }
 
-        var stack = e.stack || (new Error).stack;
+        var stack = (e ? e.stack : null) || (new Error).stack;
 
         if (typeof console != strUndef && console.log) {
             async(function(){
-                console.log(e);
+                if (e) {
+                    console.log(e);
+                }
                 if (stack) {
                     console.log(stack);
                 }
@@ -4635,19 +4637,22 @@ defineClass({
             }
 
             if (opt.form && opt.transport != "iframe") {
-                if (opt.method == "POST") {
+                if (opt.method == "POST" || opt.method == "PUT") {
                     opt.data = new FormData(opt.form);
                 }
                 else {
+                    opt.contentType = "application/x-www-form-urlencoded";
                     opt.data = serializeForm(opt.form);
                 }
             }
-            else if (opt.method == "POST" && formDataSupport) {
+            else if ((opt.method == "POST" || opt.method == "PUT") && formDataSupport) {
                 var d = opt.data,
                     k;
-                opt.data = new FormData;
 
                 if (isPlainObject(d)) {
+
+                    opt.data = new FormData;
+
                     for (k in d) {
                         opt.data.append(k, d[k]);
                     }
