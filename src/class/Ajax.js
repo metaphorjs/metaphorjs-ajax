@@ -18,7 +18,8 @@ var defineClass = require("metaphorjs-class/src/func/defineClass.js"),
     strUndef    = require("metaphorjs/src/var/strUndef.js"),
     nextUid     = require("metaphorjs/src/func/nextUid.js"),
     getAttr     = require("metaphorjs/src/func/dom/getAttr.js"),
-    setAttr     = require("metaphorjs/src/func/dom/setAttr.js");
+    setAttr     = require("metaphorjs/src/func/dom/setAttr.js"),
+    serializeParam = require("../func/serializeParam.js");
 
 require("metaphorjs-promise/src/mixin/Promise.js");
 require("./transport/XHR.js");
@@ -79,32 +80,6 @@ module.exports = (function(){
             return data + "";
         },
 
-        buildParams     = function(data, params, name) {
-
-            var i, len;
-
-            if (isPrimitive(data) && name) {
-                params.push(encodeURIComponent(name) + "=" + encodeURIComponent(""+data));
-            }
-            else if (isArray(data) && name) {
-                for (i = 0, len = data.length; i < len; i++) {
-                    buildParams(data[i], params, name + "["+i+"]");
-                }
-            }
-            else if (isObject(data)) {
-                for (i in data) {
-                    if (data.hasOwnProperty(i)) {
-                        buildParams(data[i], params, name ? name + "["+i+"]" : i);
-                    }
-                }
-            }
-        },
-
-        prepareParams   = function(data) {
-            var params = [];
-            buildParams(data, params, null);
-            return params.join("&").replace(/%20/g, "+");
-        },
 
         fixUrlDomain    = function(url) {
 
@@ -131,14 +106,11 @@ module.exports = (function(){
                       url + (rquery.test(url) ? "&" : "?" ) + "_=" + stamp;
             }
 
-            if (opt.data && (!formDataSupport || !(opt.data instanceof window.FormData))) {
+            if (opt.data && opt.method != "POST" && !opt.contentType && (!formDataSupport || !(opt.data instanceof window.FormData))) {
 
-                opt.data = !isString(opt.data) ? prepareParams(opt.data) : opt.data;
-
-                if (rgethead.test(opt.method)) {
-                    url += (rquery.test(url) ? "&" : "?") + opt.data;
-                    opt.data = null;
-                }
+                opt.data = !isString(opt.data) ? serializeParam(opt.data) : opt.data;
+                url += (rquery.test(url) ? "&" : "?") + opt.data;
+                opt.data = null;
             }
 
             return url;
@@ -169,10 +141,11 @@ module.exports = (function(){
             }
         },
 
+
         // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest
         serializeForm   = function(form) {
 
-            var oField, sFieldType, nFile, sSearch = "";
+            var oField, sFieldType, nFile, obj = {};
 
             for (var nItem = 0; nItem < form.elements.length; nItem++) {
 
@@ -188,15 +161,14 @@ module.exports = (function(){
                 if (sFieldType === "FILE") {
                     for (nFile = 0;
                          nFile < oField.files.length;
-                         sSearch += "&" + encodeURIComponent(oField.name) + "=" +
-                                    encodeURIComponent(oField.files[nFile++].name)){}
+                         obj[oField.name] = oField.files[nFile++].name){}
 
                 } else if ((sFieldType !== "RADIO" && sFieldType !== "CHECKBOX") || oField.checked) {
-                    sSearch += "&" + encodeURIComponent(oField.name) + "=" + encodeURIComponent(oField.value);
+                    obj[oField.name] = oField.value;
                 }
             }
 
-            return sSearch;
+            return serializeParam(obj);
         },
 
         globalEval = function(code){
@@ -267,8 +239,8 @@ module.exports = (function(){
                 }
             }
 
-            if (opt.form && opt.transport != "iframe") {
-                if (opt.method == "POST" || opt.method == "PUT") {
+            if (opt.form && opt.transport != "iframe" && opt.method == "POST") {
+                if (formDataSupport) {
                     opt.data = new FormData(opt.form);
                 }
                 else {
@@ -276,17 +248,19 @@ module.exports = (function(){
                     opt.data = serializeForm(opt.form);
                 }
             }
-            else if ((opt.method == "POST" || opt.method == "PUT") && formDataSupport) {
+            else if (opt.contentType == "json") {
+                opt.contentType = "text/plain";
+                opt.data = isString(opt.data) ? opt.data : JSON.stringify(opt.data);
+            }
+            else if (isPlainObject(opt.data) && opt.method == "POST" && formDataSupport) {
+
                 var d = opt.data,
                     k;
 
-                if (isPlainObject(d)) {
+                opt.data = new FormData;
 
-                    opt.data = new FormData;
-
-                    for (k in d) {
-                        opt.data.append(k, d[k]);
-                    }
+                for (k in d) {
+                    opt.data.append(k, d[k]);
                 }
             }
 

@@ -23,9 +23,9 @@ module.exports = function(){
             username:       null,
             password:       null,
             cache:          null,
-            dataType:       null,
+            dataType:       null, // response data type
             timeout:        0,
-            contentType:    null, //"application/x-www-form-urlencoded",
+            contentType:    null, // request data type
             xhrFields:      null,
             jsonp:          false,
             jsonpParam:     null,

@@ -3692,6 +3692,71 @@ function setAttr(el, name, value) {
 };
 
 
+
+// partly from jQuery serialize.js
+
+var serializeParam = function(){
+
+    var r20 = /%20/g,
+        rbracket = /\[\]$/;
+
+    function buildParams(prefix, obj, add) {
+        var name,
+            i, l, v;
+
+        if (isArray(obj)) {
+            // Serialize array item.
+
+            for (i = 0, l = obj.length; i < l; i++) {
+                v = obj[i];
+
+                if (rbracket.test(prefix)) {
+                    // Treat each array item as a scalar.
+                    add(prefix, v);
+
+                } else {
+                    // Item is non-scalar (array or object), encode its numeric index.
+                    buildParams(
+                        prefix + "[" + ( typeof v === "object" ? i : "" ) + "]",
+                        v,
+                        add
+                    );
+                }
+            }
+        } else if (isPlainObject(obj)) {
+            // Serialize object item.
+            for (name in obj) {
+                buildParams(prefix + "[" + name + "]", obj[ name ], add);
+            }
+
+        } else {
+            // Serialize scalar item.
+            add(prefix, obj);
+        }
+    }
+
+    return function(obj) {
+
+        var prefix,
+            s = [],
+            add = function( key, value ) {
+                // If value is a function, invoke it and return its value
+                value = isFunction(value) ? value() : (value == null ? "" : value);
+                s[s.length] = encodeURIComponent( key ) + "=" + encodeURIComponent( value );
+            };
+
+        for ( prefix in obj ) {
+            buildParams(prefix, obj[prefix], add);
+        }
+
+        // Return the resulting serialization
+        return s.join( "&" ).replace( r20, "+" );
+    };
+
+
+}();
+
+
 /**
  * @mixin Promise
  */
@@ -4448,32 +4513,6 @@ defineClass({
             return data + "";
         },
 
-        buildParams     = function(data, params, name) {
-
-            var i, len;
-
-            if (isPrimitive(data) && name) {
-                params.push(encodeURIComponent(name) + "=" + encodeURIComponent(""+data));
-            }
-            else if (isArray(data) && name) {
-                for (i = 0, len = data.length; i < len; i++) {
-                    buildParams(data[i], params, name + "["+i+"]");
-                }
-            }
-            else if (isObject(data)) {
-                for (i in data) {
-                    if (data.hasOwnProperty(i)) {
-                        buildParams(data[i], params, name ? name + "["+i+"]" : i);
-                    }
-                }
-            }
-        },
-
-        prepareParams   = function(data) {
-            var params = [];
-            buildParams(data, params, null);
-            return params.join("&").replace(/%20/g, "+");
-        },
 
         fixUrlDomain    = function(url) {
 
@@ -4500,14 +4539,11 @@ defineClass({
                       url + (rquery.test(url) ? "&" : "?" ) + "_=" + stamp;
             }
 
-            if (opt.data && (!formDataSupport || !(opt.data instanceof window.FormData))) {
+            if (opt.data && opt.method != "POST" && !opt.contentType && (!formDataSupport || !(opt.data instanceof window.FormData))) {
 
-                opt.data = !isString(opt.data) ? prepareParams(opt.data) : opt.data;
-
-                if (rgethead.test(opt.method)) {
-                    url += (rquery.test(url) ? "&" : "?") + opt.data;
-                    opt.data = null;
-                }
+                opt.data = !isString(opt.data) ? serializeParam(opt.data) : opt.data;
+                url += (rquery.test(url) ? "&" : "?") + opt.data;
+                opt.data = null;
             }
 
             return url;
@@ -4538,10 +4574,11 @@ defineClass({
             }
         },
 
+
         // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest
         serializeForm   = function(form) {
 
-            var oField, sFieldType, nFile, sSearch = "";
+            var oField, sFieldType, nFile, obj = {};
 
             for (var nItem = 0; nItem < form.elements.length; nItem++) {
 
@@ -4557,15 +4594,14 @@ defineClass({
                 if (sFieldType === "FILE") {
                     for (nFile = 0;
                          nFile < oField.files.length;
-                         sSearch += "&" + encodeURIComponent(oField.name) + "=" +
-                                    encodeURIComponent(oField.files[nFile++].name)){}
+                         obj[oField.name] = oField.files[nFile++].name){}
 
                 } else if ((sFieldType !== "RADIO" && sFieldType !== "CHECKBOX") || oField.checked) {
-                    sSearch += "&" + encodeURIComponent(oField.name) + "=" + encodeURIComponent(oField.value);
+                    obj[oField.name] = oField.value;
                 }
             }
 
-            return sSearch;
+            return serializeParam(obj);
         },
 
         globalEval = function(code){
@@ -4636,8 +4672,8 @@ defineClass({
                 }
             }
 
-            if (opt.form && opt.transport != "iframe") {
-                if (opt.method == "POST" || opt.method == "PUT") {
+            if (opt.form && opt.transport != "iframe" && opt.method == "POST") {
+                if (formDataSupport) {
                     opt.data = new FormData(opt.form);
                 }
                 else {
@@ -4645,17 +4681,19 @@ defineClass({
                     opt.data = serializeForm(opt.form);
                 }
             }
-            else if ((opt.method == "POST" || opt.method == "PUT") && formDataSupport) {
+            else if (opt.contentType == "json") {
+                opt.contentType = "text/plain";
+                opt.data = isString(opt.data) ? opt.data : JSON.stringify(opt.data);
+            }
+            else if (isPlainObject(opt.data) && opt.method == "POST" && formDataSupport) {
+
                 var d = opt.data,
                     k;
 
-                if (isPlainObject(d)) {
+                opt.data = new FormData;
 
-                    opt.data = new FormData;
-
-                    for (k in d) {
-                        opt.data.append(k, d[k]);
-                    }
+                for (k in d) {
+                    opt.data.append(k, d[k]);
                 }
             }
 
@@ -4959,9 +4997,9 @@ var ajax = function(){
             username:       null,
             password:       null,
             cache:          null,
-            dataType:       null,
+            dataType:       null, // response data type
             timeout:        0,
-            contentType:    null, //"application/x-www-form-urlencoded",
+            contentType:    null, // request data type
             xhrFields:      null,
             jsonp:          false,
             jsonpParam:     null,
