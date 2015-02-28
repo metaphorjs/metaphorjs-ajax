@@ -719,13 +719,6 @@ function isFunction(value) {
 
 
 
-function isPrimitive(value) {
-    var vt = varType(value);
-    return vt < 3 && vt > -1;
-};
-
-
-
 var error = (function(){
 
     var listeners = [];

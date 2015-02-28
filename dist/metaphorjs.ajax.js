@@ -3101,6 +3101,10 @@ var Promise = function(){
             return this._state == FULFILLED;
         },
 
+        isResolved: function() {
+            return this._state == FULFILLED;
+        },
+
         isRejected: function() {
             return this._state == REJECTED;
         },
@@ -3679,13 +3683,6 @@ var Promise = function(){
 }();
 
 
-
-
-
-function isPrimitive(value) {
-    var vt = varType(value);
-    return vt < 3 && vt > -1;
-};
 
 function setAttr(el, name, value) {
     return el.setAttribute(name, value);
