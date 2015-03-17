@@ -728,8 +728,8 @@ var Class = function(){
                 return;
             }
 
-            prototype.$plugins = null;
-            prototype.$pluginMap = null;
+            prototype.$plugins      = null;
+            prototype.$pluginMap    = null;
 
             if (pp.$beforeInit) {
                 prototype.$beforeInit = pp.$beforeInit.slice();
@@ -4812,7 +4812,7 @@ defineClass({
                 }
                 else {
                     if (window.File && item instanceof File) {
-                        name = "upload" + (l > 1 ? "[]" : "");
+                        name = item.uploadName || ("upload" + (l > 1 ? "[]" : ""));
                     }
                     else {
                         name = item.name || "upload" + (l > 1 ? "[]" : "");
