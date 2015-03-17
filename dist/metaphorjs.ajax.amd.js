@@ -1644,7 +1644,7 @@ defineClass({
 
             url.replace(rhash, "");
 
-            if (opt.cache === false) {
+            if (!opt.allowCache) {
 
                 var stamp   = (new Date).getTime();
 
