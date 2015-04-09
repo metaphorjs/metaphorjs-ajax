@@ -697,13 +697,14 @@ var Class = function(){
                     self    = this,
                     prev    = self.$super;
 
+                if (self.$destroyed) {
+                    self.$super = null;
+                    return null;
+                }
+
                 self.$super     = $super;
                 ret             = fn.apply(self, arguments);
                 self.$super     = prev;
-
-                if (self.$destroyed) {
-                    self.$super = null;
-                }
 
                 return ret;
             };
@@ -914,8 +915,8 @@ var Class = function(){
             $intercept: function(method, fn, newContext, when, replaceValue) {
                 var self = this,
                     orig = self[method];
-                self[method] = intercept(orig, fn, newContext || self, self, when, replaceValue);
-                return orig;
+                self[method] = intercept(orig || emptyFn, fn, newContext || self, self, when, replaceValue);
+                return orig || emptyFn;
             },
 
             /**
@@ -925,7 +926,7 @@ var Class = function(){
             $implement: function(methods) {
                 var $self = this.constructor;
                 if ($self && $self.$parent) {
-                    preparePrototype(this, methods, $self.$parent);
+                    preparePrototype(this, methods, $self.$parent, true);
                 }
             },
 
@@ -944,6 +945,27 @@ var Class = function(){
              */
             $getPlugin: function(cls) {
                 return this.$pluginMap[ns.normalize(cls)] || null;
+            },
+
+            /**
+             * @param {function} fn
+             * @returns {Function}
+             */
+            $bind: function(fn) {
+                var self = this;
+                return function() {
+                    if (self.$isDestroyed()) {
+                        return;
+                    }
+                    return fn.apply(self, arguments);
+                };
+            },
+
+            /**
+             * @return bool
+             */
+            $isDestroyed: function() {
+                return self.$destroying || self.$destroyed;
             },
 
             /**
@@ -2412,6 +2434,10 @@ var ObservableEvent = (function(){
                 args = self._prepareArgs(l, arguments);
 
                 if (filter && filter.call(filterContext, l, args, self) === false) {
+                    continue;
+                }
+
+                if (l.filter && l.filter.apply(l.filterContext || l.context, args) === false) {
                     continue;
                 }
 
@@ -4160,22 +4186,9 @@ var addListener = function(){
             self._ajax          = ajax;
 
             if (opt.progress) {
-                /*if (xhr.addEventListener) {
-                    xhr.addEventListener("progress", bind(opt.progress, opt.context));
-                }
-                else {
-                    addListener(xhr, "progress", bind(opt.progress, opt.context));
-                }*/
                 xhr.onprogress = bind(opt.progress, opt.context);
             }
             if (opt.uploadProgress && xhr.upload) {
-                /*if (xhr.addEventListener) {
-                    xhr.upload.addEventListener("progress", bind(opt.uploadProgress, opt.context));
-                }
-                else {
-                    addListener(xhr.upload, "progress", bind(opt.uploadProgress, opt.context));
-                }*/
-
                 xhr.upload.onprogress = bind(opt.uploadProgress, opt.context);
             }
 
@@ -4232,6 +4245,17 @@ var addListener = function(){
                     );
                 }
                 else {
+
+                    xhr.responseData = null;
+
+                    try {
+                        xhr.responseData = self._ajax.returnResponse(
+                            isString(xhr.responseText) ? xhr.responseText : undf,
+                            xhr.getResponseHeader("content-type") || ''
+                        );
+                    }
+                    catch (thrownErr) {}
+
                     deferred.reject(xhr);
                 }
             }
@@ -4902,6 +4926,17 @@ defineClass({
             }
 
             return data;
+        },
+
+        returnResponse: function(data, contentType) {
+
+            var self    = this;
+
+            if (!self._opt.jsonp) {
+                return self.processResponseData(data, contentType);
+            }
+
+            return null;
         },
 
         processResponse: function(data, contentType) {

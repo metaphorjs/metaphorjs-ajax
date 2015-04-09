@@ -473,6 +473,17 @@ module.exports = (function(){
             return data;
         },
 
+        returnResponse: function(data, contentType) {
+
+            var self    = this;
+
+            if (!self._opt.jsonp) {
+                return self.processResponseData(data, contentType);
+            }
+
+            return null;
+        },
+
         processResponse: function(data, contentType) {
 
             var self        = this,
