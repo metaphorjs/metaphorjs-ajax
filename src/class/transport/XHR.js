@@ -2,7 +2,6 @@
 var defineClass = require("metaphorjs-class/src/func/defineClass.js"),
     bind        = require("metaphorjs/src/func/bind.js"),
     emptyFn     = require("metaphorjs/src/func/emptyFn.js"),
-    addListener = require("metaphorjs/src/func/event/addListener.js"),
     isString    = require("metaphorjs/src/func/isString.js"),
     undf        = require("metaphorjs/src/var/undf.js");
 
