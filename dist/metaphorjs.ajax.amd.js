@@ -728,18 +728,20 @@ var error = (function(){
         var i, l;
 
         for (i = 0, l = listeners.length; i < l; i++) {
-            listeners[i][0].call(listeners[i][1], e);
+            if (listeners[i][0].call(listeners[i][1], e) === false) {
+                return;
+            }
         }
 
         var stack = (e ? e.stack : null) || (new Error).stack;
 
-        if (typeof console != strUndef && console.log) {
+        if (typeof console != strUndef && console.error) {
             async(function(){
                 if (e) {
-                    console.log(e);
+                    console.error(e);
                 }
                 if (stack) {
-                    console.log(stack);
+                    console.error(stack);
                 }
             });
         }
@@ -1852,31 +1854,52 @@ defineClass({
             }
 
             if (globalEvents.trigger("before-send", opt, transport) === false) {
-                self._promise = Promise.reject();
+                //self._promise = Promise.reject();
+                self.$$promise.reject();
             }
             if (opt.beforeSend && opt.beforeSend.call(opt.context, opt, transport) === false) {
-                self._promise = Promise.reject();
+                //self._promise = Promise.reject();
+                self.$$promise.reject();
             }
 
-            if (!self._promise) {
+            if (self.$$promise.isPending()) {
                 async(transport.send, transport);
 
                 //deferred.abort = bind(self.abort, self);
-                self.$$promise.always(self.$destroy, self);
+                self.$$promise.always(self.asyncDestroy, self);
 
                 //self._promise = deferred;
             }
+            else {
+                async(self.asyncDestroy, self, [], 1000);
+            }
         },
 
+        asyncDestroy: function() {
+
+            var self = this;
+
+            if (self.$isDestroyed()) {
+                return;
+            }
+
+            if (self.$$promise.hasListeners()) {
+                async(self.asyncDestroy, self, [], 1000);
+                return;
+            }
+
+            self.$destroy();
+        },
 
         /*promise: function() {
             return this._promise;
         },*/
 
         abort: function(reason) {
-            this._transport.abort();
             this.$$promise.reject(reason || "abort");
+            this._transport.abort();
             //this._deferred.reject(reason || "abort");
+            return this;
         },
 
         onTimeout: function() {
