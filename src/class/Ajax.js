@@ -248,7 +248,7 @@ module.exports = (function(){
                 }
             }
             else if (opt.contentType == "json") {
-                opt.contentType = "text/plain";
+                opt.contentType = opt.contentTypeHeader || "text/plain";
                 opt.data = isString(opt.data) ? opt.data : JSON.stringify(opt.data);
             }
             else if (isPlainObject(opt.data) && opt.method == "POST" && formDataSupport) {
