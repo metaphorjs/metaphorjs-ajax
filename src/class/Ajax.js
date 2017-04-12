@@ -211,7 +211,7 @@ module.exports = (function(){
 
             self._opt       = opt;
 
-            if (opt.crossDomain !== true) {
+            if (opt.crossDomain !== true && opt.ignoreCrossDomain !== true) {
                 opt.crossDomain = !!(parts &&
                                      (parts[1] !== local[1] || parts[2] !== local[2] ||
                                       (parts[3] || (parts[1] === "http:" ? "80" : "443")) !==
