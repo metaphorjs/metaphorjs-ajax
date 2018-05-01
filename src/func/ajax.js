@@ -138,6 +138,9 @@ module.exports = function(){
         return ajax(null, opt);
     };
 
+    ajax.prepareUrl = function(url, opt) {
+        return MetaphorJs.Ajax.prepareUrl(url, opt || {});
+    };
 
     return ajax;
 }();

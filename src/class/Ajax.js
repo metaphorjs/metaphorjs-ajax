@@ -566,7 +566,7 @@ module.exports = (function(){
 
     }, {
 
-
+        prepareUrl: prepareUrl,
         global: globalEvents
     });
 
