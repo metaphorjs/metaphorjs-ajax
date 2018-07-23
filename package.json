@@ -2,7 +2,6 @@
     "name": "metaphorjs-ajax",
     "version": "0.1.7",
     "description": "MetaphorJs ajax implementation",
-    "main": "dist/metaphorjs.ajax.npm.js",
     "directories": {
         "test": "test"
     },
@@ -18,10 +17,5 @@
     "bugs": {
         "url": "https://github.com/metaphorjs/metaphorjs-ajax/issues"
     },
-    "homepage": "https://github.com/metaphorjs/metaphorjs-ajax",
-    "dependencies": {
-        "metaphorjs-select": "*",
-        "metaphorjs-observable": "*",
-        "metaphorjs-promise": "*"
-    }
+    "homepage": "https://github.com/metaphorjs/metaphorjs-ajax"
 }
