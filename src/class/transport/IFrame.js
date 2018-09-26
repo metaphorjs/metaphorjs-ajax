@@ -1,16 +1,15 @@
 
-var defineClass = require("metaphorjs-class/src/func/defineClass.js"),
+var cls         = require("metaphorjs-class/src/cls.js"),
     bind        = require("metaphorjs/src/func/bind.js"),
     addListener = require("metaphorjs/src/func/event/addListener.js"),
-    error       = require("metaphorjs/src/func/error.js"),
     nextUid     = require("metaphorjs/src/func/nextUid.js"),
     setAttr     = require("metaphorjs/src/func/dom/setAttr.js"),
     async       = require("metaphorjs/src/func/async.js");
 
 
-module.exports = defineClass({
+module.exports = cls({
 
-    $class: "ajax.transport.IFrame",
+    $class: "MetaphorJs.ajax.transport.IFrame",
 
     type: "iframe",
     _opt: null,
@@ -111,7 +110,7 @@ module.exports = defineClass({
         }
     },
 
-    destroy: function() {
+    onDestroy: function() {
         var self    = this;
 
         if (self._el.parentNode) {

@@ -1,13 +1,10 @@
 
-var defineClass = require("metaphorjs-class/src/func/defineClass.js"),
-    async       = require("metaphorjs/src/func/async.js"),
+var cls         = require("metaphorjs-class/src/cls.js"),
     addListener = require("metaphorjs/src/func/event/addListener.js"),
-    error       = require("metaphorjs/src/func/error.js"),
     setAttr     = require("metaphorjs/src/func/dom/setAttr.js");
 
-
-module.exports = defineClass({
-    $class: "ajax.transport.Script",
+module.exports = cls({
+    $class: "MetaphorJs.ajax.transport.Script",
 
     type: "script",
     _opt: null,
@@ -58,7 +55,7 @@ module.exports = defineClass({
         }
     },
 
-    destroy: function() {
+    onDestroy: function() {
 
         var self    = this;
 

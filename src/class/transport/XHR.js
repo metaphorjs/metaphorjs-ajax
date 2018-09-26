@@ -1,5 +1,5 @@
 
-var defineClass = require("metaphorjs-class/src/func/defineClass.js"),
+var cls         = require("metaphorjs-class/src/cls.js"),
     bind        = require("metaphorjs/src/func/bind.js"),
     emptyFn     = require("metaphorjs/src/func/emptyFn.js"),
     isString    = require("metaphorjs/src/func/isString.js"),
@@ -7,8 +7,6 @@ var defineClass = require("metaphorjs-class/src/func/defineClass.js"),
 
 
 module.exports = (function(){
-
-
 
     var accepts     = {
             xml:        "application/xml, text/xml",
@@ -43,9 +41,9 @@ module.exports = (function(){
             return false;
         };
 
-    return defineClass({
+    return cls({
 
-        $class: "ajax.transport.XHR",
+        $class: "MetaphorJs.ajax.transport.XHR",
 
         type: "xhr",
         _xhr: null,

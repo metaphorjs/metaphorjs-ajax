@@ -1,5 +1,5 @@
 
-var defineClass = require("metaphorjs-class/src/func/defineClass.js"),
+var cls         = require("metaphorjs-class/src/cls.js"),
     bind        = require("metaphorjs/src/func/bind.js"),
     trim        = require("metaphorjs/src/func/trim.js"),
     async       = require("metaphorjs/src/func/async.js"),
@@ -8,7 +8,6 @@ var defineClass = require("metaphorjs-class/src/func/defineClass.js"),
     select      = require("metaphorjs-select/src/func/select.js"),
     isArray     = require("metaphorjs/src/func/isArray.js"),
     Observable  = require("metaphorjs-observable/src/lib/Observable.js"),
-    Promise     = require("metaphorjs-promise/src/lib/Promise.js"),
     isString    = require("metaphorjs/src/func/isString.js"),
     isFunction  = require("metaphorjs/src/func/isFunction.js"),
     isObject    = require("metaphorjs/src/func/isObject.js"),
@@ -184,10 +183,10 @@ module.exports = (function(){
             }
         };
 
-    defineClass({
+    return cls({
 
-        $class: "Ajax",
-        $mixins: ["mixin.Promise"],
+        $class: "MetaphorJs.Ajax",
+        $mixins: [MetaphorJs.mixin.Promise],
 
         _jsonpName: null,
         _transport: null,
@@ -540,7 +539,7 @@ module.exports = (function(){
             }
         },
 
-        destroy: function() {
+        onDestroy: function() {
 
             var self    = this;
 
@@ -565,10 +564,7 @@ module.exports = (function(){
         }
 
     }, {
-
         prepareUrl: prepareUrl,
         global: globalEvents
     });
-
-
 }());
