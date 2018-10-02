@@ -1,3 +1,0 @@
-
-
-jsonpCallback("some data");

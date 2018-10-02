@@ -1,0 +1,3857 @@
+{
+  "items": [
+    {
+      "isFunction": true,
+      "isApiItem": true,
+      "group": "function",
+      "type": "function",
+      "name": "ajax",
+      "fullName": "function:ajax",
+      "file": "src/func/ajax.js",
+      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+      "fileType": "js",
+      "template": "js.item.function",
+      "hasInherited": false,
+      "isInherited": false,
+      "level": 1,
+      "flags": {
+        "returns": [
+          {
+            "contentType": "typeRef",
+            "content": "MetaphorJs.ajax.Ajax",
+            "template": "js.flag.returns",
+            "ref": "MetaphorJs.ajax.Ajax"
+          }
+        ]
+      },
+      "plainFlags": {
+        "returns": [
+          "MetaphorJs.ajax.Ajax"
+        ]
+      },
+      "booleanFlags": [],
+      "children": [
+        {
+          "isApiGroup": true,
+          "type": "param",
+          "items": [
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "url",
+              "fullName": "function:ajax/url",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "string",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "string"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 202,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "Url to load or send data to",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "opt",
+              "fullName": "function:ajax/opt",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "object",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "object"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 202,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "See ajax.defaults",
+                  "template": "js.flag.description"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "childTypes": [
+        "param"
+      ],
+      "line": 202
+    },
+    {
+      "isFunction": true,
+      "isApiItem": true,
+      "group": "function",
+      "type": "function",
+      "name": "ajax",
+      "fullName": "function:ajax",
+      "file": "src/func/ajax.js",
+      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+      "fileType": "js",
+      "template": "js.item.function",
+      "hasInherited": false,
+      "isInherited": false,
+      "level": 1,
+      "flags": {
+        "returns": [
+          {
+            "contentType": "typeRef",
+            "content": "MetaphorJs.ajax.Ajax",
+            "template": "js.flag.returns",
+            "ref": "MetaphorJs.ajax.Ajax"
+          }
+        ]
+      },
+      "plainFlags": {
+        "returns": [
+          "MetaphorJs.ajax.Ajax"
+        ]
+      },
+      "booleanFlags": [],
+      "children": [
+        {
+          "isApiGroup": true,
+          "type": "param",
+          "items": [
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "opt",
+              "fullName": "function:ajax/opt",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "object",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "object"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 208,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "See ajax.defaults",
+                  "template": "js.flag.description"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "childTypes": [
+        "param"
+      ],
+      "line": 208
+    },
+    {
+      "isApiItem": true,
+      "group": "object",
+      "type": "object",
+      "name": "ajax.defaults",
+      "fullName": "object:ajax.defaults",
+      "file": "src/func/ajax.js",
+      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+      "fileType": "js",
+      "template": "js.item.object",
+      "hasInherited": false,
+      "isInherited": false,
+      "level": 1,
+      "flags": {
+        "access": [
+          {
+            "contentType": "string",
+            "content": "private",
+            "template": "js.flag.access"
+          }
+        ]
+      },
+      "plainFlags": {
+        "access": [
+          "private"
+        ]
+      },
+      "booleanFlags": [],
+      "children": [
+        {
+          "isApiGroup": true,
+          "type": "property",
+          "name": "Property",
+          "groupName": "Properties",
+          "items": [
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "url",
+              "fullName": "object:ajax.defaults.url",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "string",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "string"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 26,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "Target url",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "data",
+              "fullName": "object:ajax.defaults.data",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "string",
+                    "template": "js.flag.type"
+                  },
+                  {
+                    "contentType": "string",
+                    "content": "object",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "string",
+                  "object"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 31,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "Ajax payload",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "method",
+              "fullName": "object:ajax.defaults.method",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "string",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "string"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 36,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "GET|POST|DELETE|PUT etc",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "headers",
+              "fullName": "object:ajax.defaults.headers",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "object",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "object"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 44,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "Headers to add to XHR object:<br>\nHeader-Name: header-value",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "username",
+              "fullName": "object:ajax.defaults.username",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "string",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "string"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 49,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "XHR username",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "password",
+              "fullName": "object:ajax.defaults.password",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "string",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "string"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 54,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "XHR password",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "dataType",
+              "fullName": "object:ajax.defaults.dataType",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "string",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "string"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 70,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "<code>html</code> - along with <code>selector</code> option treats\nresponse as html, creates a document out of it and\nreturns selected element.<br>\n<code>xml</code> - parse response as xml and return element(s)\nusing <code>selector</code> option<br>\n<code>json</code> parse response as json and return the resulting\nobject<br>\n<code>fragment</code> - turn response into a DocumentFragment<br>\n<code>script</code> - evaluate response as a script",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "timeout",
+              "fullName": "object:ajax.defaults.timeout",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "int",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "int"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 75,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "Abort on timeout",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "contentType",
+              "fullName": "object:ajax.defaults.contentType",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "string",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "string"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 84,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "Request content type. Set contentType: json to\ntransform data into json automatically and set\nheader to text/plain.",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "contentTypeHeader",
+              "fullName": "object:ajax.defaults.contentTypeHeader",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "string",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "string"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 91,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "If contentType = json, set this to specific header you want to send",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "xhrFields",
+              "fullName": "object:ajax.defaults.xhrFields",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "object",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "object"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 96,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "Key:value pairs to set to xhr object",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "jsonp",
+              "fullName": "object:ajax.defaults.jsonp",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "boolean",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "boolean"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 101,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "Make a jsonp request",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "jsonParam",
+              "fullName": "object:ajax.defaults.jsonParam",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "string",
+                    "template": "js.flag.type"
+                  }
+                ],
+                "default": [
+                  {
+                    "contentType": "string",
+                    "content": "callback",
+                    "template": "js.flag.default"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "string"
+                ],
+                "default": [
+                  "callback"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 110,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "Name of the parameter with callback\nfunction name: url?<jsonParam>=<jsonCallback>",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "jsonpCallback",
+              "fullName": "object:ajax.defaults.jsonpCallback",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "string",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "string"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 117,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "Name of the callback function in global scope",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "transport",
+              "fullName": "object:ajax.defaults.transport",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "string",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "string"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 127,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "iframe|xhr|script<br>\nIf <code>files</code> or <code>form</code> options are set\nand browser doesn't support FormData,\ntransport will be set to iframe.<br>",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "replace",
+              "fullName": "object:ajax.defaults.replace",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "boolean",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "boolean"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 137,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "When using <code>ajax.load(el, url, opt)</code>\nif replace=true, all contents of el will be replaced\nby response; <br>\nif replace=false, response will be appended.",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "selector",
+              "fullName": "object:ajax.defaults.selector",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "string",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "string"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 142,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "See dataType",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "form",
+              "fullName": "object:ajax.defaults.form",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "FormElement",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "FormElement"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 149,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "Souce of request data and files, target url and request method",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "beforeSend",
+              "fullName": "object:ajax.defaults.beforeSend",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "function",
+                    "template": "js.flag.type"
+                  }
+                ],
+                "returnDescription": [
+                  {
+                    "contentType": "string",
+                    "content": "Return false to abort ajax",
+                    "template": "js.flag.returnDescription"
+                  }
+                ],
+                "returns": [
+                  {
+                    "contentType": "string",
+                    "content": "boolean",
+                    "template": "js.flag.returns"
+                  },
+                  {
+                    "contentType": "string",
+                    "content": "null",
+                    "template": "js.flag.returns"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "function"
+                ],
+                "returnDescription": [
+                  "Return false to abort ajax"
+                ],
+                "returns": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [
+                {
+                  "isApiGroup": true,
+                  "type": "param",
+                  "items": [
+                    {
+                      "isApiItem": true,
+                      "group": "param",
+                      "type": "param",
+                      "name": "options",
+                      "fullName": "object:ajax.defaults.beforeSend/options",
+                      "file": "src/func/ajax.js",
+                      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+                      "fileType": "js",
+                      "template": "js.item.param",
+                      "hasInherited": false,
+                      "isInherited": false,
+                      "level": 3,
+                      "flags": {
+                        "type": [
+                          {
+                            "contentType": "string",
+                            "content": "object",
+                            "template": "js.flag.type"
+                          }
+                        ]
+                      },
+                      "plainFlags": {
+                        "type": [
+                          "object"
+                        ]
+                      },
+                      "booleanFlags": [],
+                      "children": [],
+                      "childTypes": [],
+                      "description": [
+                        {
+                          "contentType": "string",
+                          "content": "Options passed to ajax()",
+                          "template": "js.flag.description"
+                        }
+                      ]
+                    },
+                    {
+                      "isApiItem": true,
+                      "group": "param",
+                      "type": "param",
+                      "name": "transport",
+                      "fullName": "object:ajax.defaults.beforeSend/transport",
+                      "file": "src/func/ajax.js",
+                      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+                      "fileType": "js",
+                      "template": "js.item.param",
+                      "hasInherited": false,
+                      "isInherited": false,
+                      "level": 3,
+                      "flags": {
+                        "type": [
+                          {
+                            "contentType": "string",
+                            "content": "object",
+                            "template": "js.flag.type"
+                          }
+                        ]
+                      },
+                      "plainFlags": {
+                        "type": [
+                          "object"
+                        ]
+                      },
+                      "booleanFlags": [],
+                      "children": [],
+                      "childTypes": [],
+                      "description": [
+                        {
+                          "contentType": "string",
+                          "content": "Current transport object",
+                          "template": "js.flag.description"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "childTypes": [
+                "param"
+              ],
+              "line": 158
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "progress",
+              "fullName": "object:ajax.defaults.progress",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "function",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "function"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 163,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "XHR onprogress callback",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "uploadProgress",
+              "fullName": "object:ajax.defaults.uploadProgress",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "function",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "function"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 168,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "XHR.upload progress callback",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "processResponse",
+              "fullName": "object:ajax.defaults.processResponse",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "function",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "function"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [
+                {
+                  "isApiGroup": true,
+                  "type": "param",
+                  "items": [
+                    {
+                      "isApiItem": true,
+                      "group": "param",
+                      "type": "param",
+                      "name": "response",
+                      "fullName": "object:ajax.defaults.processResponse/response",
+                      "file": "src/func/ajax.js",
+                      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+                      "fileType": "js",
+                      "template": "js.item.param",
+                      "hasInherited": false,
+                      "isInherited": false,
+                      "level": 3,
+                      "flags": {
+                        "type": [
+                          {
+                            "contentType": "string",
+                            "content": "*",
+                            "template": "js.flag.type"
+                          }
+                        ]
+                      },
+                      "plainFlags": {
+                        "type": [
+                          "*"
+                        ]
+                      },
+                      "booleanFlags": [],
+                      "children": [],
+                      "childTypes": [],
+                      "description": [
+                        {
+                          "contentType": "string",
+                          "content": "Either raw or pre-processed response data",
+                          "template": "js.flag.description"
+                        }
+                      ]
+                    },
+                    {
+                      "isApiItem": true,
+                      "group": "param",
+                      "type": "param",
+                      "name": "promise",
+                      "fullName": "object:ajax.defaults.processResponse/promise",
+                      "file": "src/func/ajax.js",
+                      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+                      "fileType": "js",
+                      "template": "js.item.param",
+                      "hasInherited": false,
+                      "isInherited": false,
+                      "level": 3,
+                      "flags": {
+                        "type": [
+                          {
+                            "contentType": "typeRef",
+                            "content": "MetaphorJs.lib.Promise",
+                            "template": "js.flag.type",
+                            "ref": "MetaphorJs.lib.Promise"
+                          }
+                        ]
+                      },
+                      "plainFlags": {
+                        "type": [
+                          "MetaphorJs.lib.Promise"
+                        ]
+                      },
+                      "booleanFlags": [],
+                      "children": [],
+                      "childTypes": [],
+                      "description": [
+                        {
+                          "contentType": "string",
+                          "content": "ajax's promise",
+                          "template": "js.flag.description"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "childTypes": [
+                "param"
+              ],
+              "line": 176
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "context",
+              "fullName": "object:ajax.defaults.context",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "object",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "object"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 181,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "All callback's context",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "property",
+              "type": "property",
+              "name": "files",
+              "fullName": "object:ajax.defaults.files",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.property",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "array",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "array"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 187,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "Array of native File objects to send\nvia FormData or iframe",
+                  "template": "js.flag.description"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "childTypes": [
+        "property"
+      ],
+      "line": 22,
+      "description": [
+        {
+          "contentType": "string",
+          "content": "The same set of options you can pass to ajax() and ajax.setup()",
+          "template": "js.flag.description"
+        }
+      ]
+    },
+    {
+      "isFunction": true,
+      "isApiItem": true,
+      "group": "function",
+      "type": "function",
+      "name": "ajax.setup",
+      "fullName": "function:ajax.setup",
+      "file": "src/func/ajax.js",
+      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+      "fileType": "js",
+      "template": "js.item.function",
+      "hasInherited": false,
+      "isInherited": false,
+      "level": 1,
+      "flags": {},
+      "plainFlags": {},
+      "booleanFlags": [],
+      "children": [
+        {
+          "isApiGroup": true,
+          "type": "param",
+          "items": [
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "opt",
+              "fullName": "function:ajax.setup/opt",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "object",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "object"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 251,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "See ajax.defaults",
+                  "template": "js.flag.description"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "childTypes": [
+        "param"
+      ],
+      "line": 251,
+      "description": [
+        {
+          "contentType": "string",
+          "content": "Set default ajax options",
+          "template": "js.flag.description"
+        }
+      ]
+    },
+    {
+      "isFunction": true,
+      "isApiItem": true,
+      "group": "function",
+      "type": "function",
+      "name": "ajax.on",
+      "fullName": "function:ajax.on",
+      "file": "src/func/ajax.js",
+      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+      "fileType": "js",
+      "template": "js.item.function",
+      "hasInherited": false,
+      "isInherited": false,
+      "level": 1,
+      "flags": {},
+      "plainFlags": {},
+      "booleanFlags": [],
+      "children": [
+        {
+          "isApiGroup": true,
+          "type": "param",
+          "items": [
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "eventName",
+              "fullName": "function:ajax.on/eventName",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "string",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "string"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 264
+            },
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "fn",
+              "fullName": "function:ajax.on/fn",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "function",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "function"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 264
+            },
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "context",
+              "fullName": "function:ajax.on/context",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "object",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "object"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 264
+            },
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "options",
+              "fullName": "function:ajax.on/options",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "object",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "object"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 264
+            }
+          ]
+        }
+      ],
+      "childTypes": [
+        "param"
+      ],
+      "line": 264,
+      "description": [
+        {
+          "contentType": "string",
+          "content": "Subscribe to global ajax events. See\nMetaphorJs.lib.Observable.on",
+          "template": "js.flag.description"
+        }
+      ]
+    },
+    {
+      "isFunction": true,
+      "isApiItem": true,
+      "group": "function",
+      "type": "function",
+      "name": "ajax.un",
+      "fullName": "function:ajax.un",
+      "file": "src/func/ajax.js",
+      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+      "fileType": "js",
+      "template": "js.item.function",
+      "hasInherited": false,
+      "isInherited": false,
+      "level": 1,
+      "flags": {},
+      "plainFlags": {},
+      "booleanFlags": [],
+      "children": [
+        {
+          "isApiGroup": true,
+          "type": "param",
+          "items": [
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "eventName",
+              "fullName": "function:ajax.un/eventName",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "string",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "string"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 277
+            },
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "fn",
+              "fullName": "function:ajax.un/fn",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "function",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "function"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 277
+            },
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "context",
+              "fullName": "function:ajax.un/context",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "object",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "object"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 277
+            },
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "options",
+              "fullName": "function:ajax.un/options",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "object",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "object"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 277
+            }
+          ]
+        }
+      ],
+      "childTypes": [
+        "param"
+      ],
+      "line": 277,
+      "description": [
+        {
+          "contentType": "string",
+          "content": "Unsubscribe from global ajax events. See\nMetaphorJs.lib.Observable.un",
+          "template": "js.flag.description"
+        }
+      ]
+    },
+    {
+      "isFunction": true,
+      "isApiItem": true,
+      "group": "function",
+      "type": "function",
+      "name": "ajax.get",
+      "fullName": "function:ajax.get",
+      "file": "src/func/ajax.js",
+      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+      "fileType": "js",
+      "template": "js.item.function",
+      "hasInherited": false,
+      "isInherited": false,
+      "level": 1,
+      "flags": {
+        "returns": [
+          {
+            "contentType": "typeRef",
+            "content": "MetaphorJs.ajax.Ajax",
+            "template": "js.flag.returns",
+            "ref": "MetaphorJs.ajax.Ajax"
+          }
+        ]
+      },
+      "plainFlags": {
+        "returns": [
+          "MetaphorJs.ajax.Ajax"
+        ]
+      },
+      "booleanFlags": [],
+      "children": [
+        {
+          "isApiGroup": true,
+          "type": "param",
+          "items": [
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "url",
+              "fullName": "function:ajax.get/url",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "string",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "string"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 288
+            },
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "opt",
+              "fullName": "function:ajax.get/opt",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "object",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "object"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 288
+            }
+          ]
+        }
+      ],
+      "childTypes": [
+        "param"
+      ],
+      "line": 288,
+      "description": [
+        {
+          "contentType": "string",
+          "content": "Same as ajax(), method is forcefully set to GET",
+          "template": "js.flag.description"
+        }
+      ]
+    },
+    {
+      "isFunction": true,
+      "isApiItem": true,
+      "group": "function",
+      "type": "function",
+      "name": "ajax.post",
+      "fullName": "function:ajax.post",
+      "file": "src/func/ajax.js",
+      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+      "fileType": "js",
+      "template": "js.item.function",
+      "hasInherited": false,
+      "isInherited": false,
+      "level": 1,
+      "flags": {
+        "returns": [
+          {
+            "contentType": "typeRef",
+            "content": "MetaphorJs.ajax.Ajax",
+            "template": "js.flag.returns",
+            "ref": "MetaphorJs.ajax.Ajax"
+          }
+        ]
+      },
+      "plainFlags": {
+        "returns": [
+          "MetaphorJs.ajax.Ajax"
+        ]
+      },
+      "booleanFlags": [],
+      "children": [
+        {
+          "isApiGroup": true,
+          "type": "param",
+          "items": [
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "url",
+              "fullName": "function:ajax.post/url",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "string",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "string"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 301
+            },
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "opt",
+              "fullName": "function:ajax.post/opt",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "object",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "object"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 301
+            }
+          ]
+        }
+      ],
+      "childTypes": [
+        "param"
+      ],
+      "line": 301,
+      "description": [
+        {
+          "contentType": "string",
+          "content": "Same as ajax(), method is forcefully set to POST",
+          "template": "js.flag.description"
+        }
+      ]
+    },
+    {
+      "isFunction": true,
+      "isApiItem": true,
+      "group": "function",
+      "type": "function",
+      "name": "ajax.load",
+      "fullName": "function:ajax.load",
+      "file": "src/func/ajax.js",
+      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+      "fileType": "js",
+      "template": "js.item.function",
+      "hasInherited": false,
+      "isInherited": false,
+      "level": 1,
+      "flags": {
+        "returns": [
+          {
+            "contentType": "typeRef",
+            "content": "MetaphorJs.ajax.Ajax",
+            "template": "js.flag.returns",
+            "ref": "MetaphorJs.ajax.Ajax"
+          }
+        ]
+      },
+      "plainFlags": {
+        "returns": [
+          "MetaphorJs.ajax.Ajax"
+        ]
+      },
+      "booleanFlags": [],
+      "children": [
+        {
+          "isApiGroup": true,
+          "type": "param",
+          "items": [
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "el",
+              "fullName": "function:ajax.load/el",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "Element",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "Element"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 315
+            },
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "url",
+              "fullName": "function:ajax.load/url",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "string",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "string"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 315
+            },
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "opt",
+              "fullName": "function:ajax.load/opt",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "object",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "object"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 315
+            }
+          ]
+        }
+      ],
+      "childTypes": [
+        "param"
+      ],
+      "line": 315,
+      "description": [
+        {
+          "contentType": "string",
+          "content": "Load response to given html element",
+          "template": "js.flag.description"
+        }
+      ]
+    },
+    {
+      "isFunction": true,
+      "isApiItem": true,
+      "group": "function",
+      "type": "function",
+      "name": "ajax.loadScript",
+      "fullName": "function:ajax.loadScript",
+      "file": "src/func/ajax.js",
+      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+      "fileType": "js",
+      "template": "js.item.function",
+      "hasInherited": false,
+      "isInherited": false,
+      "level": 1,
+      "flags": {
+        "returns": [
+          {
+            "contentType": "typeRef",
+            "content": "MetaphorJs.ajax.Ajax",
+            "template": "js.flag.returns",
+            "ref": "MetaphorJs.ajax.Ajax"
+          }
+        ]
+      },
+      "plainFlags": {
+        "returns": [
+          "MetaphorJs.ajax.Ajax"
+        ]
+      },
+      "booleanFlags": [],
+      "children": [
+        {
+          "isApiGroup": true,
+          "type": "param",
+          "items": [
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "url",
+              "fullName": "function:ajax.loadScript/url",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "string",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "string"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 341
+            }
+          ]
+        }
+      ],
+      "childTypes": [
+        "param"
+      ],
+      "line": 341,
+      "description": [
+        {
+          "contentType": "string",
+          "content": "Load script",
+          "template": "js.flag.description"
+        }
+      ]
+    },
+    {
+      "isFunction": true,
+      "isApiItem": true,
+      "group": "function",
+      "type": "function",
+      "name": "ajax.submit",
+      "fullName": "function:ajax.submit",
+      "file": "src/func/ajax.js",
+      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+      "fileType": "js",
+      "template": "js.item.function",
+      "hasInherited": false,
+      "isInherited": false,
+      "level": 1,
+      "flags": {
+        "returns": [
+          {
+            "contentType": "typeRef",
+            "content": "MetaphorJs.ajax.Ajax",
+            "template": "js.flag.returns",
+            "ref": "MetaphorJs.ajax.Ajax"
+          }
+        ]
+      },
+      "plainFlags": {
+        "returns": [
+          "MetaphorJs.ajax.Ajax"
+        ]
+      },
+      "booleanFlags": [],
+      "children": [
+        {
+          "isApiGroup": true,
+          "type": "param",
+          "items": [
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "form",
+              "fullName": "function:ajax.submit/form",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "FormElement",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "FormElement"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 352
+            },
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "opt",
+              "fullName": "function:ajax.submit/opt",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "object",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "object"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 352
+            }
+          ]
+        }
+      ],
+      "childTypes": [
+        "param"
+      ],
+      "line": 352,
+      "description": [
+        {
+          "contentType": "string",
+          "content": "Send form",
+          "template": "js.flag.description"
+        }
+      ]
+    },
+    {
+      "isFunction": true,
+      "isApiItem": true,
+      "group": "function",
+      "type": "function",
+      "name": "ajax.prepareUrl",
+      "fullName": "function:ajax.prepareUrl",
+      "file": "src/func/ajax.js",
+      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+      "fileType": "js",
+      "template": "js.item.function",
+      "hasInherited": false,
+      "isInherited": false,
+      "level": 1,
+      "flags": {},
+      "plainFlags": {},
+      "booleanFlags": [],
+      "children": [
+        {
+          "isApiGroup": true,
+          "type": "param",
+          "items": [
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "url",
+              "fullName": "function:ajax.prepareUrl/url",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "string",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "string"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 365
+            },
+            {
+              "isApiItem": true,
+              "group": "param",
+              "type": "param",
+              "name": "opt",
+              "fullName": "function:ajax.prepareUrl/opt",
+              "file": "src/func/ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/func/ajax.js",
+              "fileType": "js",
+              "template": "js.item.param",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "type": [
+                  {
+                    "contentType": "string",
+                    "content": "object",
+                    "template": "js.flag.type"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "type": [
+                  "object"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 365
+            }
+          ]
+        }
+      ],
+      "childTypes": [
+        "param"
+      ],
+      "line": 365,
+      "description": [
+        {
+          "contentType": "string",
+          "content": "Utility function that prepares url by adding random seed or\njsonp params and does other stuff based on options",
+          "template": "js.flag.description"
+        }
+      ]
+    },
+    {
+      "isApiItem": true,
+      "group": "class",
+      "type": "class",
+      "name": "MetaphorJs.ajax.Ajax",
+      "fullName": "class:MetaphorJs.ajax.Ajax",
+      "file": "src/class/Ajax.js",
+      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/class/Ajax.js",
+      "fileType": "js",
+      "template": "js.item.class",
+      "hasInherited": true,
+      "isInherited": false,
+      "level": 1,
+      "flags": {
+        "mixes": [
+          {
+            "contentType": "typeRef",
+            "content": "mixin:MetaphorJs.mixin.Promise",
+            "template": "js.flag.mixes",
+            "ref": "mixin:MetaphorJs.mixin.Promise"
+          }
+        ]
+      },
+      "plainFlags": {
+        "mixes": [
+          "mixin:MetaphorJs.mixin.Promise"
+        ]
+      },
+      "booleanFlags": [],
+      "children": [
+        {
+          "isApiGroup": true,
+          "type": "method",
+          "name": "Method",
+          "groupName": "Methods",
+          "items": [
+            {
+              "isFunction": true,
+              "isApiItem": true,
+              "group": "method",
+              "type": "method",
+              "name": "$init",
+              "fullName": "class:MetaphorJs.ajax.Ajax.$init",
+              "file": "src/class/Ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/class/Ajax.js",
+              "fileType": "js",
+              "template": "js.item.method",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {},
+              "plainFlags": {},
+              "booleanFlags": [
+                "constructor"
+              ],
+              "children": [
+                {
+                  "isApiGroup": true,
+                  "type": "param",
+                  "items": [
+                    {
+                      "isApiItem": true,
+                      "group": "param",
+                      "type": "param",
+                      "name": "opt",
+                      "fullName": "class:MetaphorJs.ajax.Ajax.$init/opt",
+                      "file": "src/class/Ajax.js",
+                      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/class/Ajax.js",
+                      "fileType": "js",
+                      "template": "js.item.param",
+                      "hasInherited": false,
+                      "isInherited": false,
+                      "level": 3,
+                      "flags": {
+                        "type": [
+                          {
+                            "contentType": "string",
+                            "content": "object",
+                            "template": "js.flag.type"
+                          }
+                        ]
+                      },
+                      "plainFlags": {
+                        "type": [
+                          "object"
+                        ]
+                      },
+                      "booleanFlags": [],
+                      "children": [],
+                      "childTypes": [],
+                      "line": 209,
+                      "description": [
+                        {
+                          "contentType": "string",
+                          "content": "See ajax.defaults",
+                          "template": "js.flag.description"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "childTypes": [
+                "param"
+              ],
+              "line": 209
+            },
+            {
+              "isFunction": true,
+              "isApiItem": true,
+              "group": "method",
+              "type": "method",
+              "name": "abort",
+              "fullName": "class:MetaphorJs.ajax.Ajax.abort",
+              "file": "src/class/Ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/class/Ajax.js",
+              "fileType": "js",
+              "template": "js.item.method",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {},
+              "plainFlags": {},
+              "booleanFlags": [],
+              "children": [
+                {
+                  "isApiGroup": true,
+                  "type": "param",
+                  "items": [
+                    {
+                      "isApiItem": true,
+                      "group": "param",
+                      "type": "param",
+                      "name": "reason",
+                      "fullName": "class:MetaphorJs.ajax.Ajax.abort/reason",
+                      "file": "src/class/Ajax.js",
+                      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/class/Ajax.js",
+                      "fileType": "js",
+                      "template": "js.item.param",
+                      "hasInherited": false,
+                      "isInherited": false,
+                      "level": 3,
+                      "flags": {
+                        "type": [
+                          {
+                            "contentType": "string",
+                            "content": "string",
+                            "template": "js.flag.type"
+                          }
+                        ]
+                      },
+                      "plainFlags": {
+                        "type": [
+                          "string"
+                        ]
+                      },
+                      "booleanFlags": [],
+                      "children": [],
+                      "childTypes": [],
+                      "line": 381
+                    }
+                  ]
+                }
+              ],
+              "childTypes": [
+                "param"
+              ],
+              "line": 381,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "Cancel ajax request",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isFunction": true,
+              "isApiItem": true,
+              "group": "method",
+              "type": "method",
+              "name": "getTransport",
+              "fullName": "class:MetaphorJs.ajax.Ajax.getTransport",
+              "file": "src/class/Ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/class/Ajax.js",
+              "fileType": "js",
+              "template": "js.item.method",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {
+                "returns": [
+                  {
+                    "contentType": "typeRef",
+                    "content": "MetaphorJs.ajax.transport.*",
+                    "template": "js.flag.returns",
+                    "ref": "MetaphorJs.ajax.transport.*"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "returns": [
+                  "MetaphorJs.ajax.transport.*"
+                ]
+              },
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 397,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "Get current transport",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isFunction": true,
+              "isApiItem": true,
+              "group": "method",
+              "type": "method",
+              "name": "then",
+              "fullName": null,
+              "file": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+              "fileType": "js",
+              "template": "js.item.method",
+              "hasInherited": false,
+              "isInherited": true,
+              "level": 2,
+              "flags": {
+                "returnDescription": [
+                  {
+                    "contentType": "string",
+                    "content": "new promise",
+                    "template": "js.flag.returnDescription"
+                  }
+                ],
+                "returns": [
+                  {
+                    "contentType": "typeRef",
+                    "content": "Promise",
+                    "template": "js.flag.returns",
+                    "ref": "class:MetaphorJs.lib.Promise.Promise"
+                  }
+                ],
+                "inherited": [
+                  {
+                    "contentType": "string",
+                    "content": "mixin:MetaphorJs.mixin.Promise",
+                    "template": "js.flag.inherited"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "returnDescription": [
+                  "new promise"
+                ],
+                "returns": [
+                  "Promise"
+                ],
+                "inherited": [
+                  "mixin:MetaphorJs.mixin.Promise"
+                ]
+              },
+              "booleanFlags": [
+                "async"
+              ],
+              "children": [
+                {
+                  "isApiGroup": true,
+                  "type": "param",
+                  "items": [
+                    {
+                      "isApiItem": true,
+                      "group": "param",
+                      "type": "param",
+                      "name": "resolve",
+                      "fullName": null,
+                      "file": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+                      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+                      "fileType": "js",
+                      "template": "js.item.param",
+                      "hasInherited": false,
+                      "isInherited": false,
+                      "level": 3,
+                      "flags": {
+                        "type": [
+                          {
+                            "contentType": "string",
+                            "content": "function",
+                            "template": "js.flag.type"
+                          }
+                        ]
+                      },
+                      "plainFlags": {
+                        "type": [
+                          "function"
+                        ]
+                      },
+                      "booleanFlags": [],
+                      "children": [],
+                      "childTypes": [],
+                      "line": 26,
+                      "description": [
+                        {
+                          "contentType": "string",
+                          "content": "-- called when this promise is resolved;\n returns new resolve value or promise",
+                          "template": "js.flag.description"
+                        }
+                      ]
+                    },
+                    {
+                      "isApiItem": true,
+                      "group": "param",
+                      "type": "param",
+                      "name": "reject",
+                      "fullName": null,
+                      "file": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+                      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+                      "fileType": "js",
+                      "template": "js.item.param",
+                      "hasInherited": false,
+                      "isInherited": false,
+                      "level": 3,
+                      "flags": {
+                        "type": [
+                          {
+                            "contentType": "string",
+                            "content": "function",
+                            "template": "js.flag.type"
+                          }
+                        ]
+                      },
+                      "plainFlags": {
+                        "type": [
+                          "function"
+                        ]
+                      },
+                      "booleanFlags": [],
+                      "children": [],
+                      "childTypes": [],
+                      "line": 26,
+                      "description": [
+                        {
+                          "contentType": "string",
+                          "content": "-- called when this promise is rejected;\n returns new reject reason",
+                          "template": "js.flag.description"
+                        }
+                      ]
+                    },
+                    {
+                      "isApiItem": true,
+                      "group": "param",
+                      "type": "param",
+                      "name": "context",
+                      "fullName": null,
+                      "file": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+                      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+                      "fileType": "js",
+                      "template": "js.item.param",
+                      "hasInherited": false,
+                      "isInherited": false,
+                      "level": 3,
+                      "flags": {
+                        "type": [
+                          {
+                            "contentType": "string",
+                            "content": "object",
+                            "template": "js.flag.type"
+                          }
+                        ]
+                      },
+                      "plainFlags": {
+                        "type": [
+                          "object"
+                        ]
+                      },
+                      "booleanFlags": [],
+                      "children": [],
+                      "childTypes": [],
+                      "line": 26,
+                      "description": [
+                        {
+                          "contentType": "string",
+                          "content": "-- resolve's and reject's functions \"this\" object",
+                          "template": "js.flag.description"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "childTypes": [
+                "param"
+              ],
+              "line": 26
+            },
+            {
+              "isFunction": true,
+              "isApiItem": true,
+              "group": "method",
+              "type": "method",
+              "name": "done",
+              "fullName": null,
+              "file": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+              "fileType": "js",
+              "template": "js.item.method",
+              "hasInherited": false,
+              "isInherited": true,
+              "level": 2,
+              "flags": {
+                "returnDescription": [
+                  {
+                    "contentType": "string",
+                    "content": "same promise",
+                    "template": "js.flag.returnDescription"
+                  }
+                ],
+                "returns": [
+                  {
+                    "contentType": "typeRef",
+                    "content": "Promise",
+                    "template": "js.flag.returns",
+                    "ref": "class:MetaphorJs.lib.Promise.Promise"
+                  }
+                ],
+                "inherited": [
+                  {
+                    "contentType": "string",
+                    "content": "mixin:MetaphorJs.mixin.Promise",
+                    "template": "js.flag.inherited"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "returnDescription": [
+                  "same promise"
+                ],
+                "returns": [
+                  "Promise"
+                ],
+                "inherited": [
+                  "mixin:MetaphorJs.mixin.Promise"
+                ]
+              },
+              "booleanFlags": [
+                "sync"
+              ],
+              "children": [
+                {
+                  "isApiGroup": true,
+                  "type": "param",
+                  "items": [
+                    {
+                      "isApiItem": true,
+                      "group": "param",
+                      "type": "param",
+                      "name": "fn",
+                      "fullName": null,
+                      "file": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+                      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+                      "fileType": "js",
+                      "template": "js.item.param",
+                      "hasInherited": false,
+                      "isInherited": false,
+                      "level": 3,
+                      "flags": {
+                        "type": [
+                          {
+                            "contentType": "string",
+                            "content": "function",
+                            "template": "js.flag.type"
+                          }
+                        ]
+                      },
+                      "plainFlags": {
+                        "type": [
+                          "function"
+                        ]
+                      },
+                      "booleanFlags": [],
+                      "children": [],
+                      "childTypes": [],
+                      "line": 38,
+                      "description": [
+                        {
+                          "contentType": "string",
+                          "content": "-- function to call when promise is resolved",
+                          "template": "js.flag.description"
+                        }
+                      ]
+                    },
+                    {
+                      "isApiItem": true,
+                      "group": "param",
+                      "type": "param",
+                      "name": "context",
+                      "fullName": null,
+                      "file": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+                      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+                      "fileType": "js",
+                      "template": "js.item.param",
+                      "hasInherited": false,
+                      "isInherited": false,
+                      "level": 3,
+                      "flags": {
+                        "type": [
+                          {
+                            "contentType": "string",
+                            "content": "object",
+                            "template": "js.flag.type"
+                          }
+                        ]
+                      },
+                      "plainFlags": {
+                        "type": [
+                          "object"
+                        ]
+                      },
+                      "booleanFlags": [],
+                      "children": [],
+                      "childTypes": [],
+                      "line": 38,
+                      "description": [
+                        {
+                          "contentType": "string",
+                          "content": "-- function's \"this\" object",
+                          "template": "js.flag.description"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "childTypes": [
+                "param"
+              ],
+              "line": 38,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "Add resolve listener",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isFunction": true,
+              "isApiItem": true,
+              "group": "method",
+              "type": "method",
+              "name": "always",
+              "fullName": null,
+              "file": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+              "fileType": "js",
+              "template": "js.item.method",
+              "hasInherited": false,
+              "isInherited": true,
+              "level": 2,
+              "flags": {
+                "returnDescription": [
+                  {
+                    "contentType": "string",
+                    "content": "same promise",
+                    "template": "js.flag.returnDescription"
+                  }
+                ],
+                "returns": [
+                  {
+                    "contentType": "typeRef",
+                    "content": "Promise",
+                    "template": "js.flag.returns",
+                    "ref": "class:MetaphorJs.lib.Promise.Promise"
+                  }
+                ],
+                "inherited": [
+                  {
+                    "contentType": "string",
+                    "content": "mixin:MetaphorJs.mixin.Promise",
+                    "template": "js.flag.inherited"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "returnDescription": [
+                  "same promise"
+                ],
+                "returns": [
+                  "Promise"
+                ],
+                "inherited": [
+                  "mixin:MetaphorJs.mixin.Promise"
+                ]
+              },
+              "booleanFlags": [
+                "sync"
+              ],
+              "children": [
+                {
+                  "isApiGroup": true,
+                  "type": "param",
+                  "items": [
+                    {
+                      "isApiItem": true,
+                      "group": "param",
+                      "type": "param",
+                      "name": "fn",
+                      "fullName": null,
+                      "file": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+                      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+                      "fileType": "js",
+                      "template": "js.item.param",
+                      "hasInherited": false,
+                      "isInherited": false,
+                      "level": 3,
+                      "flags": {
+                        "type": [
+                          {
+                            "contentType": "string",
+                            "content": "function",
+                            "template": "js.flag.type"
+                          }
+                        ]
+                      },
+                      "plainFlags": {
+                        "type": [
+                          "function"
+                        ]
+                      },
+                      "booleanFlags": [],
+                      "children": [],
+                      "childTypes": [],
+                      "line": 51,
+                      "description": [
+                        {
+                          "contentType": "string",
+                          "content": "-- function to call when promise resolved or rejected",
+                          "template": "js.flag.description"
+                        }
+                      ]
+                    },
+                    {
+                      "isApiItem": true,
+                      "group": "param",
+                      "type": "param",
+                      "name": "context",
+                      "fullName": null,
+                      "file": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+                      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+                      "fileType": "js",
+                      "template": "js.item.param",
+                      "hasInherited": false,
+                      "isInherited": false,
+                      "level": 3,
+                      "flags": {
+                        "type": [
+                          {
+                            "contentType": "string",
+                            "content": "object",
+                            "template": "js.flag.type"
+                          }
+                        ]
+                      },
+                      "plainFlags": {
+                        "type": [
+                          "object"
+                        ]
+                      },
+                      "booleanFlags": [],
+                      "children": [],
+                      "childTypes": [],
+                      "line": 51,
+                      "description": [
+                        {
+                          "contentType": "string",
+                          "content": "-- function's \"this\" object",
+                          "template": "js.flag.description"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "childTypes": [
+                "param"
+              ],
+              "line": 51,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "Add both resolve and reject listener",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isFunction": true,
+              "isApiItem": true,
+              "group": "method",
+              "type": "method",
+              "name": "fail",
+              "fullName": null,
+              "file": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+              "fileType": "js",
+              "template": "js.item.method",
+              "hasInherited": false,
+              "isInherited": true,
+              "level": 2,
+              "flags": {
+                "returnDescription": [
+                  {
+                    "contentType": "string",
+                    "content": "same promise",
+                    "template": "js.flag.returnDescription"
+                  }
+                ],
+                "returns": [
+                  {
+                    "contentType": "typeRef",
+                    "content": "Promise",
+                    "template": "js.flag.returns",
+                    "ref": "class:MetaphorJs.lib.Promise.Promise"
+                  }
+                ],
+                "inherited": [
+                  {
+                    "contentType": "string",
+                    "content": "mixin:MetaphorJs.mixin.Promise",
+                    "template": "js.flag.inherited"
+                  }
+                ]
+              },
+              "plainFlags": {
+                "returnDescription": [
+                  "same promise"
+                ],
+                "returns": [
+                  "Promise"
+                ],
+                "inherited": [
+                  "mixin:MetaphorJs.mixin.Promise"
+                ]
+              },
+              "booleanFlags": [
+                "sync"
+              ],
+              "children": [
+                {
+                  "isApiGroup": true,
+                  "type": "param",
+                  "items": [
+                    {
+                      "isApiItem": true,
+                      "group": "param",
+                      "type": "param",
+                      "name": "fn",
+                      "fullName": null,
+                      "file": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+                      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+                      "fileType": "js",
+                      "template": "js.item.param",
+                      "hasInherited": false,
+                      "isInherited": false,
+                      "level": 3,
+                      "flags": {
+                        "type": [
+                          {
+                            "contentType": "string",
+                            "content": "function",
+                            "template": "js.flag.type"
+                          }
+                        ]
+                      },
+                      "plainFlags": {
+                        "type": [
+                          "function"
+                        ]
+                      },
+                      "booleanFlags": [],
+                      "children": [],
+                      "childTypes": [],
+                      "line": 64,
+                      "description": [
+                        {
+                          "contentType": "string",
+                          "content": "-- function to call when promise is rejected.",
+                          "template": "js.flag.description"
+                        }
+                      ]
+                    },
+                    {
+                      "isApiItem": true,
+                      "group": "param",
+                      "type": "param",
+                      "name": "context",
+                      "fullName": null,
+                      "file": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+                      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-promise/src/mixin/Promise.js",
+                      "fileType": "js",
+                      "template": "js.item.param",
+                      "hasInherited": false,
+                      "isInherited": false,
+                      "level": 3,
+                      "flags": {
+                        "type": [
+                          {
+                            "contentType": "string",
+                            "content": "object",
+                            "template": "js.flag.type"
+                          }
+                        ]
+                      },
+                      "plainFlags": {
+                        "type": [
+                          "object"
+                        ]
+                      },
+                      "booleanFlags": [],
+                      "children": [],
+                      "childTypes": [],
+                      "line": 64,
+                      "description": [
+                        {
+                          "contentType": "string",
+                          "content": "-- function's \"this\" object",
+                          "template": "js.flag.description"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "childTypes": [
+                "param"
+              ],
+              "line": 64,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "Add reject listener",
+                  "template": "js.flag.description"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "isApiGroup": true,
+          "type": "event",
+          "name": "Event",
+          "groupName": "Events",
+          "items": [
+            {
+              "isApiItem": true,
+              "group": "event",
+              "type": "event",
+              "name": "success",
+              "fullName": "class:MetaphorJs.ajax.Ajax@success",
+              "file": "src/class/Ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/class/Ajax.js",
+              "fileType": "js",
+              "template": "js.item.event",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {},
+              "plainFlags": {},
+              "booleanFlags": [],
+              "children": [
+                {
+                  "isApiGroup": true,
+                  "type": "param",
+                  "items": [
+                    {
+                      "isApiItem": true,
+                      "group": "param",
+                      "type": "param",
+                      "name": "value",
+                      "fullName": "class:MetaphorJs.ajax.Ajax@success/value",
+                      "file": "src/class/Ajax.js",
+                      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/class/Ajax.js",
+                      "fileType": "js",
+                      "template": "js.item.param",
+                      "hasInherited": false,
+                      "isInherited": false,
+                      "level": 3,
+                      "flags": {
+                        "type": [
+                          {
+                            "contentType": "string",
+                            "content": "*",
+                            "template": "js.flag.type"
+                          }
+                        ]
+                      },
+                      "plainFlags": {
+                        "type": [
+                          "*"
+                        ]
+                      },
+                      "booleanFlags": [],
+                      "children": [],
+                      "childTypes": [],
+                      "line": 297,
+                      "description": [
+                        {
+                          "contentType": "string",
+                          "content": "response data",
+                          "template": "js.flag.description"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "childTypes": [
+                "param"
+              ],
+              "line": 297,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "On successful request",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "event",
+              "type": "event",
+              "name": "error",
+              "fullName": "class:MetaphorJs.ajax.Ajax@error",
+              "file": "src/class/Ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/class/Ajax.js",
+              "fileType": "js",
+              "template": "js.item.event",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {},
+              "plainFlags": {},
+              "booleanFlags": [],
+              "children": [
+                {
+                  "isApiGroup": true,
+                  "type": "param",
+                  "items": [
+                    {
+                      "isApiItem": true,
+                      "group": "param",
+                      "type": "param",
+                      "name": "reason",
+                      "fullName": "class:MetaphorJs.ajax.Ajax@error/reason",
+                      "file": "src/class/Ajax.js",
+                      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/class/Ajax.js",
+                      "fileType": "js",
+                      "template": "js.item.param",
+                      "hasInherited": false,
+                      "isInherited": false,
+                      "level": 3,
+                      "flags": {
+                        "type": [
+                          {
+                            "contentType": "string",
+                            "content": "*",
+                            "template": "js.flag.type"
+                          }
+                        ]
+                      },
+                      "plainFlags": {
+                        "type": [
+                          "*"
+                        ]
+                      },
+                      "booleanFlags": [],
+                      "children": [],
+                      "childTypes": [],
+                      "line": 306
+                    }
+                  ]
+                }
+              ],
+              "childTypes": [
+                "param"
+              ],
+              "line": 306,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "On request error",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "event",
+              "type": "event",
+              "name": "end",
+              "fullName": "class:MetaphorJs.ajax.Ajax@end",
+              "file": "src/class/Ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/class/Ajax.js",
+              "fileType": "js",
+              "template": "js.item.event",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {},
+              "plainFlags": {},
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 314,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "On request end (success or failure)",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "event",
+              "type": "event",
+              "name": "start",
+              "fullName": "class:MetaphorJs.ajax.Ajax@start",
+              "file": "src/class/Ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/class/Ajax.js",
+              "fileType": "js",
+              "template": "js.item.event",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {},
+              "plainFlags": {},
+              "booleanFlags": [],
+              "children": [],
+              "childTypes": [],
+              "line": 322,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "On request start",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "event",
+              "type": "event",
+              "name": "before-send",
+              "fullName": "class:MetaphorJs.ajax.Ajax@before-send",
+              "file": "src/class/Ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/class/Ajax.js",
+              "fileType": "js",
+              "template": "js.item.event",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {},
+              "plainFlags": {},
+              "booleanFlags": [],
+              "children": [
+                {
+                  "isApiGroup": true,
+                  "type": "param",
+                  "items": [
+                    {
+                      "isApiItem": true,
+                      "group": "param",
+                      "type": "param",
+                      "name": "opt",
+                      "fullName": "class:MetaphorJs.ajax.Ajax@before-send/opt",
+                      "file": "src/class/Ajax.js",
+                      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/class/Ajax.js",
+                      "fileType": "js",
+                      "template": "js.item.param",
+                      "hasInherited": false,
+                      "isInherited": false,
+                      "level": 3,
+                      "flags": {
+                        "type": [
+                          {
+                            "contentType": "string",
+                            "content": "object",
+                            "template": "js.flag.type"
+                          }
+                        ]
+                      },
+                      "plainFlags": {
+                        "type": [
+                          "object"
+                        ]
+                      },
+                      "booleanFlags": [],
+                      "children": [],
+                      "childTypes": [],
+                      "line": 340,
+                      "description": [
+                        {
+                          "contentType": "string",
+                          "content": "ajax options",
+                          "template": "js.flag.description"
+                        }
+                      ]
+                    },
+                    {
+                      "isApiItem": true,
+                      "group": "param",
+                      "type": "param",
+                      "name": "transport",
+                      "fullName": "class:MetaphorJs.ajax.Ajax@before-send/transport",
+                      "file": "src/class/Ajax.js",
+                      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/class/Ajax.js",
+                      "fileType": "js",
+                      "template": "js.item.param",
+                      "hasInherited": false,
+                      "isInherited": false,
+                      "level": 3,
+                      "flags": {
+                        "type": [
+                          {
+                            "contentType": "typeRef",
+                            "content": "MetaphorJs.ajax.transport.*",
+                            "template": "js.flag.type",
+                            "ref": "MetaphorJs.ajax.transport.*"
+                          }
+                        ]
+                      },
+                      "plainFlags": {
+                        "type": [
+                          "MetaphorJs.ajax.transport.*"
+                        ]
+                      },
+                      "booleanFlags": [],
+                      "children": [],
+                      "childTypes": [],
+                      "line": 340
+                    }
+                  ]
+                }
+              ],
+              "childTypes": [
+                "param"
+              ],
+              "line": 340,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "Before sending data",
+                  "template": "js.flag.description"
+                }
+              ]
+            },
+            {
+              "isApiItem": true,
+              "group": "event",
+              "type": "event",
+              "name": "process-response",
+              "fullName": "class:MetaphorJs.ajax.Ajax@process-response",
+              "file": "src/class/Ajax.js",
+              "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/class/Ajax.js",
+              "fileType": "js",
+              "template": "js.item.event",
+              "hasInherited": false,
+              "isInherited": false,
+              "level": 2,
+              "flags": {},
+              "plainFlags": {},
+              "booleanFlags": [],
+              "children": [
+                {
+                  "isApiGroup": true,
+                  "type": "param",
+                  "items": [
+                    {
+                      "isApiItem": true,
+                      "group": "param",
+                      "type": "param",
+                      "name": "data",
+                      "fullName": "class:MetaphorJs.ajax.Ajax@process-response/data",
+                      "file": "src/class/Ajax.js",
+                      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/class/Ajax.js",
+                      "fileType": "js",
+                      "template": "js.item.param",
+                      "hasInherited": false,
+                      "isInherited": false,
+                      "level": 3,
+                      "flags": {
+                        "type": [
+                          {
+                            "contentType": "string",
+                            "content": "*",
+                            "template": "js.flag.type"
+                          }
+                        ]
+                      },
+                      "plainFlags": {
+                        "type": [
+                          "*"
+                        ]
+                      },
+                      "booleanFlags": [],
+                      "children": [],
+                      "childTypes": [],
+                      "line": 529,
+                      "description": [
+                        {
+                          "contentType": "string",
+                          "content": "response data",
+                          "template": "js.flag.description"
+                        }
+                      ]
+                    },
+                    {
+                      "isApiItem": true,
+                      "group": "param",
+                      "type": "param",
+                      "name": "promise",
+                      "fullName": "class:MetaphorJs.ajax.Ajax@process-response/promise",
+                      "file": "src/class/Ajax.js",
+                      "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-ajax/src/class/Ajax.js",
+                      "fileType": "js",
+                      "template": "js.item.param",
+                      "hasInherited": false,
+                      "isInherited": false,
+                      "level": 3,
+                      "flags": {
+                        "type": [
+                          {
+                            "contentType": "typeRef",
+                            "content": "MetaphorJs.lib.Promise",
+                            "template": "js.flag.type",
+                            "ref": "MetaphorJs.lib.Promise"
+                          }
+                        ]
+                      },
+                      "plainFlags": {
+                        "type": [
+                          "MetaphorJs.lib.Promise"
+                        ]
+                      },
+                      "booleanFlags": [],
+                      "children": [],
+                      "childTypes": [],
+                      "line": 529,
+                      "description": [
+                        {
+                          "contentType": "string",
+                          "content": "Current request's promise",
+                          "template": "js.flag.description"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "childTypes": [
+                "param"
+              ],
+              "line": 529,
+              "description": [
+                {
+                  "contentType": "string",
+                  "content": "Process response data",
+                  "template": "js.flag.description"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "childTypes": [
+        "method",
+        "event"
+      ],
+      "line": 191
+    }
+  ],
+  "content": [],
+  "structure": {
+    "function": {
+      "type": "function",
+      "groupName": "Functions",
+      "where": "top-menu",
+      "children": [
+        {
+          "id": "function:ajax",
+          "name": "ajax",
+          "pathPrefix": "item",
+          "isItem": true
+        },
+        {
+          "id": "function:ajax",
+          "name": "ajax",
+          "pathPrefix": "item",
+          "isItem": true
+        },
+        {
+          "id": "function:ajax.get",
+          "name": "ajax.get",
+          "pathPrefix": "item",
+          "isItem": true
+        },
+        {
+          "id": "function:ajax.load",
+          "name": "ajax.load",
+          "pathPrefix": "item",
+          "isItem": true
+        },
+        {
+          "id": "function:ajax.loadScript",
+          "name": "ajax.loadScript",
+          "pathPrefix": "item",
+          "isItem": true
+        },
+        {
+          "id": "function:ajax.on",
+          "name": "ajax.on",
+          "pathPrefix": "item",
+          "isItem": true
+        },
+        {
+          "id": "function:ajax.post",
+          "name": "ajax.post",
+          "pathPrefix": "item",
+          "isItem": true
+        },
+        {
+          "id": "function:ajax.prepareUrl",
+          "name": "ajax.prepareUrl",
+          "pathPrefix": "item",
+          "isItem": true
+        },
+        {
+          "id": "function:ajax.setup",
+          "name": "ajax.setup",
+          "pathPrefix": "item",
+          "isItem": true
+        },
+        {
+          "id": "function:ajax.submit",
+          "name": "ajax.submit",
+          "pathPrefix": "item",
+          "isItem": true
+        },
+        {
+          "id": "function:ajax.un",
+          "name": "ajax.un",
+          "pathPrefix": "item",
+          "isItem": true
+        }
+      ]
+    },
+    "object": {
+      "type": "object",
+      "groupName": "Objects",
+      "where": "top-menu",
+      "children": [
+        {
+          "id": "object:ajax.defaults",
+          "name": "ajax.defaults",
+          "pathPrefix": "item",
+          "isItem": true
+        }
+      ]
+    },
+    "class": {
+      "type": "class",
+      "groupName": "Classes",
+      "where": "top-menu",
+      "children": [
+        {
+          "id": "class:MetaphorJs.ajax.Ajax",
+          "name": "MetaphorJs.ajax.Ajax",
+          "pathPrefix": "item",
+          "isItem": true
+        }
+      ]
+    }
+  }
+}

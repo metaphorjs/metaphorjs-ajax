@@ -1,30 +1,30 @@
 
-var cls         = require("metaphorjs-class/src/cls.js"),
-    bind        = require("metaphorjs/src/func/bind.js"),
-    trim        = require("metaphorjs/src/func/trim.js"),
-    async       = require("metaphorjs/src/func/async.js"),
-    parseJSON   = require("metaphorjs/src/func/parseJSON.js"),
-    parseXML    = require("metaphorjs/src/func/parseXML.js"),
-    select      = require("metaphorjs-select/src/func/select.js"),
-    isArray     = require("metaphorjs/src/func/isArray.js"),
-    Observable  = require("metaphorjs-observable/src/lib/Observable.js"),
-    isString    = require("metaphorjs/src/func/isString.js"),
-    isFunction  = require("metaphorjs/src/func/isFunction.js"),
-    isObject    = require("metaphorjs/src/func/isObject.js"),
-    isPlainObject= require("metaphorjs/src/func/isPlainObject.js"),
-    error       = require("metaphorjs/src/func/error.js"),
-    strUndef    = require("metaphorjs/src/var/strUndef.js"),
-    nextUid     = require("metaphorjs/src/func/nextUid.js"),
-    getAttr     = require("metaphorjs/src/func/dom/getAttr.js"),
-    setAttr     = require("metaphorjs/src/func/dom/setAttr.js"),
-    serializeParam = require("../func/serializeParam.js");
 
+var cls         = require("metaphorjs-class/src/cls.js"),
+    bind        = require("metaphorjs-shared/src/func/bind.js"),
+    async       = require("metaphorjs-shared/src/func/async.js"),
+    parseXML    = require("metaphorjs-shared/src/func/parseXML.js"),
+    isArray     = require("metaphorjs-shared/src/func/isArray.js"),
+    isString    = require("metaphorjs-shared/src/func/isString.js"),
+    isFunction  = require("metaphorjs-shared/src/func/isFunction.js"),
+    isObject    = require("metaphorjs-shared/src/func/isObject.js"),
+    isPlainObject= require("metaphorjs-shared/src/func/isPlainObject.js"),
+    error       = require("metaphorjs-shared/src/func/error.js"),
+    strUndef    = require("metaphorjs-shared/src/var/strUndef.js"),
+    nextUid     = require("metaphorjs-shared/src/func/nextUid.js"),
+    MetaphorJs  = require("metaphorjs-shared/src/MetaphorJs.js");
+
+require("metaphorjs-select/src/func/select.js")
 require("metaphorjs-promise/src/mixin/Promise.js");
+require("metaphorjs-observable/src/lib/Observable.js");
+require("metaphorjs/src/func/dom/getAttr.js");
+require("metaphorjs/src/func/dom/setAttr.js");
+require("../func/ajax/serializeParam.js");
 require("./transport/XHR.js");
 require("./transport/Script.js");
 require("./transport/IFrame.js");
 
-module.exports = (function(){
+module.exports = MetaphorJs.ajax.Ajax = (function(){
 
     var rquery          = /\?/,
         rurl            = /^([\w.+-]+:)(?:\/\/(?:[^\/?#]*@|)([^\/?#:]*)(?::(\d+)|)|)/,
@@ -32,7 +32,7 @@ module.exports = (function(){
         rts             = /([?&])_=[^&]*/,
         rgethead        = /^(?:GET|HEAD)$/i,
 
-        globalEvents    = new Observable,
+        globalEvents    = new MetaphorJs.lib.Observable,
 
         formDataSupport = !!(window && window.FormData),
 
@@ -49,12 +49,12 @@ module.exports = (function(){
             ct = ct || "";
 
             if (type === "xml" || !type && ct.indexOf("xml") >= 0) {
-                doc = parseXML(trim(data));
-                return selector ? select(selector, doc) : doc;
+                doc = parseXML(data.trim());
+                return selector ? MetaphorJs.dom.select(selector, doc) : doc;
             }
             else if (type === "html") {
                 doc = parseXML(data, "text/html");
-                return selector ? select(selector, doc) : doc;
+                return selector ? MetaphorJs.dom.select(selector, doc) : doc;
             }
             else if (type == "fragment") {
                 var fragment    = document.createDocumentFragment(),
@@ -69,7 +69,7 @@ module.exports = (function(){
                 return fragment;
             }
             else if (type === "json" || !type && ct.indexOf("json") >= 0) {
-                return parseJSON(trim(data));
+                return JSON.parse(data.trim());
             }
             else if (type === "script" || !type && ct.indexOf("javascript") >= 0) {
                 globalEval(data);
@@ -106,7 +106,7 @@ module.exports = (function(){
 
             if (opt.data && opt.method != "POST" && !opt.contentType && (!formDataSupport || !(opt.data instanceof window.FormData))) {
 
-                opt.data = !isString(opt.data) ? serializeParam(opt.data) : opt.data;
+                opt.data = !isString(opt.data) ? MetaphorJs.ajax.serializeParam(opt.data) : opt.data;
                 url += (rquery.test(url) ? "&" : "?") + opt.data;
                 opt.data = null;
             }
@@ -120,9 +120,9 @@ module.exports = (function(){
 
             if (!isObject(data) && !isFunction(data) && name) {
                 input   = document.createElement("input");
-                setAttr(input, "type", "hidden");
-                setAttr(input, "name", name);
-                setAttr(input, "value", data);
+                MetaphorJs.dom.setAttr(input, "type", "hidden");
+                MetaphorJs.dom.setAttr(input, "name", name);
+                MetaphorJs.dom.setAttr(input, "value", data);
                 form.appendChild(input);
             }
             else if (isArray(data) && name) {
@@ -149,12 +149,13 @@ module.exports = (function(){
 
                 oField = form.elements[nItem];
 
-                if (getAttr(oField, "name") === null) {
+                if (MetaphorJs.dom.getAttr(oField, "name") === null) {
                     continue;
                 }
 
                 sFieldType = oField.nodeName.toUpperCase() === "INPUT" ?
-                             getAttr(oField, "type").toUpperCase() : "TEXT";
+                                MetaphorJs.dom.getAttr(oField, "type").toUpperCase() : 
+                                "TEXT";
 
                 if (sFieldType === "FILE") {
                     for (nFile = 0;
@@ -166,7 +167,7 @@ module.exports = (function(){
                 }
             }
 
-            return serializeParam(obj);
+            return MetaphorJs.ajax.serializeParam(obj);
         },
 
         globalEval = function(code){
@@ -183,9 +184,12 @@ module.exports = (function(){
             }
         };
 
+    /**
+     * @class MetaphorJs.ajax.Ajax
+     * @mixes mixin:MetaphorJs.mixin.Promise
+     */
     return cls({
 
-        $class: "MetaphorJs.Ajax",
         $mixins: [MetaphorJs.mixin.Promise],
 
         _jsonpName: null,
@@ -197,6 +201,11 @@ module.exports = (function(){
         _form: null,
         _removeForm: false,
 
+        /**
+         * @method
+         * @constructor
+         * @param {object} opt See ajax.defaults
+         */
         $init: function(opt) {
 
             if (opt.url) {
@@ -217,7 +226,6 @@ module.exports = (function(){
                                       (local[3] || (local[1] === "http:" ? "80" : "443"))));
             }
 
-            //deferred    = new Promise,
             var transport;
 
             if (opt.files) {
@@ -246,7 +254,7 @@ module.exports = (function(){
                     opt.data = serializeForm(opt.form);
                 }
             }
-            else if (opt.contentType == "json") {
+            else if (opt.contentType === "json") {
                 opt.contentType = opt.contentTypeHeader || "text/plain";
                 opt.data = isString(opt.data) ? opt.data : JSON.stringify(opt.data);
             }
@@ -281,16 +289,36 @@ module.exports = (function(){
             //self._deferred      = deferred;
             self._transport     = transport;
 
+            /**
+             * On successful request
+             * @event success
+             * @param {*} value response data
+             */
             self.$$promise.done(function(value) {
                 globalEvents.trigger("success", value);
             });
+
+            /**
+             * On request error
+             * @event error
+             * @param {*} reason
+             */
             self.$$promise.fail(function(reason) {
                 globalEvents.trigger("error", reason);
             });
+
+            /**
+             * On request end (success or failure)
+             * @event end
+             */
             self.$$promise.always(function(){
                 globalEvents.trigger("end");
             });
 
+            /**
+             * On request start
+             * @event start
+             */
             globalEvents.trigger("start");
 
 
@@ -302,22 +330,23 @@ module.exports = (function(){
                 self.createJsonp();
             }
 
+            /**
+             * Before sending data
+             * @event before-send
+             * @param {object} opt ajax options
+             * @param {MetaphorJs.ajax.transport.*} transport 
+             * @returns {boolean|null} return false to cancel the request
+             */
             if (globalEvents.trigger("before-send", opt, transport) === false) {
-                //self._promise = Promise.reject();
                 self.$$promise.reject();
             }
             if (opt.beforeSend && opt.beforeSend.call(opt.context, opt, transport) === false) {
-                //self._promise = Promise.reject();
                 self.$$promise.reject();
             }
 
             if (self.$$promise.isPending()) {
                 async(transport.send, transport);
-
-                //deferred.abort = bind(self.abort, self);
                 self.$$promise.always(self.asyncDestroy, self);
-
-                //self._promise = deferred;
             }
             else {
                 async(self.asyncDestroy, self, [], 1000);
@@ -344,6 +373,11 @@ module.exports = (function(){
             return this._promise;
         },*/
 
+        /**
+         * Cancel ajax request
+         * @method
+         * @param {string} reason
+         */
         abort: function(reason) {
             this.$$promise.reject(reason || "abort");
             this._transport.abort();
@@ -355,6 +389,11 @@ module.exports = (function(){
             this.abort("timeout");
         },
 
+        /**
+         * Get current transport
+         * @method
+         * @returns {MetaphorJs.ajax.transport.*}
+         */
         getTransport: function() {
             return this._transport;
         },
@@ -365,8 +404,8 @@ module.exports = (function(){
                 form    = document.createElement("form");
 
             form.style.display = "none";
-            setAttr(form, "method", self._opt.method);
-            setAttr(form, "enctype", "multipart/form-data");
+            MetaphorJs.dom.setAttr(form, "method", self._opt.method);
+            MetaphorJs.dom.setAttr(form, "enctype", "multipart/form-data");
 
             data2form(self._opt.data, form, null);
 
@@ -381,7 +420,6 @@ module.exports = (function(){
             var self    = this,
                 opt     = self._opt,
                 files   = opt.files,
-                tr      = opt.transport,
                 form    = self._form,
                 data    = opt.data,
                 i, l,
@@ -462,12 +500,11 @@ module.exports = (function(){
                 res = self.processResponseData(data);
             }
             catch (thrownError) {
+                error(thrownError);
                 if (self.$$promise) {
                     self.$$promise.reject(thrownError);
                 }
-                else {
-                    error(thrownError);
-                }
+                return;
             }
 
             if (self.$$promise) {
@@ -483,6 +520,12 @@ module.exports = (function(){
             data    = processData(data, opt, contentType);
 
             if (globalEvents.hasListener("process-response")) {
+                /**
+                 * Process response data
+                 * @event process-response
+                 * @param {*} data response data
+                 * @param {MetaphorJs.lib.Promise} promise Current request's promise
+                 */
                 globalEvents.trigger("process-response", data, self.$$promise);
             }
 
@@ -515,14 +558,16 @@ module.exports = (function(){
                     result = self.processResponseData(data, contentType)
                 }
                 catch (thrownError) {
+                    error(thrownError);
                     deferred.reject(thrownError);
+                    return;
                 }
 
                 deferred.resolve(result);
             }
             else {
                 if (!data) {
-                    deferred.reject("jsonp script is empty");
+                    deferred.reject(new Error("jsonp script is empty"));
                     return;
                 }
 
@@ -530,11 +575,12 @@ module.exports = (function(){
                     globalEval(data);
                 }
                 catch (thrownError) {
+                    error(thrownError);
                     deferred.reject(thrownError);
                 }
 
                 if (deferred.isPending()) {
-                    deferred.reject("jsonp script didn't invoke callback");
+                    deferred.reject(new Error("jsonp script didn't invoke callback"));
                 }
             }
         },
