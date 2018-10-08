@@ -14,7 +14,7 @@ var cls         = require("metaphorjs-class/src/cls.js"),
     nextUid     = require("metaphorjs-shared/src/func/nextUid.js"),
     MetaphorJs  = require("metaphorjs-shared/src/MetaphorJs.js");
 
-require("metaphorjs-select/src/func/select.js")
+require("metaphorjs/src/func/dom/select.js")
 require("metaphorjs-promise/src/mixin/Promise.js");
 require("metaphorjs-observable/src/lib/Observable.js");
 require("metaphorjs/src/func/dom/getAttr.js");
