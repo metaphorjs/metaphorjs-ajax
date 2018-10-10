@@ -104,9 +104,12 @@ module.exports = MetaphorJs.ajax.Ajax = (function(){
                       url + (rquery.test(url) ? "&" : "?" ) + "_=" + stamp;
             }
 
-            if (opt.data && opt.method != "POST" && !opt.contentType && (!formDataSupport || !(opt.data instanceof window.FormData))) {
+            if (opt.data && opt.method != "POST" && !opt.contentType && 
+                (!formDataSupport || !(opt.data instanceof window.FormData))) {
 
-                opt.data = !isString(opt.data) ? MetaphorJs.ajax.serializeParam(opt.data) : opt.data;
+                opt.data = !isString(opt.data) ? 
+                                MetaphorJs.ajax.serializeParam(opt.data) : 
+                                opt.data;
                 url += (rquery.test(url) ? "&" : "?") + opt.data;
                 opt.data = null;
             }
