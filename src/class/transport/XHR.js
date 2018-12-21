@@ -1,4 +1,6 @@
 
+require("metaphorjs-promise/src/lib/Promise.js");
+
 var cls         = require("metaphorjs-class/src/cls.js"),
     bind        = require("metaphorjs-shared/src/func/bind.js"),
     error       = require("metaphorjs-shared/src/func/error.js"),
@@ -36,7 +38,8 @@ module.exports = MetaphorJs.ajax.transport.XHR = (function(){
 
         httpSuccess     = function(r) {
             try {
-                return (!r.status && location && location.protocol === "file:")
+                return (!r.status && window.location && 
+                        window.location.protocol === "file:")
                        || (r.status >= 200 && r.status < 300)
                        || r.status === 304 || r.status === 1223; // || r.status === 0;
             } 
@@ -118,7 +121,6 @@ module.exports = MetaphorJs.ajax.transport.XHR = (function(){
                 xhr.onreadystatechange = emptyFn;
 
                 if (httpSuccess(xhr)) {
-
                     self._ajax.processResponse(
                         isString(xhr.responseText) ? xhr.responseText : undf,
                         xhr.getResponseHeader("content-type") || ''
@@ -129,10 +131,16 @@ module.exports = MetaphorJs.ajax.transport.XHR = (function(){
                     xhr.responseData = null;
 
                     try {
+                        // dirty hack. Prevent response processing tools
+                        // from resolving the promise.
+                        // they are needed to process the response though
+                        // even it failed. 
+                        self._ajax.$$promise = new MetaphorJs.lib.Promise;
                         xhr.responseData = self._ajax.returnResponse(
                             isString(xhr.responseText) ? xhr.responseText : undf,
                             xhr.getResponseHeader("content-type") || ''
                         );
+                        self._ajax.$$promise = deferred;
                     }
                     catch (thrownErr) {
                         error(thrownError);

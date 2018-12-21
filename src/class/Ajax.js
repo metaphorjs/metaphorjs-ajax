@@ -258,7 +258,7 @@ module.exports = MetaphorJs.ajax.Ajax = (function(){
                 }
             }
             else if (opt.contentType === "json") {
-                opt.contentType = opt.contentTypeHeader || "text/plain";
+                opt.contentType = opt.contentTypeHeader || "application/json";
                 opt.data = isString(opt.data) ? opt.data : JSON.stringify(opt.data);
             }
             else if (isPlainObject(opt.data) && opt.method == "POST" && formDataSupport) {
