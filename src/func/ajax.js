@@ -307,7 +307,7 @@ module.exports = function(){
     /**
      * Load response to given html element
      * @function ajax.load
-     * @param {Element} el
+     * @param {HTMLElement} el
      * @param {string} url 
      * @param {object} opt 
      * @returns {MetaphorJs.ajax.Ajax}
