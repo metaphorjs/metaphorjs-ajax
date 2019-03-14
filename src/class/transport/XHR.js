@@ -143,7 +143,7 @@ module.exports = MetaphorJs.ajax.transport.XHR = (function(){
                         self._ajax.$$promise = deferred;
                     }
                     catch (thrownErr) {
-                        error(thrownError);
+                        error(thrownErr);
                     }
 
                     deferred.reject(xhr);
