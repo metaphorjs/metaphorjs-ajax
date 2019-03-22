@@ -285,6 +285,9 @@ module.exports = MetaphorJs.ajax.Ajax = (function(){
             else if (opt.transport == "iframe") {
                 transport   = new MetaphorJs.ajax.transport.IFrame(opt, self.$$promise, self);
             }
+            else if (opt.transport === "fetch") {
+                transport   = new MetaphorJs.ajax.transport.Fetch(opt, self.$$promise, self);
+            }
             else {
                 transport   = new MetaphorJs.ajax.transport.XHR(opt, self.$$promise, self);
             }
