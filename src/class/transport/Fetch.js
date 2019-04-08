@@ -27,6 +27,8 @@ module.exports = MetaphorJs.ajax.transport.Fetch = (function(){
             var self    = this,
                 opt     = self._opt;
 
+            console.log("fetch", opt)
+
             try {
                 self._deferred.after(window.fetch(opt.url, opt));
             }

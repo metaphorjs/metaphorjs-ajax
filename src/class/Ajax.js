@@ -215,6 +215,8 @@ module.exports = MetaphorJs.ajax.Ajax = (function(){
                 opt.url = fixUrlDomain(opt.url);
             }
 
+            opt.transport   = opt.transport || MetaphorJs.ajax.Ajax.defaultTransport;
+
             var self        = this,
                 href        = window ? window.location.href : "",
                 local       = rurl.exec(href.toLowerCase()) || [],
@@ -288,7 +290,7 @@ module.exports = MetaphorJs.ajax.Ajax = (function(){
             else if (opt.transport === "fetch") {
                 transport   = new MetaphorJs.ajax.transport.Fetch(opt, self.$$promise, self);
             }
-            else {
+            else if (opt.transport === "xhr") {
                 transport   = new MetaphorJs.ajax.transport.XHR(opt, self.$$promise, self);
             }
 
@@ -617,6 +619,7 @@ module.exports = MetaphorJs.ajax.Ajax = (function(){
 
     }, {
         prepareUrl: prepareUrl,
-        global: globalEvents
+        global: globalEvents,
+        defaultTransport: "xhr"
     });
 }());
