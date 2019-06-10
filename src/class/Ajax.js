@@ -23,6 +23,7 @@ require("../func/ajax/serializeParam.js");
 require("./transport/XHR.js");
 require("./transport/Script.js");
 require("./transport/IFrame.js");
+require("./transport/Fetch.js");
 
 module.exports = MetaphorJs.ajax.Ajax = (function(){
 
@@ -281,10 +282,17 @@ module.exports = MetaphorJs.ajax.Ajax = (function(){
 
             opt.url = prepareUrl(opt.url, opt);
 
-            if ((opt.crossDomain || opt.transport == "script") && !opt.form) {
+            /**
+             * Before initializing transport
+             * @event before-transport
+             * @param {object} opt ajax options
+             */
+            globalEvents.trigger("before-transport", opt);
+
+            if ((opt.crossDomain || opt.transport === "script") && !opt.form) {
                 transport   = new MetaphorJs.ajax.transport.Script(opt, self.$$promise, self);
             }
-            else if (opt.transport == "iframe") {
+            else if (opt.transport === "iframe") {
                 transport   = new MetaphorJs.ajax.transport.IFrame(opt, self.$$promise, self);
             }
             else if (opt.transport === "fetch") {
