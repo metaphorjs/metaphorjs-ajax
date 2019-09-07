@@ -1,2 +1,0 @@
-
-crossJsonpCallback("some data");

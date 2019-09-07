@@ -1,14 +1,16 @@
 
-var defineClass = require("metaphorjs-class/src/func/defineClass.js"),
-    bind        = require("metaphorjs/src/func/bind.js"),
-    emptyFn     = require("metaphorjs/src/func/emptyFn.js"),
-    isString    = require("metaphorjs/src/func/isString.js"),
-    undf        = require("metaphorjs/src/var/undf.js");
+require("metaphorjs-promise/src/lib/Promise.js");
+
+var cls         = require("metaphorjs-class/src/cls.js"),
+    bind        = require("metaphorjs-shared/src/func/bind.js"),
+    error       = require("metaphorjs-shared/src/func/error.js"),
+    emptyFn     = require("metaphorjs-shared/src/func/emptyFn.js"),
+    isString    = require("metaphorjs-shared/src/func/isString.js"),
+    undf        = require("metaphorjs-shared/src/var/undf.js"),
+    MetaphorJs  = require("metaphorjs-shared/src/MetaphorJs.js");
 
 
-module.exports = (function(){
-
-
+module.exports = MetaphorJs.ajax.transport.XHR = (function(){
 
     var accepts     = {
             xml:        "application/xml, text/xml",
@@ -26,7 +28,7 @@ module.exports = (function(){
             if (!window.XMLHttpRequest || !(xhr = new XMLHttpRequest())) {
                 if (!(xhr = new ActiveXObject("Msxml2.XMLHTTP"))) {
                     if (!(xhr = new ActiveXObject("Microsoft.XMLHTTP"))) {
-                        throw "Unable to create XHR object";
+                        throw new Error("Unable to create XHR object");
                     }
                 }
             }
@@ -36,16 +38,18 @@ module.exports = (function(){
 
         httpSuccess     = function(r) {
             try {
-                return (!r.status && location && location.protocol == "file:")
+                return (!r.status && window.location && 
+                        window.location.protocol === "file:")
                        || (r.status >= 200 && r.status < 300)
                        || r.status === 304 || r.status === 1223; // || r.status === 0;
-            } catch(thrownError){}
+            } 
+            catch (thrownError) {
+                error(thrownError);
+            }
             return false;
         };
 
-    return defineClass({
-
-        $class: "ajax.transport.XHR",
+    return cls({
 
         type: "xhr",
         _xhr: null,
@@ -85,7 +89,9 @@ module.exports = (function(){
                 }
             }
             if (opt.data && opt.contentType) {
-                xhr.setRequestHeader("Content-Type", opt.contentType);
+                xhr.setRequestHeader("Content-Type", 
+                    opt.contentTypeHeader || opt.contentType
+                );
             }
             xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
             xhr.setRequestHeader("Accept",
@@ -115,7 +121,6 @@ module.exports = (function(){
                 xhr.onreadystatechange = emptyFn;
 
                 if (httpSuccess(xhr)) {
-
                     self._ajax.processResponse(
                         isString(xhr.responseText) ? xhr.responseText : undf,
                         xhr.getResponseHeader("content-type") || ''
@@ -126,12 +131,20 @@ module.exports = (function(){
                     xhr.responseData = null;
 
                     try {
+                        // dirty hack. Prevent response processing tools
+                        // from resolving the promise.
+                        // they are needed to process the response though
+                        // even it failed. 
+                        self._ajax.$$promise = new MetaphorJs.lib.Promise;
                         xhr.responseData = self._ajax.returnResponse(
                             isString(xhr.responseText) ? xhr.responseText : undf,
                             xhr.getResponseHeader("content-type") || ''
                         );
+                        self._ajax.$$promise = deferred;
                     }
-                    catch (thrownErr) {}
+                    catch (thrownErr) {
+                        error(thrownErr);
+                    }
 
                     deferred.reject(xhr);
                 }
@@ -155,6 +168,7 @@ module.exports = (function(){
                 self._xhr.send(opt.data);
             }
             catch (thrownError) {
+                error(thrownError);
                 if (self._deferred) {
                     self._deferred.reject(thrownError);
                 }

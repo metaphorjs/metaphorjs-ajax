@@ -2,85 +2,89 @@
     "version": "0.1.7",
     "description": "MetaphorJs ajax implementation",
 
-    "push": [
-        "github"
-    ],
+    "docs": {
+        "out": "docs",
+        "renderer": {
+            "type": "default",
+            "data": {
+                "title": "MetaphorJs.ajax",
+                "description": "XHR/Iframe/JsonP/Script transport api",
+                "version": "0.1.7"
+            }
+        },
+        "src": [
+            "src/**"
+        ],
+        "includeExternal": false,
+        "export": {
+            "sort": {
+                "type": "exact",
+                "order": [
+                    "function:ajax",
+                    "object:ajax.defaults",
+                    "*",
+                    "class:MetaphorJs.ajax.Ajax",
+                    "*"
+                ]
+            }
+        }
+    },
+    
     "build": {
+
         "standalone": {
-            "wrap": true,
-            "global": true,
             "target": "dist/metaphorjs.ajax.js",
             "files": [
-                "metaphorjs/src/MetaphorJs.js",
-                [
-                    "src/func/ajax.js",
-                    {
-                        "as": "ajax"
-                    }
-                ]
+                ["src/func/ajax.js", {"as": "ajax"}]
             ],
-            "expose": [
-                "ajax"
-            ]
+            "options": {
+                "wrap": true,
+                "global": true,
+                "expose": [
+                    "ajax"
+                ]
+            }
         },
+
+        "standalone-min": {
+            "extend": "standalone",
+            "target": "dist/metaphorjs.ajax.min.js",
+            "pipe": ["build", "compile", "write"]
+        },
+
         "npm": {
             "target": "dist/metaphorjs.ajax.npm.js",
-            "compile": false,
-            "wrap": {
-                "exported": true,
-                "deferred": true,
-                "args": ["window"]
-            },
             "files": [
-                [
-                    "src/func/ajax.js",
-                    {
-                        "as": "ajax"
-                    }
-                ]
+                ["src/func/ajax.js", {"as": "ajax"}]
             ],
-            "require": {
-                "metaphorjs-select": {
-                    "as": "select",
+            "options": {
+                "exports": true,
+                "return": "ajax",
+                "wrap": {
+                    "deferred": true,
+                    "return": "ajax",
                     "args": ["window"]
-                },
-                "metaphorjs-observable": "Observable",
-                "metaphorjs-promise": "Promise",
-                "metaphorjs-class": "Class"
-            },
-            "omit": [
-                "metaphorjs-observable/src/lib/Observable.js",
-                "metaphorjs-promise/src/lib/Promise.js",
-                "metaphorjs-select/src/func/select.js",
-                "metaphorjs-class/src/lib/Class.js"
-            ],
-            "returns": "ajax"
+                }
+            }
         },
+
         "amd": {
             "target": "dist/metaphorjs.ajax.amd.js",
             "files": [
-                [
-                    "src/func/ajax.js",
-                    {
-                        "returnExports": true
-                    }
-                ]
+                ["src/func/ajax.js", {"as": "ajax"}]
             ],
-            "omit": [
-                "metaphorjs-observable/src/lib/Observable.js",
-                "metaphorjs-promise/src/lib/Promise.js",
-                "metaphorjs-select/src/func/select.js",
-                "metaphorjs-class/src/lib/Class.js"
-            ],
-            "define": {
-                "name": "metaphorjs-ajax",
-                "deps": {
-                    "metaphorjs-observable": "Observable",
-                    "metaphorjs-promise": "Promise",
-                    "metaphorjs-select": "select",
-                    "metaphorjs-class": "Class"
+            "options": {
+                "amd": {
+                    "name": "metaphorjs-ajax",
+                    "return": "ajax"
                 }
-            }
+            }   
+        },
+
+        "amd-min": {
+            "extend": "amd",
+            "target": "dist/metaphorjs.ajax.amd.min.js",
+            "pipe": ["build", "compile", "write"]
         }
     }
 }

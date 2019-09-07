@@ -1,13 +1,12 @@
 
-var defineClass = require("metaphorjs-class/src/func/defineClass.js"),
-    async       = require("metaphorjs/src/func/async.js"),
-    addListener = require("metaphorjs/src/func/event/addListener.js"),
-    error       = require("metaphorjs/src/func/error.js"),
-    setAttr     = require("metaphorjs/src/func/dom/setAttr.js");
+require("../../__init.js");
+require("metaphorjs/src/func/dom/addListener.js");
+require("metaphorjs/src/func/dom/setAttr.js");
 
-
-module.exports = defineClass({
-    $class: "ajax.transport.Script",
+var cls         = require("metaphorjs-class/src/cls.js"),
+    MetaphorJs = require("metaphorjs-shared/src/MetaphorJs.js");
+    
+module.exports = MetaphorJs.ajax.transport.Script = cls({
 
     type: "script",
     _opt: null,
@@ -28,12 +27,12 @@ module.exports = defineClass({
         var self    = this,
             script  = document.createElement("script");
 
-        setAttr(script, "async", "async");
-        setAttr(script, "charset", "utf-8");
-        setAttr(script, "src", self._opt.url);
+        MetaphorJs.dom.setAttr(script, "async", "async");
+        MetaphorJs.dom.setAttr(script, "charset", "utf-8");
+        MetaphorJs.dom.setAttr(script, "src", self._opt.url);
 
-        addListener(script, "load", bind(self.onLoad, self));
-        addListener(script, "error", bind(self.onError, self));
+        MetaphorJs.dom.addListener(script, "load", bind(self.onLoad, self));
+        MetaphorJs.dom.addListener(script, "error", bind(self.onError, self));
 
         document.head.appendChild(script);
 
@@ -58,7 +57,7 @@ module.exports = defineClass({
         }
     },
 
-    destroy: function() {
+    onDestroy: function() {
 
         var self    = this;
 

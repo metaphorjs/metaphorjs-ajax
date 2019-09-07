@@ -1,16 +1,16 @@
+require("../../__init.js");
+require("metaphorjs/src/func/dom/addListener.js");
+require("metaphorjs/src/func/dom/setAttr.js");
 
-var defineClass = require("metaphorjs-class/src/func/defineClass.js"),
-    bind        = require("metaphorjs/src/func/bind.js"),
-    addListener = require("metaphorjs/src/func/event/addListener.js"),
-    error       = require("metaphorjs/src/func/error.js"),
-    nextUid     = require("metaphorjs/src/func/nextUid.js"),
-    setAttr     = require("metaphorjs/src/func/dom/setAttr.js"),
-    async       = require("metaphorjs/src/func/async.js");
+var cls         = require("metaphorjs-class/src/cls.js"),
+    error       = require("metaphorjs-shared/src/func/error.js"),
+    bind        = require("metaphorjs-shared/src/func/bind.js"),
+    nextUid     = require("metaphorjs-shared/src/func/nextUid.js"),
+    async       = require("metaphorjs-shared/src/func/async.js"),
+    MetaphorJs = require("metaphorjs-shared/src/MetaphorJs.js");
 
 
-module.exports = defineClass({
-
-    $class: "ajax.transport.IFrame",
+module.exports = MetaphorJs.ajax.transport.IFrame = cls({
 
     type: "iframe",
     _opt: null,
@@ -34,16 +34,16 @@ module.exports = defineClass({
             id      = "frame-" + nextUid(),
             form    = self._opt.form;
 
-        setAttr(frame, "id", id);
-        setAttr(frame, "name", id);
+        MetaphorJs.dom.setAttr(frame, "id", id);
+        MetaphorJs.dom.setAttr(frame, "name", id);
         frame.style.display = "none";
         document.body.appendChild(frame);
 
-        setAttr(form, "action", self._opt.url);
-        setAttr(form, "target", id);
+        MetaphorJs.dom.setAttr(form, "action", self._opt.url);
+        MetaphorJs.dom.setAttr(form, "target", id);
 
-        addListener(frame, "load", bind(self.onLoad, self));
-        addListener(frame, "error", bind(self.onError, self));
+        MetaphorJs.dom.addListener(frame, "load", bind(self.onLoad, self));
+        MetaphorJs.dom.addListener(frame, "error", bind(self.onError, self));
 
         self._el = frame;
 
@@ -58,6 +58,7 @@ module.exports = defineClass({
                 self._sent = true;
             }
             catch (thrownError) {
+                error(thrownError);
                 if (tries > 2) {
                     self._deferred.reject(thrownError);
                 }
@@ -89,6 +90,7 @@ module.exports = defineClass({
                 self._ajax.processResponse(data);
             }
             catch (thrownError) {
+                error(thrownError);
                 self._deferred.reject(thrownError);
             }
         }
@@ -111,7 +113,7 @@ module.exports = defineClass({
         }
     },
 
-    destroy: function() {
+    onDestroy: function() {
         var self    = this;
 
         if (self._el.parentNode) {
