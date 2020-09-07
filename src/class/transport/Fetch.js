@@ -1,7 +1,7 @@
 
 require("metaphorjs-promise/src/lib/Promise.js");
 
-var cls         = require("metaphorjs-class/src/cls.js"),
+const cls         = require("metaphorjs-class/src/cls.js"),
     MetaphorJs  = require("metaphorjs-shared/src/MetaphorJs.js");
 
 module.exports = MetaphorJs.ajax.transport.Fetch = (function(){

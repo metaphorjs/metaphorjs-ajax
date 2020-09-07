@@ -2,7 +2,7 @@ require("../../__init.js");
 require("metaphorjs/src/func/dom/addListener.js");
 require("metaphorjs/src/func/dom/setAttr.js");
 
-var cls         = require("metaphorjs-class/src/cls.js"),
+const cls         = require("metaphorjs-class/src/cls.js"),
     error       = require("metaphorjs-shared/src/func/error.js"),
     bind        = require("metaphorjs-shared/src/func/bind.js"),
     nextUid     = require("metaphorjs-shared/src/func/nextUid.js"),

@@ -1,6 +1,6 @@
 
 
-var cls         = require("metaphorjs-class/src/cls.js"),
+const cls         = require("metaphorjs-class/src/cls.js"),
     bind        = require("metaphorjs-shared/src/func/bind.js"),
     async       = require("metaphorjs-shared/src/func/async.js"),
     parseXML    = require("metaphorjs-shared/src/func/parseXML.js"),
@@ -10,7 +10,6 @@ var cls         = require("metaphorjs-class/src/cls.js"),
     isObject    = require("metaphorjs-shared/src/func/isObject.js"),
     isPlainObject= require("metaphorjs-shared/src/func/isPlainObject.js"),
     error       = require("metaphorjs-shared/src/func/error.js"),
-    strUndef    = require("metaphorjs-shared/src/var/strUndef.js"),
     nextUid     = require("metaphorjs-shared/src/func/nextUid.js"),
     MetaphorJs  = require("metaphorjs-shared/src/MetaphorJs.js");
 
@@ -497,10 +496,10 @@ module.exports = MetaphorJs.ajax.Ajax = (function(){
 
             self._jsonpName = cbName;
 
-            if (typeof window != strUndef) {
+            if (typeof window != "undefined") {
                 window[cbName] = bind(self.jsonpCallback, self);
             }
-            if (typeof global != strUndef) {
+            if (typeof global != "undefined") {
                 global[cbName] = bind(self.jsonpCallback, self);
             }
 
@@ -616,10 +615,10 @@ module.exports = MetaphorJs.ajax.Ajax = (function(){
             self._transport.$destroy();
 
             if (self._jsonpName) {
-                if (typeof window != strUndef) {
+                if (typeof window != "undefined") {
                     delete window[self._jsonpName];
                 }
-                if (typeof global != strUndef) {
+                if (typeof global != "undefined") {
                     delete global[self._jsonpName];
                 }
             }

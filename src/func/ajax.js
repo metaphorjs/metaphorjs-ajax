@@ -1,5 +1,5 @@
 
-var extend      = require("metaphorjs-shared/src/func/extend.js"),
+const extend      = require("metaphorjs-shared/src/func/extend.js"),
     isString    = require("metaphorjs-shared/src/func/isString.js"),
     MetaphorJs  = require("metaphorjs-shared/src/MetaphorJs.js");
 

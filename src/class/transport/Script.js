@@ -3,7 +3,7 @@ require("../../__init.js");
 require("metaphorjs/src/func/dom/addListener.js");
 require("metaphorjs/src/func/dom/setAttr.js");
 
-var cls         = require("metaphorjs-class/src/cls.js"),
+const cls         = require("metaphorjs-class/src/cls.js"),
     MetaphorJs = require("metaphorjs-shared/src/MetaphorJs.js");
     
 module.exports = MetaphorJs.ajax.transport.Script = cls({

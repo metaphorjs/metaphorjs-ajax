@@ -1,12 +1,11 @@
 
 require("metaphorjs-promise/src/lib/Promise.js");
 
-var cls         = require("metaphorjs-class/src/cls.js"),
+const cls         = require("metaphorjs-class/src/cls.js"),
     bind        = require("metaphorjs-shared/src/func/bind.js"),
     error       = require("metaphorjs-shared/src/func/error.js"),
     emptyFn     = require("metaphorjs-shared/src/func/emptyFn.js"),
     isString    = require("metaphorjs-shared/src/func/isString.js"),
-    undf        = require("metaphorjs-shared/src/var/undf.js"),
     MetaphorJs  = require("metaphorjs-shared/src/MetaphorJs.js");
 
 
@@ -122,7 +121,7 @@ module.exports = MetaphorJs.ajax.transport.XHR = (function(){
 
                 if (httpSuccess(xhr)) {
                     self._ajax.processResponse(
-                        isString(xhr.responseText) ? xhr.responseText : undf,
+                        isString(xhr.responseText) ? xhr.responseText : undefined,
                         xhr.getResponseHeader("content-type") || ''
                     );
                 }
@@ -137,7 +136,7 @@ module.exports = MetaphorJs.ajax.transport.XHR = (function(){
                         // even it failed. 
                         self._ajax.$$promise = new MetaphorJs.lib.Promise;
                         xhr.responseData = self._ajax.returnResponse(
-                            isString(xhr.responseText) ? xhr.responseText : undf,
+                            isString(xhr.responseText) ? xhr.responseText : undefined,
                             xhr.getResponseHeader("content-type") || ''
                         );
                         self._ajax.$$promise = deferred;
