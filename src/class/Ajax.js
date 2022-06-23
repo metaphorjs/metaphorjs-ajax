@@ -18,10 +18,11 @@ require("metaphorjs-promise/src/mixin/Promise.js");
 require("metaphorjs-observable/src/lib/Observable.js");
 require("metaphorjs/src/func/dom/getAttr.js");
 require("metaphorjs/src/func/dom/setAttr.js");
+require("metaphorjs/src/func/dom/toFragment.js");
 require("../func/ajax/serializeParam.js");
-require("./transport/XHR.js");
-require("./transport/Script.js");
-require("./transport/IFrame.js");
+//require("./transport/XHR.js");
+//require("./transport/Script.js");
+//require("./transport/IFrame.js");
 require("./transport/Fetch.js");
 
 module.exports = MetaphorJs.ajax.Ajax = (function(){
@@ -57,16 +58,7 @@ module.exports = MetaphorJs.ajax.Ajax = (function(){
                 return selector ? MetaphorJs.dom.select(selector, doc) : doc;
             }
             else if (type == "fragment") {
-                var fragment    = document.createDocumentFragment(),
-                    div         = document.createElement("div");
-
-                div.innerHTML   = data;
-
-                while (div.firstChild) {
-                    fragment.appendChild(div.firstChild);
-                }
-
-                return fragment;
+                return MetaphorJs.dom.toFragment(data);
             }
             else if (type === "json" || !type && ct.indexOf("json") >= 0) {
                 return JSON.parse(data.trim());
@@ -289,15 +281,24 @@ module.exports = MetaphorJs.ajax.Ajax = (function(){
             globalEvents.trigger("before-transport", opt);
 
             if ((opt.crossDomain || opt.transport === "script") && !opt.form) {
+                if (!MetaphorJs.ajax.transport.Script) {
+                    console.error("MetaphorJs.ajax.transport.Script is not available in the build");
+                }
                 transport   = new MetaphorJs.ajax.transport.Script(opt, self.$$promise, self);
             }
             else if (opt.transport === "iframe") {
+                if (!MetaphorJs.ajax.transport.IFrame) {
+                    console.error("MetaphorJs.ajax.transport.IFrame is not available in the build");
+                }
                 transport   = new MetaphorJs.ajax.transport.IFrame(opt, self.$$promise, self);
             }
             else if (opt.transport === "fetch") {
                 transport   = new MetaphorJs.ajax.transport.Fetch(opt, self.$$promise, self);
             }
             else if (opt.transport === "xhr") {
+                if (!MetaphorJs.ajax.transport.XHR) {
+                    console.error("MetaphorJs.ajax.transport.XHR is not available in the build");
+                }
                 transport   = new MetaphorJs.ajax.transport.XHR(opt, self.$$promise, self);
             }
 
@@ -627,6 +628,6 @@ module.exports = MetaphorJs.ajax.Ajax = (function(){
     }, {
         prepareUrl: prepareUrl,
         global: globalEvents,
-        defaultTransport: "xhr"
+        defaultTransport: "fetch"
     });
 }());

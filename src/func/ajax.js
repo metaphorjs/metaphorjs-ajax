@@ -10,7 +10,7 @@ require("../class/Ajax.js");
 * Contents of this file are partially taken from jQuery
 */
 
-module.exports = function(){
+module.exports = MetaphorJs.remote.fetch = function(){
 
     "use strict";
 
@@ -118,7 +118,7 @@ module.exports = function(){
 
             /**
              * @property {string} transport {
-             *  iframe|xhr|script<br>
+             *  fetch|iframe|xhr|script<br>
              *  If <code>files</code> or <code>form</code> options are set 
              *  and browser doesn't support FormData, 
              *  transport will be set to iframe.<br>
